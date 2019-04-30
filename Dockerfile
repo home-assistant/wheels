@@ -3,7 +3,10 @@ FROM BUILD_FROM
 
 # Install requirements
 COPY requirements.txt /usr/src/
-RUN apk add --no-cache --virtual .build-dependencies \
+RUN apk add --no-cache \
+    rsync \
+    openssh-client \
+    && apk add --no-cache --virtual .build-dependencies \
     make \
     g++ \
     openssl-dev \
