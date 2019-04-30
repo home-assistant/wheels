@@ -14,7 +14,7 @@ pr:
 
 variables:
   versionHadolint: 'v1.16.3'
-  versionBuilder: '3.0'
+  versionBuilder: '3.1'
 
 jobs:
 
@@ -62,7 +62,7 @@ jobs:
         -v ~/.docker:/root/.docker \
         -v /run/docker.sock:/run/docker.sock:rw -v $(pwd):/data:ro \
         homeassistant/amd64-builder:$(versionBuilder) \
-        --builder-wheels dev --all \
+        --builder-wheels --version dev --all \
         -t /data --docker-hub homeassistant
     displayName: 'Build DEV'
 
@@ -84,6 +84,5 @@ jobs:
         -v ~/.docker:/root/.docker \
         -v /run/docker.sock:/run/docker.sock:rw -v $(pwd):/data:ro \
         homeassistant/amd64-builder:$(versionBuilder) \
-        --builder-wheels $(Build.SourceBranchName) --all \
-        -t /data --docker-hub homeassistant
+        --builder-wheels --all -t /data --docker-hub homeassistant
     displayName: 'Build Release'
