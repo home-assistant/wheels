@@ -22,7 +22,7 @@ RUN apk add --no-cache \
 
 # Install builder
 COPY . /usr/src/builder/
-RUN apk add --no-cache /usr/src/builder \
+RUN pip3 install --no-cache-dir /usr/src/builder \
     && rm -fr /usr/src/builder
 
 WORKDIR /data
