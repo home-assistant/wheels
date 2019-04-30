@@ -1,6 +1,9 @@
 ARG BUILD_FROM
 FROM BUILD_FROM
 
+ARG BUILD_ARG
+ENV ARCH=${BUILD_ARG}
+
 # Install requirements
 COPY requirements.txt /usr/src/
 RUN apk add --no-cache \
