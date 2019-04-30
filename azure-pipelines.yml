@@ -62,8 +62,8 @@ jobs:
         -v ~/.docker:/root/.docker \
         -v /run/docker.sock:/run/docker.sock:rw -v $(pwd):/data:ro \
         homeassistant/amd64-builder:$(versionBuilder) \
-        --builder-wheels --all \
-        -t /data --version dev --docker-hub homeassistant
+        --builder-wheels dev --all \
+        -t /data --docker-hub homeassistant
     displayName: 'Build DEV'
 
 
@@ -84,6 +84,6 @@ jobs:
         -v ~/.docker:/root/.docker \
         -v /run/docker.sock:/run/docker.sock:rw -v $(pwd):/data:ro \
         homeassistant/amd64-builder:$(versionBuilder) \
-        --builder-wheels --all \
+        --builder-wheels $(Build.SourceBranchName) --all \
         -t /data --docker-hub homeassistant
     displayName: 'Build Release'
