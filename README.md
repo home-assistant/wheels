@@ -11,4 +11,4 @@
 
 ## Folder structure of index folder:
 
-`/alpine_{version}/{arch}/{python_version}/*`
+`/alpine_{version}/{arch}/*`

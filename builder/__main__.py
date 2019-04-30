@@ -7,7 +7,7 @@ import click_pathlib
 
 from builder.pip import build_wheels
 from builder.upload import run_upload
-from builder.folder import create_wheels_folder
+from builder.folder import create_wheels_folder, create_wheels_index
 
 
 @click.command()
@@ -20,9 +20,11 @@ def builder(index, requirement, upload, remote):
 
     with TemporaryDirectory() as temp_dir:
         output = Path(temp_dir)
-        wheels_dir = create_wheels_folder(output)
 
-        build_wheels(requirement, index, wheels_dir)
+        wheels_dir = create_wheels_folder(output)
+        wheels_index = create_wheels_index(index)
+
+        build_wheels(requirement, wheels_index, wheels_dir)
         run_upload(upload, output, remote)
 
 
