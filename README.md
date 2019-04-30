@@ -17,4 +17,4 @@ $ python3 -m builder \
 
 ## Folder structure of index folder:
 
-`/alpine_{version}/{arch}/*`
+`/alpine-{version}/{arch}/*`
