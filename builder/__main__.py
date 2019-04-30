@@ -5,8 +5,8 @@ from tempfile import TemporaryDirectory
 import click
 import click_pathlib
 
-from .pip import build_wheels
-from .upload import run_upload
+from builder.pip import build_wheels
+from builder.upload import run_upload
 
 
 @click.command()
@@ -25,4 +25,4 @@ def builder(index, requirement, upload, remote):
 
 
 if __name__ == "__main__":
-    builder()
+    builder()  # pylint: disable=no-value-for-parameter
