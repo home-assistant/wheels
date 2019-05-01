@@ -1,6 +1,7 @@
 """Hass.io Builder main application."""
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from subprocess import CalledProcessError
 
 import click
 import click_pathlib
@@ -34,7 +35,11 @@ def builder(apk, index, requirement, upload, remote):
         wheels_dir = create_wheels_folder(output)
         wheels_index = create_wheels_index(index)
 
-        build_wheels(requirement, wheels_index, wheels_dir)
+        try:
+            build_wheels(requirement, wheels_index, wheels_dir)
+        except CalledProcessError:
+            pass
+
         run_upload(upload, output, remote)
 
 
