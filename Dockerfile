@@ -10,11 +10,9 @@ RUN apk add --no-cache \
     rsync \
     openssh-client \
     && apk add --no-cache --virtual .build-dependencies \
-    make \
-    g++ \
+    build-base \
     openssl-dev \
     libffi-dev \
-    musl-dev \
     && export MAKEFLAGS="-j$(nproc)" \
     && pip3 install --no-cache-dir -r /usr/src/requirements.txt \
     && apk del .build-dependencies \
