@@ -26,4 +26,4 @@ RUN pip3 install --no-cache-dir /usr/src/builder \
     && rm -fr /usr/src/builder
 
 WORKDIR /data
-CMD [ "python3", "-m", "builder" ]
+ENTRYPOINT [ "python3", "-m", "builder" ]

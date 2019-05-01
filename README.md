@@ -5,6 +5,7 @@
 ```sh
 
 $ python3 -m builder \
+    --apk build-base \
     --index https://wheels.hass.io \
     --requirement requirements_all.txt \
     --upload rsync \

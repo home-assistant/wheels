@@ -5,18 +5,21 @@ from tempfile import TemporaryDirectory
 import click
 import click_pathlib
 
+from builder.apk import install_apks
+from builder.folder import create_wheels_folder, create_wheels_index
 from builder.pip import build_wheels
 from builder.upload import run_upload
-from builder.folder import create_wheels_folder, create_wheels_index
 
 
 @click.command()
-@click.option("--index", required=True, help="Index URL of remote wheels repository")
-@click.option("--requirement", required=True, type=click_pathlib.Path, help="Python requirement file")
+@click.option("--apk", default="build-base", help="APKs they are needed to build this.")
+@click.option("--index", required=True, help="Index URL of remote wheels repository.")
+@click.option("--requirement", required=True, type=click_pathlib.Path, help="Python requirement file.")
 @click.option("--upload", default="rsync", help="Upload plugin to upload wheels.")
 @click.option("--remote", required=True, type=str, help="Remote URL pass to upload plugin.")
-def builder(index, requirement, upload, remote):
+def builder(apk, index, requirement, upload, remote):
     """Build wheels precompiled for Home Assistant container."""
+    install_apks(apk)
 
     with TemporaryDirectory() as temp_dir:
         output = Path(temp_dir)
