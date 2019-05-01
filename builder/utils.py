@@ -19,5 +19,5 @@ def build_arch() -> str:
 
 def check_url(url: str) -> None:
     """Check if url is responsible."""
-    response = requests.get(url)
+    response = requests.get(url, timeout=10)
     response.raise_for_status()
