@@ -1,8 +1,8 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
-ARG BUILD_ARG
-ENV ARCH=${BUILD_ARG}
+ARG BUILD_ARCH
+ENV ARCH=${BUILD_ARCH}
 
 # Install requirements
 COPY requirements.txt /usr/src/

@@ -2,6 +2,8 @@
 from pathlib import Path
 import os
 
+import requests
+
 
 def alpine_version() -> str:
     """Return alpine version for index server."""
@@ -13,3 +15,9 @@ def alpine_version() -> str:
 def build_arch() -> str:
     """Return build arch for wheels."""
     return os.environ["ARCH"]
+
+
+def check_url(url: str) -> None:
+    """Check if url is responsible."""
+    response = requests.get(url)
+    response.raise_for_status()

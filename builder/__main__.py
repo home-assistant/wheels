@@ -6,9 +6,10 @@ import click
 import click_pathlib
 
 from builder.apk import install_apks
-from builder.folder import create_wheels_folder, create_wheels_index
 from builder.pip import build_wheels
+from builder.infra import create_wheels_folder, create_wheels_index
 from builder.upload import run_upload
+from builder.utils import check_url
 
 
 @click.command()
@@ -25,6 +26,7 @@ from builder.upload import run_upload
 def builder(apk, index, requirement, upload, remote):
     """Build wheels precompiled for Home Assistant container."""
     install_apks(apk)
+    check_url(index)
 
     with TemporaryDirectory() as temp_dir:
         output = Path(temp_dir)
