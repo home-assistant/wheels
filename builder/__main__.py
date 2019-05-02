@@ -2,6 +2,7 @@
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from subprocess import CalledProcessError
+import sys
 
 import click
 import click_pathlib
@@ -29,6 +30,7 @@ def builder(apk, index, requirement, upload, remote):
     install_apks(apk)
     check_url(index)
 
+    exit_code = 0
     with TemporaryDirectory() as temp_dir:
         output = Path(temp_dir)
 
@@ -38,9 +40,11 @@ def builder(apk, index, requirement, upload, remote):
         try:
             build_wheels(requirement, wheels_index, wheels_dir)
         except CalledProcessError:
-            pass
+            exit_code = 109
 
         run_upload(upload, output, remote)
+
+    sys.exit(exit_code)
 
 
 if __name__ == "__main__":

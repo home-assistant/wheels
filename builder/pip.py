@@ -14,7 +14,7 @@ def build_wheels(requirement: Path, index: str, output: Path) -> None:
     build_env['MAKEFLAGS'] = f"-j{cpu}"
 
     result = subprocess.run(
-        f"pip3 wheel --wheel-dir {output} --find-links {index} --requirement {requirement}",
+        f"pip3 wheel --progress-bar ascii --wheel-dir {output} --find-links {index} --requirement {requirement}",
         shell=True, stdout=sys.stdout, stderr=sys.stderr, env=build_env
     )
 
