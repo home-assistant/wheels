@@ -8,7 +8,7 @@ ENV ARCH=${BUILD_ARCH}
 COPY requirements.txt /usr/src/
 RUN apk add --no-cache \
         rsync \
-     openssh-client \
+        openssh-client \
     && pip3 install --no-cache-dir --find-links https://wheels.hass.io/alpine-3.9/${BUILD_ARCH}/ \
         -r /usr/src/requirements.txt \
     && rm -f /usr/src/requirements.txt
