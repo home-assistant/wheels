@@ -4,13 +4,14 @@ trigger:
   branches:
     include:
     - master
+    - dev
   tags:
     include:
     - '*'
     exclude:
     - untagged*
 pr:
-  - master
+  - dev
 variables:
   - name: versionHadolint
     value: 'v1.16.3'
@@ -51,7 +52,7 @@ jobs:
 
 
 - job: 'Wheels'
-  condition: eq(variables['Build.SourceBranchName'], 'master')
+  condition: eq(variables['Build.SourceBranchName'], 'dev')
   timeoutInMinutes: 360
   pool:
     vmImage: 'ubuntu-latest'
@@ -99,7 +100,7 @@ jobs:
 
 
 - job: 'ReleaseDEV'
-  condition: and(eq(variables['Build.SourceBranchName'], 'master'), succeeded('Tox'), succeeded('Hadolint'), succeeded('Wheels'))
+  condition: and(eq(variables['Build.SourceBranchName'], 'dev'), succeeded('Tox'), succeeded('Hadolint'), succeeded('Wheels'))
   dependsOn:
   - 'Tox'
   - 'Hadolint'
