@@ -51,6 +51,20 @@ jobs:
     displayName: 'Run Hadolint'
 
 
+- job: 'Black'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - task: UsePythonVersion@0
+    displayName: 'Use Python $(python.version)'
+    inputs:
+      versionSpec: '3.7'
+  - script: pip install black
+    displayName: 'Install black'
+  - script: black --check builder
+    displayName: 'Run Black'
+
+
 - job: 'Wheels'
   condition: eq(variables['Build.SourceBranchName'], 'dev')
   timeoutInMinutes: 360
