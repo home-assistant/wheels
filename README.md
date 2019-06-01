@@ -6,7 +6,7 @@
 
 $ python3 -m builder \
     --apk build-base \
-    --index https://wheels.hass.io \
+    --index https://wheels.home-assistant.io \
     --requirement requirements_all.txt \
     --upload rsync \
     --remote user@server:/wheels

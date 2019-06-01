@@ -1,6 +1,6 @@
 from setuptools import setup
 
-VERSION=0.4
+VERSION = 0.4
 
 setup(
     name="builder",
@@ -26,4 +26,5 @@ setup(
     zip_safe=False,
     platforms="any",
     packages=["builder", "builder.upload"],
-    include_package_data=True)
+    include_package_data=True,
+)
