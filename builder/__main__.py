@@ -41,6 +41,7 @@ def builder(apk, index, requirement, upload, remote):
         requirements = parse_requirements(requirement)
 
         for package in requirements:
+            print(f"Process package: {package}")
             try:
                 build_wheels(package, wheels_index, wheels_dir)
             except CalledProcessError:
