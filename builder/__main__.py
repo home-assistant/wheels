@@ -51,7 +51,7 @@ def builder(apk, index, requirement, upload, remote):
 
             if timer < monotonic():
                 run_upload(upload, output, remote)
-                timer = monotonic + 900
+                timer = monotonic() + 900
 
         run_upload(upload, output, remote)
 
