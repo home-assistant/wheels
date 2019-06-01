@@ -15,7 +15,7 @@ def build_wheels(package: str, index: str, output: Path) -> None:
     build_env["MAKEFLAGS"] = f"-j{cpu}"
 
     result = subprocess.run(
-        f"pip3 wheel --progress-bar ascii --wheel-dir {output} --find-links {index} {package}",
+        f'pip3 wheel --progress-bar ascii --wheel-dir {output} --find-links {index} "{package}"',
         shell=True,
         stdout=sys.stdout,
         stderr=sys.stderr,
@@ -31,6 +31,7 @@ def parse_requirements(requirement: Path) -> List[str]:
     requirement_list = []
     with requirement.open("r") as data:
         for line in data:
+            line = line.strip()
             if not line or line.startswith("#"):
                 continue
             requirement_list.append(line)

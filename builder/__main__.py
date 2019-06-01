@@ -1,15 +1,16 @@
 """Hass.io Builder main application."""
-from pathlib import Path
-from tempfile import TemporaryDirectory
-from subprocess import CalledProcessError
 import sys
+from pathlib import Path
+from subprocess import CalledProcessError
+from tempfile import TemporaryDirectory
+from time import monotonic
 
 import click
 import click_pathlib
 
 from builder.apk import install_apks
-from builder.pip import build_wheels, parse_requirements
 from builder.infra import create_wheels_folder, create_wheels_index
+from builder.pip import build_wheels, parse_requirements
 from builder.upload import run_upload
 from builder.utils import check_url
 
@@ -33,6 +34,7 @@ def builder(apk, index, requirement, upload, remote):
     check_url(index)
 
     exit_code = 0
+    timer = 0
     with TemporaryDirectory() as temp_dir:
         output = Path(temp_dir)
 
@@ -41,12 +43,17 @@ def builder(apk, index, requirement, upload, remote):
         requirements = parse_requirements(requirement)
 
         for package in requirements:
+            print(f"Process package: {package}")
             try:
                 build_wheels(package, wheels_index, wheels_dir)
             except CalledProcessError:
                 exit_code = 109
-            finally:
+
+            if timer < monotonic():
                 run_upload(upload, output, remote)
+                timer = monotonic() + 900
+
+        run_upload(upload, output, remote)
 
     sys.exit(exit_code)
 
