@@ -40,12 +40,13 @@ def builder(apk, index, requirement, upload, remote):
         wheels_index = create_wheels_index(index)
         requirements = parse_requirements(requirement)
 
-        try:
-            build_wheels(requirements, wheels_index, wheels_dir)
-        except CalledProcessError:
-            exit_code = 109
-
-        run_upload(upload, output, remote)
+        for package in requirements:
+            try:
+                build_wheels(package, wheels_index, wheels_dir)
+            except CalledProcessError:
+                exit_code = 109
+            finally:
+                run_upload(upload, output, remote)
 
     sys.exit(exit_code)
 
