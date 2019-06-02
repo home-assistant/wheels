@@ -10,7 +10,7 @@ import click_pathlib
 
 from builder.apk import install_apks
 from builder.infra import create_wheels_folder, create_wheels_index
-from builder.pip import build_wheels, parse_requirements
+from builder.pip import build_wheels, extract_packages
 from builder.upload import run_upload
 from builder.utils import check_url
 
@@ -28,7 +28,12 @@ from builder.utils import check_url
 @click.option(
     "--remote", required=True, type=str, help="Remote URL pass to upload plugin."
 )
-def builder(apk, index, requirement, upload, remote):
+@click.option(
+    "--requirement-diff",
+    type=click_pathlib.Path(exists=True),
+    help="Python requirement file to calc the different for selective builds.",
+)
+def builder(apk, index, requirement, upload, remote, requirement_diff):
     """Build wheels precompiled for Home Assistant container."""
     install_apks(apk)
     check_url(index)
@@ -40,10 +45,10 @@ def builder(apk, index, requirement, upload, remote):
 
         wheels_dir = create_wheels_folder(output)
         wheels_index = create_wheels_index(index)
-        requirements = parse_requirements(requirement)
+        packages = extract_packages(requirement, requirement_diff)
 
-        for package in requirements:
-            print(f"Process package: {package}")
+        for package in packages:
+            print(f"Process package: {package}", flush=True)
             try:
                 build_wheels(package, wheels_index, wheels_dir)
             except CalledProcessError:

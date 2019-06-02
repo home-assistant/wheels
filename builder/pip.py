@@ -3,7 +3,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 
 def build_wheels(package: str, index: str, output: Path) -> None:
@@ -34,5 +34,20 @@ def parse_requirements(requirement: Path) -> List[str]:
             line = line.strip()
             if not line or line.startswith("#"):
                 continue
-            requirement_list.append(line)
+            requirement_list.append(line.split(" ")[-1])
     return requirement_list
+
+
+def extract_packages(
+    requirement: Path, requirement_diff: Optional[Path] = None
+) -> List[str]:
+    """Extract packages they need build."""
+    packages = parse_requirements(requirement)
+
+    # Without diff
+    if requirement_diff is None:
+        return packages
+
+    packages_diff = parse_requirements(requirement_diff)
+
+    return list(set(packages) - set(packages_diff))
