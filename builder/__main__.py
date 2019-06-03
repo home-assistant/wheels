@@ -10,12 +10,17 @@ import click_pathlib
 
 from builder.apk import install_apks
 from builder.infra import create_wheels_folder, create_wheels_index
-from builder.pip import build_wheels, extract_packages
+from builder.pip import (
+    build_wheels_package,
+    build_wheels_requirement,
+    write_requirement,
+    extract_packages,
+)
 from builder.upload import run_upload
 from builder.utils import check_url
 
 
-@click.command()
+@click.command("builder")
 @click.option("--apk", default="build-base", help="APKs they are needed to build this.")
 @click.option("--index", required=True, help="Index URL of remote wheels repository.")
 @click.option(
@@ -33,13 +38,15 @@ from builder.utils import check_url
     type=click_pathlib.Path(exists=True),
     help="Python requirement file to calc the different for selective builds.",
 )
-def builder(apk, index, requirement, upload, remote, requirement_diff):
+@click.option(
+    "--single", default=False, help="Install every package as single requirement."
+)
+def builder(apk, index, requirement, upload, remote, requirement_diff, single):
     """Build wheels precompiled for Home Assistant container."""
     install_apks(apk)
     check_url(index)
 
     exit_code = 0
-    timer = 0
     with TemporaryDirectory() as temp_dir:
         output = Path(temp_dir)
 
@@ -47,16 +54,26 @@ def builder(apk, index, requirement, upload, remote, requirement_diff):
         wheels_index = create_wheels_index(index)
         packages = extract_packages(requirement, requirement_diff)
 
-        for package in packages:
-            print(f"Process package: {package}", flush=True)
+        if single:
+            timer = 0
+            for package in packages:
+                print(f"Process package: {package}", flush=True)
+                try:
+                    build_wheels_package(package, wheels_index, wheels_dir)
+                except CalledProcessError:
+                    exit_code = 109
+
+                if timer < monotonic():
+                    run_upload(upload, output, remote)
+                    timer = monotonic() + 900
+        else:
+            temp_requirement = Path("/tmp/wheels_requirement.txt")
+            write_requirement(temp_requirement, packages)
+
             try:
-                build_wheels(package, wheels_index, wheels_dir)
+                build_wheels_requirement(temp_requirement, wheels_index, wheels_dir)
             except CalledProcessError:
                 exit_code = 109
-
-            if timer < monotonic():
-                run_upload(upload, output, remote)
-                timer = monotonic() + 900
 
         run_upload(upload, output, remote)
 
