@@ -39,7 +39,10 @@ from builder.utils import check_url
     help="Python requirement file to calc the different for selective builds.",
 )
 @click.option(
-    "--single", default=False, help="Install every package as single requirement."
+    "--single",
+    is_flag=True,
+    default=False,
+    help="Install every package as single requirement.",
 )
 def builder(apk, index, requirement, upload, remote, requirement_diff, single):
     """Build wheels precompiled for Home Assistant container."""
