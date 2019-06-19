@@ -1,5 +1,5 @@
 click==7.0
-click-pathlib==2019.4.30.2
+click-pathlib==2019.6.13.1
 requests==2.22.0
 Cython==0.29.10
 wheel==0.33.4
