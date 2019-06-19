@@ -13,6 +13,7 @@ from builder.infra import create_wheels_folder, create_wheels_index
 from builder.pip import (
     build_wheels_package,
     build_wheels_requirement,
+    build_wheels_local,
     write_requirement,
     extract_packages,
 )
@@ -25,7 +26,6 @@ from builder.utils import check_url
 @click.option("--index", required=True, help="Index URL of remote wheels repository.")
 @click.option(
     "--requirement",
-    required=True,
     type=click_pathlib.Path(exists=True),
     help="Python requirement file.",
 )
@@ -44,7 +44,10 @@ from builder.utils import check_url
     default=False,
     help="Install every package as single requirement.",
 )
-def builder(apk, index, requirement, upload, remote, requirement_diff, single):
+@click.option(
+    "--local", is_flag=True, default=False, help="Build wheel from local folder setup."
+)
+def builder(apk, index, requirement, upload, remote, requirement_diff, single, local):
     """Build wheels precompiled for Home Assistant container."""
     install_apks(apk)
     check_url(index)
@@ -55,9 +58,11 @@ def builder(apk, index, requirement, upload, remote, requirement_diff, single):
 
         wheels_dir = create_wheels_folder(output)
         wheels_index = create_wheels_index(index)
-        packages = extract_packages(requirement, requirement_diff)
 
-        if single:
+        if local:
+            build_wheels_local(wheels_index, wheels_dir)
+        elif single:
+            packages = extract_packages(requirement, requirement_diff)
             timer = 0
             for package in packages:
                 print(f"Process package: {package}", flush=True)
@@ -70,6 +75,7 @@ def builder(apk, index, requirement, upload, remote, requirement_diff, single):
                     run_upload(upload, output, remote)
                     timer = monotonic() + 900
         else:
+            packages = extract_packages(requirement, requirement_diff)
             temp_requirement = Path("/tmp/wheels_requirement.txt")
             write_requirement(temp_requirement, packages)
 
