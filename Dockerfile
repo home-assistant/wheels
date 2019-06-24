@@ -9,7 +9,7 @@ COPY requirements.txt /usr/src/
 RUN apk add --no-cache \
         rsync \
         openssh-client \
-    && pip3 install --no-cache-dir --find-links "https://wheels.home-assistant.io/alpine-$(cat /etc/alpine-release | cut -d '.' -f 1-2)/${BUILD_ARCH}/" \
+    && pip3 install --no-cache-dir --find-links "https://wheels.home-assistant.io/alpine-$(cut -d '.' -f 1-2 < /etc/alpine-release)/${BUILD_ARCH}/" \
         -r /usr/src/requirements.txt \
     && rm -f /usr/src/requirements.txt
 
