@@ -1,6 +1,7 @@
 # https://dev.azure.com/home-assistant
 
 trigger:
+  batch: true
   branches:
     include:
     - master
@@ -16,9 +17,7 @@ variables:
   - name: versionHadolint
     value: 'v1.16.3'
   - name: versionBuilder
-    value: '3.1'
-  - name: versionWheels
-    value: '0.3'
+    value: '4.4'
   - group: docker
   - group: wheels
 
@@ -65,82 +64,20 @@ jobs:
     displayName: 'Run Black'
 
 
-- job: 'Wheels'
-  condition: eq(variables['Build.SourceBranchName'], 'dev')
-  timeoutInMinutes: 360
-  pool:
-    vmImage: 'ubuntu-latest'
-  strategy:
-    maxParallel: 3
-    matrix:
-      amd64:
-        buildArch: 'amd64'
-      i386:
-        buildArch: 'i386'
-      armhf:
-        buildArch: 'armhf'
-      armv7:
-        buildArch: 'armv7'
-      aarch64:
-        buildArch: 'aarch64'
-  steps:
-  - script: |
-      sudo apt-get update
-      sudo apt-get install -y --no-install-recommends \
-        qemu-user-static \
-        binfmt-support \
-        curl
-      
-      sudo mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc
-      sudo update-binfmts --enable qemu-arm
-      sudo update-binfmts --enable qemu-aarch64
-    displayName: 'Initial cross build'
-  - script: |
-      mkdir -p .ssh
-      echo -e "-----BEGIN RSA PRIVATE KEY-----\n$(wheelsSSH)\n-----END RSA PRIVATE KEY-----" >> .ssh/id_rsa
-      ssh-keyscan -H $(wheelsHost) >> .ssh/known_hosts
-      chmod 600 .ssh/*
-    displayName: 'Install ssh key'
-  - script: sudo docker pull homeassistant/$(buildArch)-wheels:$(versionWheels)
-    displayName: 'Install wheels builder'
-  - script: |
-      curl -s -o requirements_diff.txt https://raw.githubusercontent.com/home-assistant/hassio-wheels/master/requirements.txt
-      sudo docker run --rm -v $(pwd):/data:ro -v $(pwd)/.ssh:/root/.ssh:rw \
-        homeassistant/$(buildArch)-wheels:$(versionWheels) \
-        --apk "build-base;libffi-dev;openssl-dev" \
-        --index $(wheelsIndex) \
-        --requirement requirements.txt \
-        --requirement-diff requirements_diff.txt \
-        --upload rsync \
-        --remote wheels@$(wheelsHost):/opt/wheels
-    displayName: 'Run wheels build'
+- template: .azure/azp-template-wheels.yml
+  parameters:
+    name: '37_Alpine39'
+    python: '3.7-alpine3.9'
 
 
-- job: 'ReleaseDEV'
-  condition: and(eq(variables['Build.SourceBranchName'], 'dev'), succeeded('Tox'), succeeded('Hadolint'), succeeded('Wheels'))
-  dependsOn:
-  - 'Tox'
-  - 'Hadolint'
-  - 'Wheels'
-  pool:
-    vmImage: 'ubuntu-latest'
-  steps:
-  - script: sudo docker login -u $(dockerUser) -p $(dockerPassword)
-    displayName: 'Docker hub login'
-  - script: sudo docker pull homeassistant/amd64-builder:$(versionBuilder)
-    displayName: 'Install Builder'
-  - script: |
-      sudo docker run --rm --privileged \
-        -v ~/.docker:/root/.docker \
-        -v /run/docker.sock:/run/docker.sock:rw -v $(pwd):/data:ro \
-        homeassistant/amd64-builder:$(versionBuilder) \
-        --builder-wheels --version dev --all \
-        -t /data --docker-hub homeassistant
-    displayName: 'Build DEV'
+- template: .azure/azp-template-wheels.yml
+  parameters:
+    name: '37_Alpine310'
+    python: '3.7-alpine3.10'
 
 
 - job: 'VersionValidate'
-  condition: startsWith(variables['Build.SourceBranch'], 'refs/tags')
+  condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags'), eq(variables['Build.SourceBranchName'], 'dev'))
   pool:
     vmImage: 'ubuntu-latest'
   steps:
@@ -152,7 +89,9 @@ jobs:
       setup_version="$(python setup.py -V)"
       branch_version="$(Build.SourceBranchName)"
 
-      if [ "${setup_version}" != "${branch_version}" ]; then
+      if [ "${branch_version}" == "dev" ]; then
+        exit 0
+      elif [ "${setup_version}" != "${branch_version}" ]; then
         echo "Version of tag ${branch_version} don't match with ${setup_version}!"
         exit 1
       fi
@@ -160,13 +99,22 @@ jobs:
 
 
 - job: 'Release'
-  condition: and(startsWith(variables['Build.SourceBranch'], 'refs/tags'), succeeded('Tox'), succeeded('Hadolint'), succeeded('VersionValidate'))
   dependsOn:
   - 'Tox'
   - 'Hadolint'
   - 'VersionValidate'
+  timeoutInMinutes: 120
   pool:
     vmImage: 'ubuntu-latest'
+  strategy:
+    maxParallel: 2
+    matrix:
+      37-Alpine39:
+        buildPython: '3.7-alpine3.9'
+        buildArgs: ''
+      37-Alpine310:
+        buildPython: '3.7-alpine3.10'
+        buildArgs: '--release-tag'
   steps:
   - script: sudo docker login -u $(dockerUser) -p $(dockerPassword)
     displayName: 'Docker hub login'
@@ -177,5 +125,7 @@ jobs:
         -v ~/.docker:/root/.docker \
         -v /run/docker.sock:/run/docker.sock:rw -v $(pwd):/data:ro \
         homeassistant/amd64-builder:$(versionBuilder) \
-        --builder-wheels --all -t /data --docker-hub homeassistant
+        --builder-wheels $(buildPython) --all \
+        $(buildArgs) --version $(Build.SourceBranchName) \
+        -t /data --docker-hub homeassistant
     displayName: 'Build Release'
