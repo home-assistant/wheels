@@ -17,8 +17,6 @@ variables:
     value: 'v1.16.3'
   - name: versionBuilder
     value: '4.3'
-  - name: versionWheels
-    value: 'dev'
   - group: docker
   - group: wheels
 
@@ -100,7 +98,7 @@ jobs:
 
 
 - job: 'Release'
-  condition: and(startsWith(variables['Build.SourceBranch'], 'refs/tags'), succeeded('Tox'), succeeded('Hadolint'), succeeded('VersionValidate'))
+  condition: and(or(startsWith(variables['Build.SourceBranch'], 'refs/tags'), eq(variables['Build.SourceBranchName'], 'dev')), succeeded('Tox'), succeeded('Hadolint'), succeeded('VersionValidate'))
   dependsOn:
   - 'Tox'
   - 'Hadolint'
