@@ -76,7 +76,7 @@ jobs:
 
 
 - job: 'VersionValidate'
-  condition: startsWith(variables['Build.SourceBranch'], 'refs/tags')
+  condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags'), eq(variables['Build.SourceBranchName'], 'dev'))
   pool:
     vmImage: 'ubuntu-latest'
   steps:
@@ -98,7 +98,6 @@ jobs:
 
 
 - job: 'Release'
-  condition: and(or(startsWith(variables['Build.SourceBranch'], 'refs/tags'), eq(variables['Build.SourceBranchName'], 'dev')), succeeded('Tox'), succeeded('Hadolint'), succeeded('VersionValidate'))
   dependsOn:
   - 'Tox'
   - 'Hadolint'
