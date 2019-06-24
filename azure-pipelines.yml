@@ -103,6 +103,7 @@ jobs:
   - 'Tox'
   - 'Hadolint'
   - 'VersionValidate'
+  timeoutInMinutes: 360
   pool:
     vmImage: 'ubuntu-latest'
   strategy:
