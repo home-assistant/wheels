@@ -17,7 +17,7 @@ variables:
   - name: versionHadolint
     value: 'v1.16.3'
   - name: versionBuilder
-    value: '4.3'
+    value: '4.4'
   - group: docker
   - group: wheels
 
