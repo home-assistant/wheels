@@ -16,7 +16,7 @@ variables:
   - name: versionHadolint
     value: 'v1.16.3'
   - name: versionBuilder
-    value: '3.1'
+    value: '4.3'
   - name: versionWheels
     value: '0.3'
   - group: docker
@@ -116,29 +116,6 @@ jobs:
     displayName: 'Run wheels build'
 
 
-- job: 'ReleaseDEV'
-  condition: and(eq(variables['Build.SourceBranchName'], 'dev'), succeeded('Tox'), succeeded('Hadolint'), succeeded('Wheels'))
-  dependsOn:
-  - 'Tox'
-  - 'Hadolint'
-  - 'Wheels'
-  pool:
-    vmImage: 'ubuntu-latest'
-  steps:
-  - script: sudo docker login -u $(dockerUser) -p $(dockerPassword)
-    displayName: 'Docker hub login'
-  - script: sudo docker pull homeassistant/amd64-builder:$(versionBuilder)
-    displayName: 'Install Builder'
-  - script: |
-      sudo docker run --rm --privileged \
-        -v ~/.docker:/root/.docker \
-        -v /run/docker.sock:/run/docker.sock:rw -v $(pwd):/data:ro \
-        homeassistant/amd64-builder:$(versionBuilder) \
-        --builder-wheels --version dev --all \
-        -t /data --docker-hub homeassistant
-    displayName: 'Build DEV'
-
-
 - job: 'VersionValidate'
   condition: startsWith(variables['Build.SourceBranch'], 'refs/tags')
   pool:
@@ -152,7 +129,9 @@ jobs:
       setup_version="$(python setup.py -V)"
       branch_version="$(Build.SourceBranchName)"
 
-      if [ "${setup_version}" != "${branch_version}" ]; then
+      if [ "${branch_version}" == "dev" ]; then
+        exit 0
+      elif [ "${setup_version}" != "${branch_version}" ]; then
         echo "Version of tag ${branch_version} don't match with ${setup_version}!"
         exit 1
       fi
@@ -167,6 +146,15 @@ jobs:
   - 'VersionValidate'
   pool:
     vmImage: 'ubuntu-latest'
+  strategy:
+    maxParallel: 2
+    matrix:
+      37-Alpine39:
+        buildPython: '3.7-alpine3.9'
+        buildArgs: ''
+      37-Alpine310:
+        buildPython: '3.7-alpine3.10'
+        buildArgs: '--release-tag'
   steps:
   - script: sudo docker login -u $(dockerUser) -p $(dockerPassword)
     displayName: 'Docker hub login'
@@ -177,5 +165,7 @@ jobs:
         -v ~/.docker:/root/.docker \
         -v /run/docker.sock:/run/docker.sock:rw -v $(pwd):/data:ro \
         homeassistant/amd64-builder:$(versionBuilder) \
-        --builder-wheels --all -t /data --docker-hub homeassistant
+        --builder-wheels $(buildPython) --all \
+        $(buildArgs) --version $(Build.SourceBranchName) \
+        -t /data --docker-hub homeassistant
     displayName: 'Build Release'
