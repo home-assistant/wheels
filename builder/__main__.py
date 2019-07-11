@@ -84,7 +84,7 @@ def builder(apk, index, requirement, upload, remote, requirement_diff, single, l
             except CalledProcessError:
                 exit_code = 109
 
-        fix_wheels_name(output)
+        fix_wheels_name(wheels_dir)
         run_upload(upload, output, remote)
 
     sys.exit(exit_code)
