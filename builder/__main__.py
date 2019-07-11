@@ -18,7 +18,7 @@ from builder.pip import (
     extract_packages,
 )
 from builder.upload import run_upload
-from builder.utils import check_url
+from builder.utils import check_url, fix_wheels_name
 
 
 @click.command("builder")
@@ -84,6 +84,7 @@ def builder(apk, index, requirement, upload, remote, requirement_diff, single, l
             except CalledProcessError:
                 exit_code = 109
 
+        fix_wheels_name(output)
         run_upload(upload, output, remote)
 
     sys.exit(exit_code)
