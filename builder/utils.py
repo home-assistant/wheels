@@ -5,7 +5,7 @@ import re
 
 import requests
 
-RE_WHEEL_PLATFORM = re.compile(r"^(?P<name>.*-)linux_\w+\.whl$")
+RE_WHEEL_PLATFORM = re.compile(r"^(?P<name>.*-)cp\d{2}m-linux_\w+\.whl$")
 
 
 def alpine_version() -> str:
@@ -32,4 +32,4 @@ def fix_wheels_name(wheels_folder: Path) -> None:
         match = RE_WHEEL_PLATFORM.match(package.name)
         if not match:
             continue
-        package.rename(Path(package.parent, f"{match.group('name')}any.whl"))
+        package.rename(Path(package.parent, f"{match.group('name')}none-any.whl"))
