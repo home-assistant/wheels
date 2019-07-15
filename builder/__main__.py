@@ -3,7 +3,6 @@ import sys
 from pathlib import Path
 from subprocess import CalledProcessError
 from tempfile import TemporaryDirectory
-from time import monotonic
 
 import click
 import click_pathlib
@@ -63,17 +62,12 @@ def builder(apk, index, requirement, upload, remote, requirement_diff, single, l
             build_wheels_local(wheels_index, wheels_dir)
         elif single:
             packages = extract_packages(requirement, requirement_diff)
-            timer = 0
             for package in packages:
                 print(f"Process package: {package}", flush=True)
                 try:
                     build_wheels_package(package, wheels_index, wheels_dir)
                 except CalledProcessError:
                     exit_code = 109
-
-                if timer < monotonic():
-                    run_upload(upload, output, remote)
-                    timer = monotonic() + 900
         else:
             packages = extract_packages(requirement, requirement_diff)
             temp_requirement = Path("/tmp/wheels_requirement.txt")
