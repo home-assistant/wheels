@@ -1,8 +1,10 @@
 """Hass.io Builder main application."""
-import sys
 from pathlib import Path
+import shutil
 from subprocess import CalledProcessError
+import sys
 from tempfile import TemporaryDirectory
+from typing import Optional
 
 import click
 import click_pathlib
@@ -10,11 +12,11 @@ import click_pathlib
 from builder.apk import install_apks
 from builder.infra import create_wheels_folder, create_wheels_index
 from builder.pip import (
+    build_wheels_local,
     build_wheels_package,
     build_wheels_requirement,
-    build_wheels_local,
-    write_requirement,
     extract_packages,
+    write_requirement,
 )
 from builder.upload import run_upload
 from builder.utils import check_url, fix_wheels_name
@@ -28,14 +30,15 @@ from builder.utils import check_url, fix_wheels_name
     type=click_pathlib.Path(exists=True),
     help="Python requirement file.",
 )
-@click.option("--upload", default="rsync", help="Upload plugin to upload wheels.")
-@click.option(
-    "--remote", required=True, type=str, help="Remote URL pass to upload plugin."
-)
 @click.option(
     "--requirement-diff",
     type=click_pathlib.Path(exists=True),
     help="Python requirement file to calc the different for selective builds.",
+)
+@click.option(
+    "--prebuild-dir",
+    type=click_pathlib.Path(exists=True),
+    help="Folder with include allready builded wheels for upload.",
 )
 @click.option(
     "--single",
@@ -46,7 +49,21 @@ from builder.utils import check_url, fix_wheels_name
 @click.option(
     "--local", is_flag=True, default=False, help="Build wheel from local folder setup."
 )
-def builder(apk, index, requirement, upload, remote, requirement_diff, single, local):
+@click.option("--upload", default="rsync", help="Upload plugin to upload wheels.")
+@click.option(
+    "--remote", required=True, type=str, help="Remote URL pass to upload plugin."
+)
+def builder(
+    apk: str,
+    index: str,
+    requirement: Optional[Path],
+    requirement_diff: Optional[Path],
+    prebuild_dir: Optional[Path],
+    single: bool,
+    local: bool,
+    upload: str,
+    remote: str,
+):
     """Build wheels precompiled for Home Assistant container."""
     install_apks(apk)
     check_url(index)
@@ -59,8 +76,14 @@ def builder(apk, index, requirement, upload, remote, requirement_diff, single, l
         wheels_index = create_wheels_index(index)
 
         if local:
+            # Build wheels in a local folder/src
             build_wheels_local(wheels_index, wheels_dir)
+        elif prebuild_dir:
+            # Prepare allready builded wheels for upload
+            for whl_file in prebuild_dir.glob("*.whl"):
+                shutil.copy(whl_file, Path(wheels_dir, whl_file.name))
         elif single:
+            # Build every wheel like a single installation
             packages = extract_packages(requirement, requirement_diff)
             for package in packages:
                 print(f"Process package: {package}", flush=True)
@@ -69,6 +92,7 @@ def builder(apk, index, requirement, upload, remote, requirement_diff, single, l
                 except CalledProcessError:
                     exit_code = 109
         else:
+            # Build all needed wheels at once
             packages = extract_packages(requirement, requirement_diff)
             temp_requirement = Path("/tmp/wheels_requirement.txt")
             write_requirement(temp_requirement, packages)
