@@ -4,7 +4,6 @@ import shutil
 from subprocess import CalledProcessError
 import sys
 from tempfile import TemporaryDirectory
-from time import monotonic
 from typing import Optional
 
 import click
@@ -86,17 +85,12 @@ def builder(
         elif single:
             # Build every wheel like a single installation
             packages = extract_packages(requirement, requirement_diff)
-            timer = 0
             for package in packages:
                 print(f"Process package: {package}", flush=True)
                 try:
                     build_wheels_package(package, wheels_index, wheels_dir)
                 except CalledProcessError:
                     exit_code = 109
-
-                if timer < monotonic():
-                    run_upload(upload, output, remote)
-                    timer = monotonic() + 900
         else:
             # Build all needed wheels at once
             packages = extract_packages(requirement, requirement_diff)
