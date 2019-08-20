@@ -19,7 +19,12 @@ variables:
   - name: versionBuilder
     value: '4.4'
   - group: docker
-  - group: wheels
+resources:
+  repositories:
+    - repository: azure
+      type: github
+      name: 'home-assistant/ci-azure'
+      endpoint: 'home-assistant'
 
 jobs:
 
@@ -64,38 +69,23 @@ jobs:
     displayName: 'Run Black'
 
 
-- template: .azure/azp-template-wheels.yml
+- template: templates/azp-job-wheels.yaml@azure
   parameters:
-    name: '37_Alpine39'
-    python: '3.7-alpine3.9'
+    builderVersion: 'dev-3.7-alpine3.9'
+    builderApk: 'build-base;libffi-dev;openssl-dev'
+    wheelsRequirement: 'requirements.txt'
 
 
-- template: .azure/azp-template-wheels.yml
+- template: templates/azp-job-wheels.yaml@azure
   parameters:
-    name: '37_Alpine310'
-    python: '3.7-alpine3.10'
+    builderVersion: 'dev-3.7-alpine3.10'
+    builderApk: 'build-base;libffi-dev;openssl-dev'
+    wheelsRequirement: 'requirements.txt'
 
 
-- job: 'VersionValidate'
-  condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags'), eq(variables['Build.SourceBranchName'], 'dev'))
-  pool:
-    vmImage: 'ubuntu-latest'
-  steps:
-  - task: UsePythonVersion@0
-    displayName: 'Use Python 3.7'
-    inputs:
-      versionSpec: '3.7'
-  - script: |
-      setup_version="$(python setup.py -V)"
-      branch_version="$(Build.SourceBranchName)"
-
-      if [ "${branch_version}" == "dev" ]; then
-        exit 0
-      elif [ "${setup_version}" != "${branch_version}" ]; then
-        echo "Version of tag ${branch_version} don't match with ${setup_version}!"
-        exit 1
-      fi
-    displayName: 'Check version of branch/tag'
+- template: templates/azp-job-version.yaml@azure
+  parameters:
+    ignoreDev: true
 
 
 - job: 'Release'
