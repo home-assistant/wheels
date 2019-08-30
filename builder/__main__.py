@@ -6,9 +6,6 @@ import sys
 from tempfile import TemporaryDirectory
 from typing import Optional
 
-import click
-import click_pathlib
-
 from builder.apk import install_apks
 from builder.infra import create_wheels_folder, create_wheels_index
 from builder.pip import (
@@ -16,14 +13,18 @@ from builder.pip import (
     build_wheels_package,
     build_wheels_requirement,
     extract_packages,
+    install_pips,
     write_requirement,
 )
 from builder.upload import run_upload
 from builder.utils import check_url, fix_wheels_name
+import click
+import click_pathlib
 
 
 @click.command("builder")
 @click.option("--apk", default="build-base", help="APKs they are needed to build this.")
+@click.option("--pip", default="Cython" help="PiPy modules needed to build this.")
 @click.option("--index", required=True, help="Index URL of remote wheels repository.")
 @click.option(
     "--requirement",
@@ -55,6 +56,7 @@ from builder.utils import check_url, fix_wheels_name
 )
 def builder(
     apk: str,
+    pip: str,
     index: str,
     requirement: Optional[Path],
     requirement_diff: Optional[Path],
@@ -74,6 +76,9 @@ def builder(
 
         wheels_dir = create_wheels_folder(output)
         wheels_index = create_wheels_index(index)
+
+        # Setup build helper 
+        install_pips(wheels_index, pip)
 
         if local:
             # Build wheels in a local folder/src
