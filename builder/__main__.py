@@ -25,7 +25,7 @@ from builder.utils import check_url, fix_wheels_name
 
 @click.command("builder")
 @click.option("--apk", default="build-base", help="APKs they are needed to build this.")
-@click.option("--pip", default="Cython" help="PiPy modules needed to build this.")
+@click.option("--pip", default="Cython", help="PiPy modules needed to build this.")
 @click.option("--index", required=True, help="Index URL of remote wheels repository.")
 @click.option(
     "--requirement",
@@ -78,7 +78,7 @@ def builder(
         wheels_dir = create_wheels_folder(output)
         wheels_index = create_wheels_index(index)
 
-        # Setup build helper 
+        # Setup build helper
         install_pips(wheels_index, pip)
 
         if local:
