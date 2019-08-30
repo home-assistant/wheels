@@ -6,6 +6,9 @@ import sys
 from tempfile import TemporaryDirectory
 from typing import Optional
 
+import click
+import click_pathlib
+
 from builder.apk import install_apks
 from builder.infra import create_wheels_folder, create_wheels_index
 from builder.pip import (
@@ -18,8 +21,6 @@ from builder.pip import (
 )
 from builder.upload import run_upload
 from builder.utils import check_url, fix_wheels_name
-import click
-import click_pathlib
 
 
 @click.command("builder")
