@@ -96,3 +96,18 @@ def extract_packages(
 def write_requirement(requirement: Path, packages: List[str]) -> None:
     """Write packages list to a requirement file."""
     requirement.write_text("\n".join(packages))
+
+
+def install_pips(index: str, pips: str) -> None:
+    """Install all pipy string formated as 'package1;package2'."""
+    packages = " ".join(pips.split(";"))
+
+    result = subprocess.run(
+        f"pip install --upgrade --no-cache-dir --prefer-binary --find-links {index} {packages}",
+        shell=True,
+        stdout=sys.stdout,
+        stderr=sys.stderr,
+    )
+
+    # Check result of program
+    result.check_returncode()

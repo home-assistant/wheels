@@ -74,15 +74,22 @@ jobs:
     jobName: 'Wheels_Alpine39'
     builderVersion: 'dev-3.7-alpine3.9'
     builderApk: 'build-base;libffi-dev;openssl-dev'
-    wheelsRequirement: 'requirements.txt'
-
+    wheelsRequirement: 'requirements_all.txt'
+    preBuild:
+    - script: |
+        cat requirements.txt requirements_build.txt > requirements_all.txt
+      displayName: 'Prepare requirements'
 
 - template: templates/azp-job-wheels.yaml@azure
   parameters:
     jobName: 'Wheels_Alpine310'
     builderVersion: 'dev-3.7-alpine3.10'
     builderApk: 'build-base;libffi-dev;openssl-dev'
-    wheelsRequirement: 'requirements.txt'
+    wheelsRequirement: 'requirements_all.txt'
+    preBuild:
+    - script: |
+        cat requirements.txt requirements_build.txt > requirements_all.txt
+      displayName: 'Prepare requirements'
 
 
 - template: templates/azp-job-version.yaml@azure
