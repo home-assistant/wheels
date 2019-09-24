@@ -9,8 +9,6 @@ trigger:
   tags:
     include:
     - '*'
-    exclude:
-    - untagged*
 pr:
   - dev
 variables:
