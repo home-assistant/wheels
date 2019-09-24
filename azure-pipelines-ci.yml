@@ -1,0 +1,41 @@
+# https://dev.azure.com/home-assistant
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+    - dev
+pr:
+- dev
+variables:
+- name: versionHadolint
+  value: 'v1.16.3'
+
+jobs:
+
+- job: 'Tox'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - task: UsePythonVersion@0
+    displayName: 'Use Python $(python.version)'
+    inputs:
+      versionSpec: '3.7'
+  - script: pip install tox
+    displayName: 'Install Tox'
+  - script: tox
+    displayName: 'Run Tox'
+
+
+- job: 'Hadolint'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - script: sudo docker pull hadolint/hadolint:$(versionHadolint)
+    displayName: 'Install Hadolint'
+  - script: |
+      sudo docker run --rm -i \
+        -v $(pwd)/.hadolint.yaml:/.hadolint.yaml:ro \
+        hadolint/hadolint:$(versionHadolint) < Dockerfile
+    displayName: 'Run Hadolint'
