@@ -7,12 +7,10 @@ def install_apks(apks: str) -> None:
     """Install all apk string formated as 'package1;package2'."""
     packages = " ".join(apks.split(";"))
 
-    result = subprocess.run(
+    subprocess.run(
         f"apk add --no-cache {packages}",
         shell=True,
+        check=True,
         stdout=sys.stdout,
         stderr=sys.stderr,
     )
-
-    # Check result of program
-    result.check_returncode()

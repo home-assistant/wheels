@@ -9,8 +9,6 @@ trigger:
   tags:
     include:
     - '*'
-    exclude:
-    - untagged*
 pr:
   - dev
 variables:
@@ -53,20 +51,6 @@ jobs:
         -v $(pwd)/.hadolint.yaml:/.hadolint.yaml:ro \
         hadolint/hadolint:$(versionHadolint) < Dockerfile
     displayName: 'Run Hadolint'
-
-
-- job: 'Black'
-  pool:
-    vmImage: 'ubuntu-latest'
-  steps:
-  - task: UsePythonVersion@0
-    displayName: 'Use Python $(python.version)'
-    inputs:
-      versionSpec: '3.7'
-  - script: pip install black
-    displayName: 'Install black'
-  - script: black --check builder
-    displayName: 'Run Black'
 
 
 - template: templates/azp-job-wheels.yaml@azure

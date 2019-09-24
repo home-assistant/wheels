@@ -14,16 +14,14 @@ def build_wheels_package(package: str, index: str, output: Path) -> None:
     build_env = os.environ.copy()
     build_env["MAKEFLAGS"] = f"-j{cpu}"
 
-    result = subprocess.run(
+    subprocess.run(
         f'pip3 wheel --progress-bar ascii --wheel-dir {output} --find-links {index} "{package}"',
         shell=True,
+        check=True,
         stdout=sys.stdout,
         stderr=sys.stderr,
         env=build_env,
     )
-
-    # Check result of program
-    result.check_returncode()
 
 
 def build_wheels_requirement(requirement: Path, index: str, output: Path) -> None:
@@ -34,16 +32,14 @@ def build_wheels_requirement(requirement: Path, index: str, output: Path) -> Non
     build_env = os.environ.copy()
     build_env["MAKEFLAGS"] = f"-j{cpu}"
 
-    result = subprocess.run(
+    subprocess.run(
         f"pip3 wheel --progress-bar ascii --wheel-dir {output} --find-links {index} --requirement {requirement}",
         shell=True,
+        check=True,
         stdout=sys.stdout,
         stderr=sys.stderr,
         env=build_env,
     )
-
-    # Check result of program
-    result.check_returncode()
 
 
 def build_wheels_local(index: str, output: Path) -> None:
@@ -54,16 +50,14 @@ def build_wheels_local(index: str, output: Path) -> None:
     build_env = os.environ.copy()
     build_env["MAKEFLAGS"] = f"-j{cpu}"
 
-    result = subprocess.run(
+    subprocess.run(
         f"pip3 wheel --progress-bar ascii --wheel-dir {output} --find-links {index} .",
         shell=True,
+        check=True,
         stdout=sys.stdout,
         stderr=sys.stderr,
         env=build_env,
     )
-
-    # Check result of program
-    result.check_returncode()
 
 
 def parse_requirements(requirement: Path) -> List[str]:
@@ -102,12 +96,10 @@ def install_pips(index: str, pips: str) -> None:
     """Install all pipy string formated as 'package1;package2'."""
     packages = " ".join(pips.split(";"))
 
-    result = subprocess.run(
+    subprocess.run(
         f"pip install --upgrade --no-cache-dir --prefer-binary --find-links {index} {packages}",
         shell=True,
+        check=True,
         stdout=sys.stdout,
         stderr=sys.stderr,
     )
-
-    # Check result of program
-    result.check_returncode()
