@@ -4,6 +4,7 @@ trigger:
   tags:
     include:
     - '*'
+pr: none
 variables:
 - name: versionBuilder
   value: '4.4'
