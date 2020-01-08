@@ -4,7 +4,8 @@
 	"context": "..",
 	"dockerFile": "Dockerfile",
 	"extensions": [
-		"ms-python.python"
+		"ms-python.python",
+		"esbenp.prettier-vscode"
 	],
 	"settings": {
 		"python.pythonPath": "/usr/local/bin/python",
