@@ -1,6 +1,6 @@
 from setuptools import setup
 
-VERSION = "1.6"
+VERSION = "1.7"
 
 setup(
     name="builder",
