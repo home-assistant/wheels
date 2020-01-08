@@ -5,7 +5,7 @@ import re
 
 import requests
 
-RE_WHEEL_PLATFORM = re.compile(r"^(?P<name>.*-)cp\d{2}m-linux_\w+\.whl$")
+RE_WHEEL_PLATFORM = re.compile(r"^(?P<name>.*-)cp\d{2}m?-linux_\w+\.whl$")
 
 
 def alpine_version() -> str:
