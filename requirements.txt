@@ -1,5 +1,5 @@
 click==7.1.1
-click-pathlib==2019.12.28.7
+click-pathlib==2020.3.13.0
 requests==2.23.0
 wheel==0.34.2
 setuptools==46.0.0
