@@ -24,7 +24,7 @@ stages:
     jobs:
       - template: templates/azp-job-version.yaml@azure
         parameters:
-          ignoreDev: true
+          ignoreMaster: true
 
   - stage: "Release"
     jobs:
