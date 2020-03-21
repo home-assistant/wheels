@@ -28,6 +28,9 @@ from builder.utils import check_url, fix_wheels_name
 @click.option("--pip", default="Cython", help="PiPy modules needed to build this.")
 @click.option("--index", required=True, help="Index URL of remote wheels repository.")
 @click.option(
+    "--skip-binary", default=":none:", help="List of packages to skip wheels from pypi."
+)
+@click.option(
     "--requirement",
     type=click_pathlib.Path(exists=True),
     help="Python requirement file.",
@@ -59,6 +62,7 @@ def builder(
     apk: str,
     pip: str,
     index: str,
+    skip_binary: str,
     requirement: Optional[Path],
     requirement_diff: Optional[Path],
     prebuild_dir: Optional[Path],
@@ -94,7 +98,7 @@ def builder(
             for package in packages:
                 print(f"Process package: {package}", flush=True)
                 try:
-                    build_wheels_package(package, wheels_index, wheels_dir)
+                    build_wheels_package(package, wheels_index, wheels_dir, skip_binary)
                 except CalledProcessError:
                     exit_code = 109
         else:
@@ -104,7 +108,9 @@ def builder(
             write_requirement(temp_requirement, packages)
 
             try:
-                build_wheels_requirement(temp_requirement, wheels_index, wheels_dir)
+                build_wheels_requirement(
+                    temp_requirement, wheels_index, wheels_dir, skip_binary
+                )
             except CalledProcessError:
                 exit_code = 109
 
