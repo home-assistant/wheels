@@ -3,7 +3,7 @@
 trigger:
   branches:
     include:
-      - dev
+      - master
   tags:
     include:
       - "*"
@@ -51,11 +51,17 @@ stages:
           - script: sudo docker pull homeassistant/amd64-builder:$(versionBuilder)
             displayName: "Install Builder"
           - script: |
+              if [ "$(Build.SourceBranchName)" == "master" ]; then
+                version="dev"
+              else
+                version="$(Build.SourceBranchName)"
+              fi
+
               sudo docker run --rm --privileged \
                 -v ~/.docker:/root/.docker \
                 -v /run/docker.sock:/run/docker.sock:rw -v $(pwd):/data:ro \
                 homeassistant/amd64-builder:$(versionBuilder) \
                 --builder-wheels $(buildPython) --all \
-                $(buildArgs) --version $(Build.SourceBranchName) \
+                $(buildArgs) --version "${version}" \
                 -t /data --docker-hub homeassistant
             displayName: "Build Release"
