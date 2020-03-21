@@ -99,11 +99,22 @@ def write_requirement(requirement: Path, packages: List[str]) -> None:
 def install_pips(index: str, pips: str) -> None:
     """Install all pipy string formated as 'package1;package2'."""
     packages = " ".join(pips.split(";"))
+    latest_exception = None
 
-    subprocess.run(
-        f"pip install --progress-bar off --upgrade --no-cache-dir --prefer-binary --find-links {index} {packages}",
-        shell=True,
-        check=True,
-        stdout=sys.stdout,
-        stderr=sys.stderr,
-    )
+    # Retry on error
+    for _ in range(0, 3):
+        try:
+            subprocess.run(
+                f"pip install --progress-bar off --upgrade --no-cache-dir --prefer-binary --find-links {index} {packages}",
+                shell=True,
+                check=True,
+                stdout=sys.stdout,
+                stderr=sys.stderr,
+            )
+        except OSError as err:
+            latest_exception = err
+            continue
+        else:
+            return
+
+    raise latest_exception
