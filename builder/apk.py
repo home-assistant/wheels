@@ -8,7 +8,7 @@ def install_apks(apks: str) -> None:
     packages = " ".join(apks.split(";"))
 
     subprocess.run(
-        f"apk add --no-cache {packages}",
+        f"apk add --no-progress --no-cache {packages}",
         shell=True,
         check=True,
         stdout=sys.stdout,
