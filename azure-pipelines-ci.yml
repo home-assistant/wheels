@@ -5,9 +5,8 @@ trigger:
   branches:
     include:
       - master
-      - dev
 pr:
-  - dev
+  - master
 variables:
   - name: versionHadolint
     value: "v1.16.3"
