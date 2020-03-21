@@ -3,11 +3,8 @@
 trigger:
   branches:
     include:
-      - dev
+      - master
 pr: none
-variables:
-  - name: versionBuilder
-    value: "4.4"
 resources:
   repositories:
     - repository: azure
