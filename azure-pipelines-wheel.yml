@@ -1,7 +1,7 @@
 # https://dev.azure.com/home-assistant
 
 trigger:
-  patch: true
+  batch: true
   branches:
     include:
       - master
