@@ -6,7 +6,9 @@ from pathlib import Path
 from typing import List, Optional
 
 
-def build_wheels_package(package: str, index: str, output: Path) -> None:
+def build_wheels_package(
+    package: str, index: str, output: Path, skip_binary: str
+) -> None:
     """Build wheels from a requirements file into output."""
     cpu = os.cpu_count() or 4
 
@@ -15,7 +17,7 @@ def build_wheels_package(package: str, index: str, output: Path) -> None:
     build_env["MAKEFLAGS"] = f"-j{cpu}"
 
     subprocess.run(
-        f'pip3 wheel --progress-bar off --wheel-dir {output} --find-links {index} "{package}"',
+        f'pip3 wheel --progress-bar off --no-binary "{skip_binary}" --wheel-dir {output} --find-links {index} "{package}"',
         shell=True,
         check=True,
         stdout=sys.stdout,
@@ -24,7 +26,9 @@ def build_wheels_package(package: str, index: str, output: Path) -> None:
     )
 
 
-def build_wheels_requirement(requirement: Path, index: str, output: Path) -> None:
+def build_wheels_requirement(
+    requirement: Path, index: str, output: Path, skip_binary: str
+) -> None:
     """Build wheels from a requirements file into output."""
     cpu = os.cpu_count() or 4
 
@@ -33,7 +37,7 @@ def build_wheels_requirement(requirement: Path, index: str, output: Path) -> Non
     build_env["MAKEFLAGS"] = f"-j{cpu}"
 
     subprocess.run(
-        f"pip3 wheel --progress-bar off --wheel-dir {output} --find-links {index} --requirement {requirement}",
+        f'pip3 wheel --progress-bar off --no-binary "{skip_binary}" --wheel-dir {output} --find-links {index} --requirement {requirement}',
         shell=True,
         check=True,
         stdout=sys.stdout,
