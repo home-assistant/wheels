@@ -1,8 +1,9 @@
 """Pip build commands."""
 import os
+from pathlib import Path
 import subprocess
 import sys
-from pathlib import Path
+from time import sleep
 from typing import List, Optional
 
 
@@ -113,6 +114,7 @@ def install_pips(index: str, pips: str) -> None:
             )
         except OSError as err:
             latest_exception = err
+            sleep(60)
             continue
         else:
             return
