@@ -21,10 +21,7 @@ def build_wheels_package(
     build_env["MAKEFLAGS"] = f"-j{cpu}"
 
     # Add constraint
-    if constraint:
-        constraint_cmd = f"--constraint {constraint}"
-    else:
-        constraint_cmd = ""
+    constraint_cmd = f"--constraint {constraint}" if constraint else ""
 
     subprocess.run(
         f'pip3 wheel --progress-bar off --no-binary "{skip_binary}" --wheel-dir {output} --find-links {index} {constraint_cmd} "{package}"',
@@ -51,10 +48,7 @@ def build_wheels_requirement(
     build_env["MAKEFLAGS"] = f"-j{cpu}"
 
     # Add constraint
-    if constraint:
-        constraint_cmd = f"--constraint {constraint}"
-    else:
-        constraint_cmd = ""
+    constraint_cmd = f"--constraint {constraint}" if constraint else ""
 
     subprocess.run(
         f'pip3 wheel --progress-bar off --no-binary "{skip_binary}" --wheel-dir {output} --find-links {index} {constraint_cmd} --requirement {requirement}',
