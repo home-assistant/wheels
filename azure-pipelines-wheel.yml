@@ -5,6 +5,11 @@ trigger:
   branches:
     include:
       - master
+  paths:
+    include:
+    - requirements.txt
+    - requirements_build.txt
+    - requirements_tests.txt
 pr: none
 resources:
   repositories:
