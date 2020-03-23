@@ -29,17 +29,18 @@ def check_available_binary(index: str, skip_binary: str, packages: List[str]) ->
         return skip_binary
 
     list_binary = skip_binary.split(",")
-    available_data = requests.get(index).text
+    available_data = requests.get(index, allow_redirects=True).text
 
     list_needed: Set[str] = set()
     for binary in list_binary:
         for package in packages:
             if not package.startswith(binary):
                 continue
-            find = _RE_REQUIREMENT.fullmatch(package)
+            find = _RE_REQUIREMENT.match(package)
             name = f"{binary}-{find['version']}"
-            if available_data.find(name) != -1:
+            if name in available_data:
                 continue
+            print(f"\t binary {package}: {name}", flush=True)
             list_needed.add(binary)
 
     # Generate needed list of skip binary
