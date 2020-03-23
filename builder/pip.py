@@ -7,7 +7,11 @@ from typing import List, Optional
 
 
 def build_wheels_package(
-    package: str, index: str, output: Path, skip_binary: str
+    package: str,
+    index: str,
+    output: Path,
+    skip_binary: str,
+    constraint: Optional[Path] = None,
 ) -> None:
     """Build wheels from a requirements file into output."""
     cpu = os.cpu_count() or 4
@@ -16,8 +20,11 @@ def build_wheels_package(
     build_env = os.environ.copy()
     build_env["MAKEFLAGS"] = f"-j{cpu}"
 
+    # Add constraint
+    constraint_cmd = f"--constraint {constraint}" if constraint else ""
+
     subprocess.run(
-        f'pip3 wheel --progress-bar off --no-binary "{skip_binary}" --wheel-dir {output} --find-links {index} "{package}"',
+        f'pip3 wheel --progress-bar off --no-binary "{skip_binary}" --wheel-dir {output} --find-links {index} {constraint_cmd} "{package}"',
         shell=True,
         check=True,
         stdout=sys.stdout,
@@ -27,7 +34,11 @@ def build_wheels_package(
 
 
 def build_wheels_requirement(
-    requirement: Path, index: str, output: Path, skip_binary: str
+    requirement: Path,
+    index: str,
+    output: Path,
+    skip_binary: str,
+    constraint: Optional[Path] = None,
 ) -> None:
     """Build wheels from a requirements file into output."""
     cpu = os.cpu_count() or 4
@@ -36,8 +47,11 @@ def build_wheels_requirement(
     build_env = os.environ.copy()
     build_env["MAKEFLAGS"] = f"-j{cpu}"
 
+    # Add constraint
+    constraint_cmd = f"--constraint {constraint}" if constraint else ""
+
     subprocess.run(
-        f'pip3 wheel --progress-bar off --no-binary "{skip_binary}" --wheel-dir {output} --find-links {index} --requirement {requirement}',
+        f'pip3 wheel --progress-bar off --no-binary "{skip_binary}" --wheel-dir {output} --find-links {index} {constraint_cmd} --requirement {requirement}',
         shell=True,
         check=True,
         stdout=sys.stdout,

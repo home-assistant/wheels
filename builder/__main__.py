@@ -45,6 +45,11 @@ from builder.utils import check_url, fix_wheels_name
     help="Python requirement file to calc the different for selective builds.",
 )
 @click.option(
+    "--constraint",
+    type=click_pathlib.Path(exists=True),
+    help="Python constraint file.",
+)
+@click.option(
     "--prebuild-dir",
     type=click_pathlib.Path(exists=True),
     help="Folder with include allready builded wheels for upload.",
@@ -69,6 +74,7 @@ def builder(
     skip_binary: str,
     requirement: Optional[Path],
     requirement_diff: Optional[Path],
+    constraint: Optional[Path],
     prebuild_dir: Optional[Path],
     single: bool,
     local: bool,
@@ -103,7 +109,9 @@ def builder(
             for package in packages:
                 print(f"Process package: {package}", flush=True)
                 try:
-                    build_wheels_package(package, wheels_index, wheels_dir, skip_binary)
+                    build_wheels_package(
+                        package, wheels_index, wheels_dir, skip_binary, constraint
+                    )
                 except CalledProcessError:
                     exit_code = 109
         else:
@@ -115,7 +123,7 @@ def builder(
             skip_binary = check_available_binary(wheels_index, skip_binary, packages)
             try:
                 build_wheels_requirement(
-                    temp_requirement, wheels_index, wheels_dir, skip_binary
+                    temp_requirement, wheels_index, wheels_dir, skip_binary, constraint
                 )
             except CalledProcessError:
                 exit_code = 109
