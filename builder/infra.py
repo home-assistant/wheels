@@ -29,7 +29,7 @@ def check_available_binary(index: str, skip_binary: str, packages: List[str]) ->
         return skip_binary
 
     list_binary = skip_binary.split(",")
-    available_data = requests.get(index).text
+    available_data = requests.get(index, allow_redirects=True).text
 
     list_needed: Set[str] = set()
     for binary in list_binary:
