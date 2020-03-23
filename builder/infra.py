@@ -37,7 +37,7 @@ def check_available_binary(index: str, skip_binary: str, packages: List[str]) ->
             if not package.startswith(binary):
                 continue
             find = _RE_REQUIREMENT.fullmatch(package)
-            name = f"{find['package']}-{find['version']}"
+            name = f"{binary}-{find['version']}"
             if available_data.find(name) != -1:
                 continue
             list_needed.add(binary)
