@@ -7,7 +7,7 @@ import sys
 def upload(local: Path, remote: str) -> None:
     """Upload wheels from folder to remote rsync server."""
     subprocess.run(
-        f"rsync -chrP {local}/* {remote}/",
+        f"rsync --human-readable --recursive --partial --progress --checksum {local}/* {remote}/",
         shell=True,
         check=True,
         stdout=sys.stdout,
