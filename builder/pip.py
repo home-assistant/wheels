@@ -112,9 +112,9 @@ def install_pips(index: str, pips: str) -> None:
                 stdout=sys.stdout,
                 stderr=sys.stderr,
             )
-        except OSError as err:
+        except subprocess.CalledProcessError as err:
             latest_exception = err
-            sleep(60)
+            sleep(30)
             continue
         else:
             return
