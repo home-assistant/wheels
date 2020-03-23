@@ -10,7 +10,11 @@ import click
 import click_pathlib
 
 from builder.apk import install_apks
-from builder.infra import create_wheels_folder, create_wheels_index
+from builder.infra import (
+    create_wheels_folder,
+    create_wheels_index,
+    check_available_binary,
+)
 from builder.pip import (
     build_wheels_local,
     build_wheels_package,
@@ -95,6 +99,7 @@ def builder(
         elif single:
             # Build every wheel like a single installation
             packages = extract_packages(requirement, requirement_diff)
+            skip_binary = check_available_binary(wheels_index, skip_binary, packages)
             for package in packages:
                 print(f"Process package: {package}", flush=True)
                 try:
@@ -107,6 +112,7 @@ def builder(
             temp_requirement = Path("/tmp/wheels_requirement.txt")
             write_requirement(temp_requirement, packages)
 
+            skip_binary = check_available_binary(wheels_index, skip_binary, packages)
             try:
                 build_wheels_requirement(
                     temp_requirement, wheels_index, wheels_dir, skip_binary
