@@ -36,7 +36,7 @@ def check_available_binary(index: str, skip_binary: str, packages: List[str]) ->
         for package in packages:
             if not package.startswith(binary):
                 continue
-   
+
             # Check more details
             find = _RE_REQUIREMENT.match(package)
             if find:
