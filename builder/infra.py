@@ -50,7 +50,7 @@ def check_available_binary(index: str, skip_binary: str, packages: List[str]) ->
                     continue
 
             # Ignore binary
-            print(f"Binary {package}: {name}", flush=True)
+            print(f"Ignore Binary {package}: {binary}", flush=True)
             list_needed.add(binary)
 
     # Generate needed list of skip binary
