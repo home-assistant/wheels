@@ -36,16 +36,20 @@ def check_available_binary(index: str, skip_binary: str, packages: List[str]) ->
         for package in packages:
             if not package.startswith(binary):
                 continue
+   
+            # Check more details
             find = _RE_REQUIREMENT.match(package)
+            if find:
+                # Check full name
+                if binary != find["package"]:
+                    continue
 
-            # Check full name
-            if binary != find["package"]:
-                continue
+                # Process packages
+                name = f"{binary}-{find['version']}"
+                if name in available_data:
+                    continue
 
-            # Process packages
-            name = f"{binary}-{find['version']}"
-            if name in available_data:
-                continue
+            # Ignore binary
             print(f"Binary {package}: {name}", flush=True)
             list_needed.add(binary)
 
