@@ -39,11 +39,17 @@ stages:
             37-Alpine311:
               buildPython: "3.7-alpine3.11"
               buildArgs: ""
+            37-Alpine312:
+              buildPython: "3.7-alpine3.12"
+              buildArgs: ""
             38-Alpine310:
               buildPython: "3.8-alpine3.10"
               buildArgs: ""
             38-Alpine311:
               buildPython: "3.8-alpine3.11"
+              buildArgs: ""
+            38-Alpine312:
+              buildPython: "3.8-alpine3.12"
               buildArgs: "--release-tag"
         steps:
           - script: sudo docker login -u $(dockerUser) -p $(dockerPassword)
