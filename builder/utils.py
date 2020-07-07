@@ -50,11 +50,12 @@ def run_command(
     try:
         process.communicate(timeout=timeout)
     except subprocess.TimeoutExpired as err:
-        print(f"Timeout for {cmd}", flash=True)
+        print(f"Timeout for '{cmd}'", flash=True)
         process.kill()
         raise err
 
     # Process return code
     if process.returncode == 0:
         return
+    print(f"Command '{cmd}' return error {process.returncode}", flash=True)
     raise subprocess.CalledProcessError(process.returncode, cmd)
