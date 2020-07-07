@@ -1,15 +1,11 @@
 """Upload plugin rsync."""
 from pathlib import Path
-import subprocess
-import sys
+
+from ..utils import run_command
 
 
 def upload(local: Path, remote: str) -> None:
     """Upload wheels from folder to remote rsync server."""
-    subprocess.run(
+    run_command(
         f"rsync --human-readable --recursive --partial --progress --checksum {local}/* {remote}/",
-        shell=True,
-        check=True,
-        stdout=sys.stdout,
-        stderr=sys.stderr,
     )

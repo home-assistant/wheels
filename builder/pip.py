@@ -1,9 +1,9 @@
 """Pip build commands."""
 import os
-import subprocess
-import sys
 from pathlib import Path
 from typing import List, Optional
+
+from .utils import run_command
 
 
 def build_wheels_package(
@@ -24,12 +24,8 @@ def build_wheels_package(
     # Add constraint
     constraint_cmd = f"--constraint {constraint}" if constraint else ""
 
-    subprocess.run(
+    run_command(
         f'pip3 wheel --progress-bar off --no-binary "{skip_binary}" --wheel-dir {output} --find-links {index} {constraint_cmd} "{package}"',
-        shell=True,
-        check=True,
-        stdout=sys.stdout,
-        stderr=sys.stderr,
         env=build_env,
         timeout=timeout,
     )
@@ -53,12 +49,8 @@ def build_wheels_requirement(
     # Add constraint
     constraint_cmd = f"--constraint {constraint}" if constraint else ""
 
-    subprocess.run(
+    run_command(
         f'pip3 wheel --progress-bar off --no-binary "{skip_binary}" --wheel-dir {output} --find-links {index} {constraint_cmd} --requirement {requirement}',
-        shell=True,
-        check=True,
-        stdout=sys.stdout,
-        stderr=sys.stderr,
         env=build_env,
         timeout=timeout,
     )
@@ -72,12 +64,8 @@ def build_wheels_local(index: str, output: Path) -> None:
     build_env = os.environ.copy()
     build_env["MAKEFLAGS"] = f"-j{cpu}"
 
-    subprocess.run(
+    run_command(
         f"pip3 wheel --progress-bar off --wheel-dir {output} --find-links {index} .",
-        shell=True,
-        check=True,
-        stdout=sys.stdout,
-        stderr=sys.stderr,
         env=build_env,
     )
 
@@ -118,10 +106,6 @@ def install_pips(index: str, pips: str) -> None:
     """Install all pipy string formated as 'package1;package2'."""
     packages = " ".join(pips.split(";"))
 
-    subprocess.run(
+    run_command(
         f"pip install --progress-bar off --upgrade --no-cache-dir --prefer-binary --find-links {index} {packages}",
-        shell=True,
-        check=True,
-        stdout=sys.stdout,
-        stderr=sys.stderr,
     )
