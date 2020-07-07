@@ -1,7 +1,5 @@
 """Upload plugin rsync."""
 from pathlib import Path
-import subprocess
-import sys
 
 from ..utils import run_command
 
