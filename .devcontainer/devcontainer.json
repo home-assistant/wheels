@@ -5,6 +5,8 @@
 	"dockerFile": "Dockerfile",
 	"extensions": [
 		"ms-python.python",
+		"ms-python.vscode-pylance",
+    	"visualstudioexptteam.vscodeintellicode",
 		"esbenp.prettier-vscode"
 	],
 	"settings": {

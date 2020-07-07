@@ -11,6 +11,7 @@ def build_wheels_package(
     index: str,
     output: Path,
     skip_binary: str,
+    timeout: int,
     constraint: Optional[Path] = None,
 ) -> None:
     """Build wheels from a requirements file into output."""
@@ -30,6 +31,7 @@ def build_wheels_package(
         stdout=sys.stdout,
         stderr=sys.stderr,
         env=build_env,
+        timeout=timeout,
     )
 
 
@@ -38,6 +40,7 @@ def build_wheels_requirement(
     index: str,
     output: Path,
     skip_binary: str,
+    timeout: int,
     constraint: Optional[Path] = None,
 ) -> None:
     """Build wheels from a requirements file into output."""
@@ -57,6 +60,7 @@ def build_wheels_requirement(
         stdout=sys.stdout,
         stderr=sys.stderr,
         env=build_env,
+        timeout=timeout,
     )
 
 

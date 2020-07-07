@@ -1,4 +1,4 @@
-FROM python:3.7
+FROM mcr.microsoft.com/vscode/devcontainers/python:0-3.8
 
 WORKDIR /workspace
 
@@ -6,7 +6,4 @@ WORKDIR /workspace
 COPY requirements.txt requirements_tests.txt /workspace/
 RUN pip install -r requirements.txt \
     && pip3 install -r requirements_tests.txt \
-    && pip install black tox
-
-# Set the default shell to bash instead of sh
-ENV SHELL /bin/bash
+    && pip install tox
