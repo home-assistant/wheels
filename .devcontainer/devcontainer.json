@@ -1,21 +1,21 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
-	"name": "Python 3",
-	"context": "..",
-	"dockerFile": "Dockerfile",
-	"extensions": [
-		"ms-python.python",
-		"ms-python.vscode-pylance",
-    	"visualstudioexptteam.vscodeintellicode",
-		"esbenp.prettier-vscode"
-	],
-	"settings": {
-		"python.pythonPath": "/usr/local/bin/python",
-		"python.linting.pylintEnabled": true,
-		"python.linting.enabled": true,
-		"python.formatting.provider": "black",
-		"editor.formatOnPaste": false,
-		"editor.formatOnSave": true,
-		"editor.formatOnType": true
-	}
+  "name": "Wheels",
+  "context": "..",
+  "dockerFile": "Dockerfile",
+  "extensions": [
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "visualstudioexptteam.vscodeintellicode",
+    "esbenp.prettier-vscode"
+  ],
+  "settings": {
+    "python.pythonPath": "/usr/local/bin/python",
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true,
+    "python.formatting.provider": "black",
+    "editor.formatOnPaste": false,
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true
+  }
 }
