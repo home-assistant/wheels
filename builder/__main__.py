@@ -1,7 +1,7 @@
 """Hass.io Builder main application."""
 from pathlib import Path
 import shutil
-from subprocess import CalledProcessError
+from subprocess import CalledProcessError, TimeoutExpired
 import sys
 from tempfile import TemporaryDirectory
 from typing import Optional
@@ -67,6 +67,9 @@ from builder.utils import check_url, fix_wheels_name
 @click.option(
     "--remote", required=True, type=str, help="Remote URL pass to upload plugin."
 )
+@click.option(
+    "--timeout", default=330, type=int, help="Max runtime for pip before abort."
+)
 def builder(
     apk: str,
     pip: str,
@@ -80,6 +83,7 @@ def builder(
     local: bool,
     upload: str,
     remote: str,
+    timeout: int,
 ):
     """Build wheels precompiled for Home Assistant container."""
     install_apks(apk)
@@ -94,6 +98,7 @@ def builder(
 
         # Setup build helper
         install_pips(wheels_index, pip)
+        timeout = timeout * 60
 
         if local:
             # Build wheels in a local folder/src
@@ -110,10 +115,17 @@ def builder(
                 print(f"Process package: {package}", flush=True)
                 try:
                     build_wheels_package(
-                        package, wheels_index, wheels_dir, skip_binary, constraint
+                        package,
+                        wheels_index,
+                        wheels_dir,
+                        skip_binary,
+                        timeout,
+                        constraint,
                     )
                 except CalledProcessError:
                     exit_code = 109
+                except TimeoutExpired:
+                    exit_code = 80
         else:
             # Build all needed wheels at once
             packages = extract_packages(requirement, requirement_diff)
@@ -123,10 +135,17 @@ def builder(
             skip_binary = check_available_binary(wheels_index, skip_binary, packages)
             try:
                 build_wheels_requirement(
-                    temp_requirement, wheels_index, wheels_dir, skip_binary, constraint
+                    temp_requirement,
+                    wheels_index,
+                    wheels_dir,
+                    skip_binary,
+                    timeout,
+                    constraint,
                 )
             except CalledProcessError:
                 exit_code = 109
+            except TimeoutExpired:
+                exit_code = 80
 
         fix_wheels_name(wheels_dir)
         run_upload(upload, output, remote)
