@@ -2,6 +2,9 @@
 from pathlib import Path
 import os
 import re
+import subprocess
+import sys
+from typing import Optional, Dict
 
 import requests
 
@@ -33,3 +36,25 @@ def fix_wheels_name(wheels_folder: Path) -> None:
         if not match:
             continue
         package.rename(Path(package.parent, f"{match.group('name')}none-any.whl"))
+
+
+def run_command(
+    cmd: str, env: Optional[Dict[str, str]] = None, timeout: Optional[int] = None
+) -> None:
+    """Implement subprocess.run but handle timeout different."""
+    process = subprocess.Popen(
+        cmd, shell=True, stdout=sys.stdout, stderr=sys.stderr, env=env
+    )
+
+    # Run command and wait
+    try:
+        process.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired as err:
+        print(f"Timeout for {cmd}", flash=True)
+        process.kill()
+        raise err
+
+    # Process return code
+    if process.returncode == 0:
+        return
+    raise subprocess.CalledProcessError(process.returncode, cmd)
