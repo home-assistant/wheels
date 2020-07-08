@@ -57,7 +57,7 @@ def run_command(
     # Run command and wait
     try:
         process.communicate(timeout=timeout)
-    except:
+    except Exception:
         os.kill(os.getpgid(process.pid), signal.SIGTERM)
         raise
 
