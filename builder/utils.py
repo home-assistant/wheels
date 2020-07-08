@@ -1,10 +1,12 @@
 """Some utils for builder."""
-from pathlib import Path
+from contextlib import suppress
 import os
+from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
-from typing import Optional, Dict
+from typing import Dict, Optional
 
 import requests
 
@@ -36,6 +38,13 @@ def fix_wheels_name(wheels_folder: Path) -> None:
         if not match:
             continue
         package.rename(Path(package.parent, f"{match.group('name')}none-any.whl"))
+
+
+def copy_wheels_from_cache(cache_folder: Path, wheels_folder: Path) -> None:
+    """Preserve wheels from cache on timeout error."""
+    for wheel_file in cache_folder.glob("**/*.whl"):
+        with suppress(OSError):
+            shutil.copy(wheel_file, wheels_folder)
 
 
 def run_command(
