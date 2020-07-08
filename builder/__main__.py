@@ -11,9 +11,9 @@ import click_pathlib
 
 from builder.apk import install_apks
 from builder.infra import (
+    check_available_binary,
     create_wheels_folder,
     create_wheels_index,
-    check_available_binary,
 )
 from builder.pip import (
     build_wheels_local,
@@ -24,7 +24,7 @@ from builder.pip import (
     write_requirement,
 )
 from builder.upload import run_upload
-from builder.utils import check_url, fix_wheels_name
+from builder.utils import check_url, copy_wheels_from_cache, fix_wheels_name
 
 
 @click.command("builder")
@@ -126,6 +126,7 @@ def builder(
                     exit_code = 109
                 except TimeoutExpired:
                     exit_code = 80
+                    copy_wheels_from_cache(Path("/root/.cache/pip/wheels"), wheels_dir)
         else:
             # Build all needed wheels at once
             packages = extract_packages(requirement, requirement_diff)
@@ -146,6 +147,7 @@ def builder(
                 exit_code = 109
             except TimeoutExpired:
                 exit_code = 80
+                copy_wheels_from_cache(Path("/root/.cache/pip/wheels"), wheels_dir)
 
         fix_wheels_name(wheels_dir)
         run_upload(upload, output, remote)
