@@ -2,6 +2,7 @@
 from pathlib import Path
 import os
 import re
+import signal
 import subprocess
 import sys
 from typing import Optional, Dict
@@ -42,20 +43,26 @@ def run_command(
     cmd: str, env: Optional[Dict[str, str]] = None, timeout: Optional[int] = None
 ) -> None:
     """Implement subprocess.run but handle timeout different."""
+    # pylint: disable=subprocess-popen-preexec-fn
     process = subprocess.Popen(
-        cmd, shell=True, stdout=sys.stdout, stderr=sys.stderr, env=env
+        cmd,
+        shell=True,
+        stdout=sys.stdout,
+        stderr=sys.stderr,
+        stdin=subprocess.DEVNULL,
+        env=env,
+        preexec_fn=os.setsid,
     )
 
     # Run command and wait
     try:
         process.communicate(timeout=timeout)
-    except subprocess.TimeoutExpired as err:
-        print(f"Timeout for '{cmd}'", flash=True)
-        process.kill()
-        raise err
+    except Exception:
+        os.kill(os.getpgid(process.pid), signal.SIGTERM)
+        raise
 
     # Process return code
     if process.returncode == 0:
         return
-    print(f"Command '{cmd}' return error {process.returncode}", flash=True)
+
     raise subprocess.CalledProcessError(process.returncode, cmd)
