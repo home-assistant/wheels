@@ -68,7 +68,7 @@ from builder.utils import check_url, fix_wheels_name
     "--remote", required=True, type=str, help="Remote URL pass to upload plugin."
 )
 @click.option(
-    "--timeout", default=330, type=int, help="Max runtime for pip before abort."
+    "--timeout", default=345, type=int, help="Max runtime for pip before abort."
 )
 def builder(
     apk: str,
