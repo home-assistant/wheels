@@ -76,9 +76,18 @@ def parse_requirements(requirement: Path) -> List[str]:
     with requirement.open("r") as data:
         for line in data:
             line = line.strip()
-            if not line or line.startswith("#"):
+
+            # Ignore comments or constraint files
+            if not line or line.startswith(("#", "-c")):
                 continue
-            requirement_list.add(line.split(" ")[-1])
+
+            if not line.startswith("-r"):
+                requirement_list.add(line.split(" ")[-1])
+                continue
+
+            # References new requirements file
+            requirement_list.update(parse_requirements(requirement.parent / line[3:]))
+
     return list(requirement_list)
 
 
