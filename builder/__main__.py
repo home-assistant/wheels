@@ -24,7 +24,8 @@ from builder.pip import (
     write_requirement,
 )
 from builder.upload import run_upload
-from builder.utils import check_url, copy_wheels_from_cache, fix_wheels_name
+from builder.utils import check_url
+from builder.wheel import copy_wheels_from_cache, fix_wheels_name
 
 
 @click.command("builder")
@@ -61,6 +62,12 @@ from builder.utils import check_url, copy_wheels_from_cache, fix_wheels_name
     help="Install every package as single requirement.",
 )
 @click.option(
+    "--auditwheel",
+    is_flag=True,
+    default=False,
+    help="Use auditwheel to include dynamic linked library.",
+)
+@click.option(
     "--local", is_flag=True, default=False, help="Build wheel from local folder setup."
 )
 @click.option("--upload", default="rsync", help="Upload plugin to upload wheels.")
@@ -80,6 +87,7 @@ def builder(
     constraint: Optional[Path],
     prebuild_dir: Optional[Path],
     single: bool,
+    auditwheel: bool,
     local: bool,
     upload: str,
     remote: str,
@@ -148,6 +156,9 @@ def builder(
             except TimeoutExpired:
                 exit_code = 80
                 copy_wheels_from_cache(Path("/root/.cache/pip/wheels"), wheels_dir)
+
+        if auditwheel:
+            run_auditwheel(wheels_dir)
 
         fix_wheels_name(wheels_dir)
         run_upload(upload, output, remote)
