@@ -42,5 +42,5 @@ def run_auditwheel(wheels_folder: Path) -> None:
         if not RE_WHEEL_PLATFORM.match(wheel_file.name):
             continue
         run_command(
-            f"auditwheel autofix --plat {platform} --no-update-tags -w {wheels_folder} {wheel_file}"
+            f"auditwheel repair --plat {platform} --no-update-tags -w {wheels_folder} {wheel_file}"
         )
