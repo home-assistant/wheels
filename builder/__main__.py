@@ -25,7 +25,7 @@ from builder.pip import (
 )
 from builder.upload import run_upload
 from builder.utils import check_url
-from builder.wheel import copy_wheels_from_cache, fix_wheels_name
+from builder.wheel import copy_wheels_from_cache, fix_wheels_name, run_auditwheel
 
 
 @click.command("builder")
