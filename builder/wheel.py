@@ -13,7 +13,7 @@ ARCH_PLAT = {
     "amd64": "linux_x86_64",
     "i386": "linux_i686",
     "aarch64": "linux_aarch64",
-    "armhf": "linux_armv6l",
+    "armhf": "linux_armv7l",
     "armv7": "linux_armv7l",
 }
 
