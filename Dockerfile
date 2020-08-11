@@ -13,7 +13,7 @@ RUN apk add --no-cache --virtual .build-dependencies \
         git \
         autoconf \
         automake \
-    && git clone --depth 1 -b ${PATCHELF_VERSION} https://github.com/NixOS/patchelf \
+    && git clone --depth 1 -b "${PATCHELF_VERSION}" https://github.com/NixOS/patchelf \
     && cd patchelf \
     && ./bootstrap.sh \
     && ./configure \
