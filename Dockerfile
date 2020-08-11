@@ -17,7 +17,7 @@ RUN apk add --no-cache --virtual .build-dependencies \
     && cd patchelf \
     && ./bootstrap.sh \
     && ./configure \
-    && make -j$(nproc) \
+    && make "-j$(nproc)" \
     && make install \
     && apk del .build-dependencies \
     && rm -rf /usr/src/patchelf
