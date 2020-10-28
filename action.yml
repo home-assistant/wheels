@@ -127,7 +127,7 @@ runs:
         echo "Create container: ${{ inputs.name }}"
         docker create --name "${{ inputs.name }}" -t \
           --workdir /data \
-          --entrypoint sleep ${{ inputs.timeout }} \
+          --entrypoint "sleep ${{ inputs.timeout }}" \
           ${{ steps.options.outputs.docker }} \
           "${{ steps.pull.outputs.name }}"
         docker start "${{ inputs.name }}"
