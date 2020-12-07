@@ -1,4 +1,4 @@
-auditwheel==3.2.0
+auditwheel==3.3.0
 click==7.1.2
 click-pathlib==2020.3.13.0
 requests==2.25.0
