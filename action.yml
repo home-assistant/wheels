@@ -153,7 +153,7 @@ runs:
       run: |
         echo "Copy repository and SSH files to the container"
         docker cp "${{ steps.options.outputs.path }}/." "${{ inputs.name }}:/data"
-        #docker cp -a .ssh/ "${{ inputs.name }}:/root/.ssh"
+        docker cp -a .ssh/ "${{ inputs.name }}:/root/.ssh"
 
     - shell: bash
       id: build
