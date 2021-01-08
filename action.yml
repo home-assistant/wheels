@@ -66,7 +66,7 @@ runs:
       run: |
         mkdir -p .ssh
         echo -e "-----BEGIN RSA PRIVATE KEY-----\n${{ inputs.wheels-key }}\n-----END RSA PRIVATE KEY-----" >> .ssh/id_rsa
-        #ssh-keyscan -H ${{ inputs.wheels-host }} >> .ssh/known_hosts
+        ssh-keyscan -H ${{ inputs.wheels-host }} >> .ssh/known_hosts
         chmod 600 .ssh/*
 
     - shell: bash
