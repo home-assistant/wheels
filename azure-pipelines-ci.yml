@@ -20,6 +20,8 @@ jobs:
         displayName: "Use Python $(python.version)"
         inputs:
           versionSpec: "3.7"
+      - script: pip install pip==20.2
+        displayName: "Install pip 20.2"
       - script: pip install tox
         displayName: "Install Tox"
       - script: tox
