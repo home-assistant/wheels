@@ -116,5 +116,5 @@ def install_pips(index: str, pips: str) -> None:
     packages = " ".join(pips.split(";"))
 
     run_command(
-        f"pip install --progress-bar off --upgrade --no-cache-dir --prefer-binary --find-links {index} {packages}",
+        f"pip install --disable-pip-version-check --progress-bar off --upgrade --no-cache-dir --prefer-binary --find-links {index} {packages}",
     )
