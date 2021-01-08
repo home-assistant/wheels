@@ -6,6 +6,22 @@ ENV ARCH=${BUILD_ARCH}
 
 WORKDIR /usr/src
 
+# Install elf
+ARG PATCHELF_VERSION=0.11
+RUN apk add --no-cache --virtual .build-dependencies \
+        build-base \
+        git \
+        autoconf \
+        automake \
+    && git clone --depth 1 -b "${PATCHELF_VERSION}" https://github.com/NixOS/patchelf \
+    && cd patchelf \
+    && ./bootstrap.sh \
+    && ./configure \
+    && make "-j$(nproc)" \
+    && make install \
+    && apk del .build-dependencies \
+    && rm -rf /usr/src/patchelf
+
 # Install requirements
 COPY requirements.txt /usr/src/
 RUN apk add --no-cache \
