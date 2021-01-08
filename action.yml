@@ -105,13 +105,16 @@ runs:
         if [ -d "${{ inputs.prebuild-dir }}" ]; then
           build+=("--prebuild-dir ${{ inputs.prebuild-dir }}")
         fi
-        if [ "${{ inputs.single }}" == "True" ]; then
+        if [ "${{ inputs.single }}" == "True" ] || [ "${{ inputs.single }}" == "true" ]; then
           build+=("--single")
         fi
-        if [ "${{ inputs.local }}" == "True" ]; then
+        if [ "${{ inputs.local }}" == "True" ] || [ "${{ inputs.local }}" == "true" ]; then
           build+=("--local")
         fi
-        if [ "${{ inputs.audit }}" == "True" ]; then
+        if [ "${{ inputs.test }}" == "True" ] || [ "${{ inputs.test }}" == "true" ]; then
+          build+=("--test")
+        fi
+        if [ "${{ inputs.audit }}" == "True" ] || [ "${{ inputs.audit }}" == "true" ]; then
           build+=("--auditwheel")
         fi
         if [ -n "${{ inputs.skip-binary }}" ]; then
