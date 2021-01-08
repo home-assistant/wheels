@@ -70,6 +70,9 @@ from builder.wheel import copy_wheels_from_cache, fix_wheels_name, run_auditwhee
 @click.option(
     "--local", is_flag=True, default=False, help="Build wheel from local folder setup."
 )
+@click.option(
+    "--test", is_flag=True, default=False, help="Test building wheels, no upload."
+)
 @click.option("--upload", default="rsync", help="Upload plugin to upload wheels.")
 @click.option(
     "--remote", required=True, type=str, help="Remote URL pass to upload plugin."
@@ -89,6 +92,7 @@ def builder(
     single: bool,
     auditwheel: bool,
     local: bool,
+    test: bool,
     upload: str,
     remote: str,
     timeout: int,
@@ -161,7 +165,8 @@ def builder(
             run_auditwheel(wheels_dir)
 
         fix_wheels_name(wheels_dir)
-        run_upload(upload, output, remote)
+        if not test:
+            run_upload(upload, output, remote)
 
     sys.exit(exit_code)
 

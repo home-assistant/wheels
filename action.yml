@@ -29,6 +29,9 @@ inputs:
     description: "The constraints file"
     default: ""
   local:
+    description: "Set to true if not uploading wheels"
+    default: false
+  test:
     description: "Set to true if local"
     default: false
   single:
