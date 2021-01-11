@@ -50,7 +50,7 @@ inputs:
     description: "SSH keys for the wheels host"
     required: true
   wheels-host:
-    description: "SSH keys for the wheels host"
+    description: "wheels host URL"
     required: true
   wheels-user:
     description: "User for wheels host"
@@ -64,7 +64,7 @@ runs:
   steps:
     - shell: bash
       run: |
-        if [ "${{ inputs.test }}" != "True" ] || [ "${{ inputs.test }}" != "true" ]; then
+        if [[ "${{ inputs.test }}" =~ false|False ]]; then
           mkdir -p .ssh
           echo -e "-----BEGIN RSA PRIVATE KEY-----\n${{ inputs.wheels-key }}\n-----END RSA PRIVATE KEY-----" >> .ssh/id_rsa
           ssh-keyscan -H ${{ inputs.wheels-host }} >> .ssh/known_hosts
@@ -92,7 +92,7 @@ runs:
         fi
 
         # Environment
-        if [ "${{ inputs.env-file }}" == "True" ] && [ -f .env_file ]; then
+        if [[ "${{ inputs.env-file  }}" =~ true|True ]] && [ -f .env_file ]; then
           docker+=("--env-file .env_file")
         fi
         if [ -f "${{ inputs.requirements }}" ]; then
@@ -107,16 +107,16 @@ runs:
         if [ -d "${{ inputs.prebuild-dir }}" ]; then
           build+=("--prebuild-dir ${{ inputs.prebuild-dir }}")
         fi
-        if [ "${{ inputs.single }}" == "True" ] || [ "${{ inputs.single }}" == "true" ]; then
+        if  [[ "${{ inputs.single }}" =~ true|True ]]; then
           build+=("--single")
         fi
-        if [ "${{ inputs.local }}" == "True" ] || [ "${{ inputs.local }}" == "true" ]; then
+        if [[ "${{ inputs.local }}" =~ true|True ]]; then
           build+=("--local")
         fi
-        if [ "${{ inputs.test }}" == "True" ] || [ "${{ inputs.test }}" == "true" ]; then
+        if [[ "${{ inputs.test }}" =~ true|True ]]; then
           build+=("--test")
         fi
-        if [ "${{ inputs.audit }}" == "True" ] || [ "${{ inputs.audit }}" == "true" ]; then
+        if [[ "${{ inputs.audit }}" =~ true|True ]]; then
           build+=("--auditwheel")
         fi
         if [ -n "${{ inputs.skip-binary }}" ]; then
@@ -158,7 +158,7 @@ runs:
       run: |
         echo "Copy repository and SSH files to the container"
         docker cp "${{ steps.options.outputs.path }}/." "${{ inputs.name }}:/data"
-        if [ "${{ inputs.test }}" != "True" ] || [ "${{ inputs.test }}" != "true" ]; then
+        if [[ "${{ inputs.test }}" =~ false|False ]]; then
           docker cp -a .ssh/ "${{ inputs.name }}:/root/.ssh"
         fi
 
