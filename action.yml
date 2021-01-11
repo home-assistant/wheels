@@ -64,10 +64,12 @@ runs:
   steps:
     - shell: bash
       run: |
-        mkdir -p .ssh
-        echo -e "-----BEGIN RSA PRIVATE KEY-----\n${{ inputs.wheels-key }}\n-----END RSA PRIVATE KEY-----" >> .ssh/id_rsa
-        ssh-keyscan -H ${{ inputs.wheels-host }} >> .ssh/known_hosts
-        chmod 600 .ssh/*
+        if [ "${{ inputs.test }}" != "True" ] || [ "${{ inputs.test }}" != "true" ]; then
+          mkdir -p .ssh
+          echo -e "-----BEGIN RSA PRIVATE KEY-----\n${{ inputs.wheels-key }}\n-----END RSA PRIVATE KEY-----" >> .ssh/id_rsa
+          ssh-keyscan -H ${{ inputs.wheels-host }} >> .ssh/known_hosts
+          chmod 600 .ssh/*
+        fi
 
     - shell: bash
       id: pull
@@ -156,7 +158,9 @@ runs:
       run: |
         echo "Copy repository and SSH files to the container"
         docker cp "${{ steps.options.outputs.path }}/." "${{ inputs.name }}:/data"
-        docker cp -a .ssh/ "${{ inputs.name }}:/root/.ssh"
+        if [ "${{ inputs.test }}" != "True" ] || [ "${{ inputs.test }}" != "true" ]; then
+          docker cp -a .ssh/ "${{ inputs.name }}:/root/.ssh"
+        fi
 
     - shell: bash
       id: build
