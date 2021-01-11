@@ -50,7 +50,7 @@ inputs:
     description: "SSH keys for the wheels host"
     required: true
   wheels-host:
-    description: "SSH keys for the wheels host"
+    description: "wheels host URL"
     required: true
   wheels-user:
     description: "User for wheels host"
@@ -64,12 +64,14 @@ runs:
   steps:
     - shell: bash
       run: |
+        echo ${{ inputs.test }}
         if [ "${{ inputs.test }}" != "True" ] || [ "${{ inputs.test }}" != "true" ]; then
           mkdir -p .ssh
           echo -e "-----BEGIN RSA PRIVATE KEY-----\n${{ inputs.wheels-key }}\n-----END RSA PRIVATE KEY-----" >> .ssh/id_rsa
           ssh-keyscan -H ${{ inputs.wheels-host }} >> .ssh/known_hosts
           chmod 600 .ssh/*
         fi
+        exit 1
 
     - shell: bash
       id: pull
