@@ -71,7 +71,7 @@ runs:
           ssh-keyscan -H ${{ inputs.wheels-host }} >> .ssh/known_hosts
           chmod 600 .ssh/*
         fi
-        exit 0
+        exit 1
 
     - shell: bash
       id: pull

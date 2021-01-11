@@ -15,8 +15,3 @@ jobs:
 
       - name: 👷 Build wheels
         uses: ./
-        with:
-          test: true
-
-      - name: 👷 Build wheels
-        uses: ./
