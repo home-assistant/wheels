@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+env:
+  PYTHON_VERSION: 3.8
+  HADOLINT_VERSION: "v1.16.3"
+  VIRTUALENV_PIP: "20.2"
+
+jobs:
+  tox:
+    name: Tox
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code from GitHub
+        uses: actions/checkout@v2
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v2.2.1
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install tox
+        run: python3 -m pip install tox
+
+      - name: Run tox
+        run: tox
+
+  hadolint:
+    name: Hadolint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code from GitHub
+        uses: actions/checkout@v2
+
+      - name: Run Hadolint
+        run: |
+          docker run --rm -i \
+            -v $(pwd)/.hadolint.yaml:/.hadolint.yaml:ro \
+            hadolint/hadolint:${{ env.HADOLINT_VERSION }} < Dockerfile

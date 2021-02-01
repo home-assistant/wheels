@@ -1,6 +1,4 @@
-[![Build Status](https://dev.azure.com/home-assistant/Hass.io/_apis/build/status/wheels?branchName=master)](https://dev.azure.com/home-assistant/Hass.io/_build/latest?definitionId=11&branchName=master)
-
-# Hass.io Wheels builder
+# Home Assistant Wheels builder
 
 ```sh
 
