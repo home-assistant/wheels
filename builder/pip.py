@@ -30,7 +30,7 @@ def build_wheels_package(
     constraint_cmd = f"--constraint {constraint}" if constraint else ""
 
     run_command(
-        f'pip3 wheel --progress-bar off --no-clean --no-binary "{skip_binary}" --wheel-dir {output} --find-links {index} {constraint_cmd} "{package}"',
+        f'pip3 wheel --disable-pip-version-check --progress-bar off --no-clean --no-binary "{skip_binary}" --wheel-dir {output} --find-links {index} {constraint_cmd} "{package}"',
         env=build_env,
         timeout=timeout,
     )
@@ -59,7 +59,7 @@ def build_wheels_requirement(
     constraint_cmd = f"--constraint {constraint}" if constraint else ""
 
     run_command(
-        f'pip3 wheel --progress-bar off --no-clean --no-binary "{skip_binary}" --wheel-dir {output} --find-links {index} {constraint_cmd} --requirement {requirement}',
+        f'pip3 wheel --disable-pip-version-check --progress-bar off --no-clean --no-binary "{skip_binary}" --wheel-dir {output} --find-links {index} {constraint_cmd} --requirement {requirement}',
         env=build_env,
         timeout=timeout,
     )
@@ -81,7 +81,7 @@ def build_wheels_local(
         build_env["CRYPTOGRAPHY_DONT_BUILD_RUST"] = "1"
 
     run_command(
-        f"pip3 wheel --progress-bar off --no-clean --wheel-dir {output} --find-links {index} .",
+        f"pip3 wheel --disable-pip-version-check --progress-bar off --no-clean --wheel-dir {output} --find-links {index} .",
         env=build_env,
     )
 
