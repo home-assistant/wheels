@@ -3,7 +3,7 @@ from pathlib import Path
 
 from builder.pip import write_requirement, parse_requirements
 
-FILTERED = {"RPi.GPIO": ["amd64", "i386", "armhf"]}
+FILTERED = {"RPi.GPIO": ["amd64", "i386"]}
 
 
 def filter_requirements(requirement: Path, arch: str) -> None:

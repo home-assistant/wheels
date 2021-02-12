@@ -12,7 +12,7 @@ from builder import pip
     [
         ("RPi.GPIO==1.2.3", "amd64", False),
         ("RPi.GPIO==1.2.3", "i386", False),
-        ("RPi.GPIO==1.2.3", "armhf", False),
+        ("RPi.GPIO==1.2.3", "armhf", True),
         ("RPi.GPIO==1.2.3", "armv7", True),
         ("RPi.GPIO==1.2.3", "aarch64", True),
     ],
