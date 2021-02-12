@@ -1,3 +1,4 @@
 # Core requirements
 -c constraints.txt
 aiohttp==1.2.3
+RPi.GPIO==1.2.3

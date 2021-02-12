@@ -6,6 +6,7 @@ import sys
 from tempfile import TemporaryDirectory
 from typing import Optional
 
+from awesomeversion import AwesomeVersion
 import click
 import click_pathlib
 
@@ -23,6 +24,7 @@ from builder.pip import (
     install_pips,
     write_requirement,
 )
+from builder.filter import filter_requirements
 from builder.upload import run_upload
 from builder.utils import check_url
 from builder.wheel import copy_wheels_from_cache, fix_wheels_name, run_auditwheel
@@ -30,6 +32,8 @@ from builder.wheel import copy_wheels_from_cache, fix_wheels_name, run_auditwhee
 
 @click.command("builder")
 @click.option("--apk", default="build-base", help="APKs they are needed to build this.")
+@click.option("--tag", default="", help="The tag used.")
+@click.option("--arch", default="amd64", help="The architecture we build for.")
 @click.option("--pip", default="Cython", help="PiPy modules needed to build this.")
 @click.option("--index", required=True, help="Index URL of remote wheels repository.")
 @click.option(
@@ -94,12 +98,16 @@ def builder(
     local: bool,
     test: bool,
     upload: str,
+    tag: str,
+    arch: str,
     remote: str,
     timeout: int,
 ):
     """Build wheels precompiled for Home Assistant container."""
     install_apks(apk)
     check_url(index)
+
+    alpine_version = AwesomeVersion(tag.split("alpine")[-1])
 
     exit_code = 0
     with TemporaryDirectory() as temp_dir:
@@ -108,13 +116,16 @@ def builder(
         wheels_dir = create_wheels_folder(output)
         wheels_index = create_wheels_index(index)
 
+        # Filter requirements
+        filter_requirements(requirement, arch)
+
         # Setup build helper
         install_pips(wheels_index, pip)
         timeout = timeout * 60
 
         if local:
             # Build wheels in a local folder/src
-            build_wheels_local(wheels_index, wheels_dir)
+            build_wheels_local(wheels_index, wheels_dir, alpine_version)
         elif prebuild_dir:
             # Prepare allready builded wheels for upload
             for whl_file in prebuild_dir.glob("*.whl"):
@@ -132,6 +143,7 @@ def builder(
                         wheels_dir,
                         skip_binary,
                         timeout,
+                        alpine_version,
                         constraint,
                     )
                 except CalledProcessError:
@@ -153,6 +165,7 @@ def builder(
                     wheels_dir,
                     skip_binary,
                     timeout,
+                    alpine_version,
                     constraint,
                 )
             except CalledProcessError:

@@ -29,10 +29,10 @@ inputs:
     description: "The constraints file"
     default: ""
   local:
-    description: "Set to true if not uploading wheels"
+    description: "Set to true if local"
     default: false
   test:
-    description: "Set to true if local"
+    description: "Set to true if not uploading wheels"
     default: false
   single:
     description: "Set to true if should build each wheel as a single prosess"
@@ -152,6 +152,8 @@ runs:
           --index "${{ inputs.wheels-index }}" \
           --upload rsync \
           --remote "${{ inputs.wheels-user }}@${{ inputs.wheels-host }}:/opt/wheels" \
+          --arch "${{ inputs.arch }}" \
+          --tag "${{ inputs.tag }}" \
           ${{ steps.options.outputs.build }}
 
     - shell: bash

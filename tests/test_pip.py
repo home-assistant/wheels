@@ -8,7 +8,7 @@ def test_parse_requirements():
         pip.parse_requirements(
             Path(__file__).parent / "requirements/requirements_all.txt"
         )
-    ) == ["aiohttp==1.2.3", "aiohue==5.6.7"]
+    ) == ["RPi.GPIO==1.2.3", "aiohttp==1.2.3", "aiohue==5.6.7"]
 
 
 def test_extract_packages():
@@ -16,7 +16,7 @@ def test_extract_packages():
         pip.extract_packages(
             Path(__file__).parent / "requirements/requirements_all.txt"
         )
-    ) == ["aiohttp==1.2.3", "aiohue==5.6.7"]
+    ) == ["RPi.GPIO==1.2.3", "aiohttp==1.2.3", "aiohue==5.6.7"]
 
 
 def test_extract_packages_diff():
@@ -27,7 +27,7 @@ def test_extract_packages_diff():
                 Path(__file__).parent / "requirements/requirements_diff.txt",
             )
         )
-        == ["aiohue==5.6.7"]
+        == ["RPi.GPIO==1.2.3", "aiohue==5.6.7"]
     )
 
 
