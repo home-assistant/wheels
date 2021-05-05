@@ -1,4 +1,4 @@
-auditwheel==3.3.1
+auditwheel==4.0.0
 awesomeversion>=21.2.2
 click==7.1.2
 click-pathlib==2020.3.13.0
