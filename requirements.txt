@@ -4,4 +4,4 @@ click==7.1.2
 click-pathlib==2020.3.13.0
 requests==2.25.1
 wheel==0.36.2
-setuptools==56.0.0
+setuptools==56.1.0
