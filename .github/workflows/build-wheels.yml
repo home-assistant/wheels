@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: ["3.7", "3.8", "3.9"]
+        python: ["3.8", "3.9"]
         alpine: ["3.11", "3.12", "3.13"]
         arch: ["aarch64", "armhf", "armv7", "amd64", "i386"]
 
@@ -30,7 +30,7 @@ jobs:
         with:
           tag: ${{ matrix.python }}-alpine${{ matrix.alpine }}
           arch: ${{ matrix.arch }}
-          wheels-host: ${{ secrets.WHEELS_HOST }}
+          wheels-host: wheels.hass.io
           wheels-key: ${{ secrets.WHEELS_KEY }}
           apk: "build-base;libffi-dev;openssl-dev"
           requirements: "requirements_all.txt"
