@@ -28,7 +28,7 @@ jobs:
         run: cat requirements.txt requirements_build.txt > requirements_all.txt
 
       - name: Build wheels
-        uses: home-assistant/wheels@master
+        uses: ./
         with:
           tag: ${{ matrix.python }}-alpine${{ matrix.alpine }}
           arch: ${{ matrix.arch }}

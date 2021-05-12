@@ -68,7 +68,7 @@ jobs:
           ) > .env_file
 
       - name: Build wheels
-        uses: home-assistant/wheels@master
+        uses: ./
         with:
           tag: ${{ matrix.python }}-alpine${{ matrix.alpine }}
           arch: ${{ matrix.arch }}
