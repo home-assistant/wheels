@@ -16,6 +16,9 @@ inputs:
   path:
     description: "The path to be used for the builder"
     default: ""
+  prebuild-dir:
+    description: "The directory for prebuild"
+    default: ""
   env-file:
     description: "Set to true if the builder should use a env file"
     default: false
@@ -105,7 +108,7 @@ runs:
           build+=("--constraint ${{ inputs.constraints }}")
         fi
         if [ -d "${{ inputs.prebuild-dir }}" ]; then
-          build+=("--prebuild-dir ${{ inputs.prebuild-dir }}")
+          build+=("--prebuild-dir ${{ github.workspace }}/${{ inputs.prebuild-dir }}")
         fi
         if  [[ "${{ inputs.single }}" =~ true|True ]]; then
           build+=("--single")
