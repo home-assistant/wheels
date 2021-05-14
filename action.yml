@@ -48,10 +48,10 @@ inputs:
     default: false
   wheels-key:
     description: "SSH keys for the wheels host"
-    required: true
+    required: false
   wheels-host:
     description: "wheels host URL"
-    required: true
+    default: "wheels.hass.io"
   wheels-user:
     description: "User for wheels host"
     default: "wheels"

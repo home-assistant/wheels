@@ -8,6 +8,9 @@ FILTERED = {"RPi.GPIO": ["amd64", "i386"]}
 
 def filter_requirements(requirement: Path, arch: str) -> None:
     """Filter requirements."""
+    if requirement is None:
+        return
+
     requirements = parse_requirements(requirement)
 
     for req_filter in FILTERED:
