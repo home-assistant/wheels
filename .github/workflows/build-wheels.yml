@@ -15,6 +15,7 @@ jobs:
     name: Build ${{ matrix.arch }}-python${{ matrix.python }}-alpine${{ matrix.alpine }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python: ["3.8", "3.9"]
         alpine: ["3.11", "3.12", "3.13"]
