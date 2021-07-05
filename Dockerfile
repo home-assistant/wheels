@@ -6,37 +6,22 @@ ENV ARCH=${BUILD_ARCH}
 
 WORKDIR /usr/src
 
-# Install elf
-ARG PATCHELF_VERSION=0.11
-RUN apk add --no-cache --virtual .build-dependencies \
-        build-base \
-        git \
-        autoconf \
-        automake \
-    && git clone --depth 1 -b "${PATCHELF_VERSION}" https://github.com/NixOS/patchelf \
-    && cd patchelf \
-    && ./bootstrap.sh \
-    && ./configure \
-    && make "-j$(nproc)" \
-    && make install \
-    && apk del .build-dependencies \
-    && rm -rf /usr/src/patchelf
-
 # Install requirements
-COPY requirements.txt /usr/src/
+COPY requirements.txt .
 RUN apk add --no-cache \
         rsync \
         openssh-client \
+        patchelf \
     && pip3 install --no-cache-dir --find-links \
         "https://wheels.home-assistant.io/alpine-$(cut -d '.' -f 1-2 < /etc/alpine-release)/${BUILD_ARCH}/" \
-        -r /usr/src/requirements.txt \
-    && rm -f /usr/src/requirements.txt
+        -r requirements.txt \
+    && rm -f requirements.txt
 
 # Install builder
-COPY . /usr/src/builder/
+COPY . builder/
 RUN pip3 install --no-cache-dir \
-        /usr/src/builder \
-    && rm -fr /usr/src/builder
+        builder/ \
+    && rm -fr builder
 
 WORKDIR /data
 ENTRYPOINT [ "python3", "-m", "builder" ]
