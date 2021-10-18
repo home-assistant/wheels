@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Check out code from GitHub
-        uses: actions/checkout@v2.3.4
+        uses: actions/checkout@v2.3.5
 
       - name: Prepare requirements
         run: cat requirements.txt requirements_build.txt > requirements_all.txt
