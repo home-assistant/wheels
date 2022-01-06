@@ -130,8 +130,9 @@ def builder(
         elif single:
             # Build every wheel like a single installation
             packages = extract_packages(requirement, requirement_diff)
+            constraints = parse_requirements(constraint) if constraint else []
             skip_binary = check_available_binary(
-                wheels_index, skip_binary, packages, parse_requirements(constraint)
+                wheels_index, skip_binary, packages, constraints,
             )
             for package in packages:
                 print(f"Process package: {package}", flush=True)
@@ -155,8 +156,9 @@ def builder(
             packages = extract_packages(requirement, requirement_diff)
             temp_requirement = Path("/tmp/wheels_requirement.txt")
             write_requirement(temp_requirement, packages)
+            constraints = parse_requirements(constraint) if constraint else []
             skip_binary = check_available_binary(
-                wheels_index, skip_binary, packages, parse_requirements(constraint)
+                wheels_index, skip_binary, packages, constraints,
             )
             try:
                 build_wheels_requirement(
