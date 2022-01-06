@@ -22,6 +22,7 @@ from builder.pip import (
     build_wheels_requirement,
     extract_packages,
     install_pips,
+    parse_requirements,
     write_requirement,
 )
 from builder.upload import run_upload
