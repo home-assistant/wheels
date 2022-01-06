@@ -124,7 +124,7 @@ def test_check_available_binary_skip_constraint() -> None:
                 "google_cloud_pubsub==2.1.0",
             ],
             constraints=[
-                "grpcio==1.31.0", # Already exists in index
+                "grpcio==1.31.0",  # Already exists in index
             ],
         )
         == ":none:"
