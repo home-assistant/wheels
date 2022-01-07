@@ -23,7 +23,9 @@ def create_wheels_index(base_index: str) -> str:
     return f"{base_index}/{alpine_version()}/{build_arch()}/"
 
 
-def check_available_binary(index: str, skip_binary: str, packages: List[str]) -> str:
+def check_available_binary(
+    index: str, skip_binary: str, packages: List[str], constraints: List[str]
+) -> str:
     """Check if binary exists and ignore this skip."""
     if skip_binary == ":none:":
         return skip_binary
@@ -33,15 +35,14 @@ def check_available_binary(index: str, skip_binary: str, packages: List[str]) ->
 
     list_needed: Set[str] = set()
     for binary in list_binary:
-        for package in packages.copy():
+        for package in packages + constraints:
             if not package.startswith(binary):
                 continue
 
             # Check more details
             find = _RE_REQUIREMENT.match(package)
             if not find:
-                packages.remove(package)
-                continue
+                raise ValueError(f"package requirement malformed: {package}")
 
             # Check full name
             if binary != find["package"]:
