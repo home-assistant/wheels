@@ -42,6 +42,7 @@ def test_check_available_binary_none() -> None:
                 "aiohttp==3.7.4",
                 "google_cloud_pubsub==2.1.0",
             ],
+            constraints=[],
         )
         == ":none:"
     )
@@ -57,6 +58,7 @@ def test_check_available_binary_all() -> None:
                 "aiohttp==3.7.4",
                 "google_cloud_pubsub==2.1.0",
             ],
+            constraints=[],
         )
         == ":none:"
     )
@@ -72,6 +74,7 @@ def test_check_available_binary_version_present() -> None:
                 "aiohttp==3.7.4",
                 "google_cloud_pubsub==2.1.0",
             ],
+            constraints=[],
         )
         == ":none:"
     )
@@ -87,6 +90,7 @@ def test_check_available_binary_version_missing() -> None:
                 "aiohttp==3.7.5",  # Not in the index
                 "google_cloud_pubsub==2.1.0",
             ],
+            constraints=[],
         )
         == "aiohttp"
     )
@@ -102,6 +106,7 @@ def test_check_available_binary_implicit_dep_skipped() -> None:
                 "aiohttp==3.7.4",
                 "google_cloud_pubsub==2.1.0",
             ],
+            constraints=[],
         )
         == ":none:"
     )
@@ -116,6 +121,8 @@ def test_check_available_binary_skip_constraint() -> None:
             packages=[
                 "aiohttp==3.7.4",
                 "google_cloud_pubsub==2.1.0",
+            ],
+            constraints=[
                 "grpcio==1.31.0",  # Already exists in index
             ],
         )
@@ -132,6 +139,8 @@ def test_check_available_binary_for_missing_constraint() -> None:
             packages=[
                 "aiohttp==3.7.4",
                 "google_cloud_pubsub==2.1.0",
+            ],
+            constraints=[
                 "grpcio==1.43.0",  # Not in index
             ],
         )

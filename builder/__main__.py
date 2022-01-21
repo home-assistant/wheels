@@ -141,7 +141,8 @@ def builder(
             skip_binary = check_available_binary(
                 wheels_index,
                 skip_binary,
-                packages + constraints,
+                packages,
+                constraints,
             )
             for package in packages:
                 print(f"Process package: {package}", flush=True)
@@ -169,7 +170,8 @@ def builder(
             skip_binary = check_available_binary(
                 wheels_index,
                 skip_binary,
-                packages + constraints,
+                packages,
+                constraints,
             )
             try:
                 build_wheels_requirement(

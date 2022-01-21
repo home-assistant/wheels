@@ -46,7 +46,7 @@ def check_existing_packages(index: str, package_map: Dict[str, str]) -> Set[str]
     return found
 
 
-def check_available_binary(index: str, skip_binary: str, packages: List[str]) -> str:
+def check_available_binary(index: str, skip_binary: str, packages: List[str], constraints: List[str]) -> str:
     """Check if binary exists and ignore this skip."""
     if skip_binary == ":none:":
         return skip_binary
@@ -54,7 +54,7 @@ def check_available_binary(index: str, skip_binary: str, packages: List[str]) ->
     list_binary = skip_binary.split(",")
 
     # Map of package basename to the desired package version
-    package_map = create_package_map(packages)
+    package_map = create_package_map(packages + constraints)
 
     # View of package map limited to packages in --skip-binary
     binary_package_map = {}
