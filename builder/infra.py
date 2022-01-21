@@ -1,7 +1,7 @@
 """Create folder structure for index."""
 from pathlib import Path
 import re
-from typing import List, Set
+from typing import List, Set, Dict
 
 import requests
 
@@ -23,7 +23,7 @@ def create_wheels_index(base_index: str) -> str:
     return f"{base_index}/{alpine_version()}/{build_arch()}/"
 
 
-def create_package_map(packages: list[str]) -> dict[str, str]:
+def create_package_map(packages: List[str]) -> Dict[str, str]:
     """Create a dictionary from package base name to package and version string."""
     results = {}
     for package in packages.copy():
@@ -36,7 +36,7 @@ def create_package_map(packages: list[str]) -> dict[str, str]:
     return results
 
 
-def check_existing_packages(index: str, package_map: dict[str, str]) -> Set[str]:
+def check_existing_packages(index: str, package_map: Dict[str, str]) -> Set[str]:
     """Return the set of package names that already exist in the index."""
     available_data = requests.get(index, allow_redirects=True).text
     found: Set[str] = set({})
@@ -81,7 +81,7 @@ def check_available_binary(
 
 
 def remove_local_wheels(
-    index: str, skip_exists: list[str], packages: List[str], wheels_dir: Path,
+    index: str, skip_exists: List[str], packages: List[str], wheels_dir: Path,
 ) -> str:
     """Remove existing wheels if they already exist in the index to avoid syncing."""
     package_map = create_package_map(packages)
