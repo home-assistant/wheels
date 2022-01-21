@@ -54,7 +54,6 @@ def check_available_binary(
         return skip_binary
 
     list_binary = skip_binary.split(",")
-    available_data = requests.get(index, allow_redirects=True).text
 
     # Map of package basename to the desired package version
     package_map = create_package_map(packages)
