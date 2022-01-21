@@ -151,10 +151,10 @@ def test_remove_local_wheel(tmppath: Path) -> None:
     p.touch()
     p = tmppath / "grpcio-1.31.0-cp39-none-any.whl"
     p.touch()
-    assert [ p.name for p in tmppath.glob("*.whl") ] == [
+    assert { p.name for p in tmppath.glob("*.whl") } == {
         "grpcio-1.31.0-cp39-none-any.whl",
         "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl",
-    ]
+    }
 
     remove_local_wheels(
         TEST_INDEX_URL,
@@ -167,9 +167,9 @@ def test_remove_local_wheel(tmppath: Path) -> None:
     )
 
     # grpc is removed
-    assert [ p.name for p in tmppath.glob("*.whl") ] == [
+    assert { p.name for p in tmppath.glob("*.whl") } == {
         "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl",
-    ]
+    }
 
 
 def test_remove_local_wheel_preserves_newer(tmppath: Path) -> None:
@@ -179,10 +179,10 @@ def test_remove_local_wheel_preserves_newer(tmppath: Path) -> None:
     p.touch()
     p = tmppath / "grpcio-1.43.0-cp39-none-any.whl"
     p.touch()
-    assert [ p.name for p in tmppath.glob("*.whl") ] == [
+    assert { p.name for p in tmppath.glob("*.whl") } == {
         "grpcio-1.43.0-cp39-none-any.whl",
         "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl",
-    ]
+    }
 
     remove_local_wheels(
         TEST_INDEX_URL,
@@ -195,8 +195,8 @@ def test_remove_local_wheel_preserves_newer(tmppath: Path) -> None:
     )
 
     # grpc is removed
-    assert [ p.name for p in tmppath.glob("*.whl") ] == [
+    assert set([ p.name for p in tmppath.glob("*.whl") ]) == {
         "grpcio-1.43.0-cp39-none-any.whl",
         "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl",
-    ]
+    }
 
