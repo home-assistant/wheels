@@ -1,8 +1,7 @@
-"""Tests for infra module.
-
-pip module."""
+"""Tests for infra module."""
 import pytest
-from builder.infra import check_available_binary
+from pathlib import Path
+from builder.infra import check_available_binary, remove_local_wheels
 from unittest.mock import patch
 
 
@@ -43,7 +42,6 @@ def test_check_available_binary_none() -> None:
                 "aiohttp==3.7.4",
                 "google_cloud_pubsub==2.1.0",
             ],
-            constraints=[],
         )
         == ":none:"
     )
@@ -59,7 +57,6 @@ def test_check_available_binary_all() -> None:
                 "aiohttp==3.7.4",
                 "google_cloud_pubsub==2.1.0",
             ],
-            constraints=[],
         )
         == ":none:"
     )
@@ -75,7 +72,6 @@ def test_check_available_binary_version_present() -> None:
                 "aiohttp==3.7.4",
                 "google_cloud_pubsub==2.1.0",
             ],
-            constraints=[],
         )
         == ":none:"
     )
@@ -91,7 +87,6 @@ def test_check_available_binary_version_missing() -> None:
                 "aiohttp==3.7.5",  # Not in the index
                 "google_cloud_pubsub==2.1.0",
             ],
-            constraints=[],
         )
         == "aiohttp"
     )
@@ -107,7 +102,6 @@ def test_check_available_binary_implicit_dep_skipped() -> None:
                 "aiohttp==3.7.4",
                 "google_cloud_pubsub==2.1.0",
             ],
-            constraints=[],
         )
         == ":none:"
     )
@@ -122,8 +116,6 @@ def test_check_available_binary_skip_constraint() -> None:
             packages=[
                 "aiohttp==3.7.4",
                 "google_cloud_pubsub==2.1.0",
-            ],
-            constraints=[
                 "grpcio==1.31.0",  # Already exists in index
             ],
         )
@@ -140,10 +132,71 @@ def test_check_available_binary_for_missing_constraint() -> None:
             packages=[
                 "aiohttp==3.7.4",
                 "google_cloud_pubsub==2.1.0",
-            ],
-            constraints=[
                 "grpcio==1.43.0",  # Not in index
             ],
         )
         == "grpcio"
     )
+
+
+@pytest.fixture
+def tmppath(tmpdir):
+    return Path(tmpdir)
+
+
+def test_remove_local_wheel(tmppath: Path) -> None:
+    """Test removing an existing wheel."""
+
+    p = tmppath / "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl"
+    p.touch()
+    p = tmppath / "grpcio-1.31.0-cp39-none-any.whl"
+    p.touch()
+    assert [ p.name for p in tmppath.glob("*.whl") ] == [
+        "grpcio-1.31.0-cp39-none-any.whl",
+        "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl",
+    ]
+
+    remove_local_wheels(
+        TEST_INDEX_URL,
+        skip_exists=["grpcio"],
+        packages=[
+            "google_cloud_pubsub==2.9.0",
+            "grpcio==1.31.0",  # Exists in index
+        ],
+        wheels_dir=tmppath,
+    )
+
+    # grpc is removed
+    assert [ p.name for p in tmppath.glob("*.whl") ] == [
+        "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl",
+    ]
+
+
+def test_remove_local_wheel_preserves_newer(tmppath: Path) -> None:
+    """Test that the wheel is preserved when newer than in the index."""
+
+    p = tmppath / "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl"
+    p.touch()
+    p = tmppath / "grpcio-1.43.0-cp39-none-any.whl"
+    p.touch()
+    assert [ p.name for p in tmppath.glob("*.whl") ] == [
+        "grpcio-1.43.0-cp39-none-any.whl",
+        "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl",
+    ]
+
+    remove_local_wheels(
+        TEST_INDEX_URL,
+        skip_exists=["grpcio"],
+        packages=[
+            "google_cloud_pubsub==2.9.0",
+            "grpcio==1.43.0",  # Newer than index
+        ],
+        wheels_dir=tmppath,
+    )
+
+    # grpc is removed
+    assert [ p.name for p in tmppath.glob("*.whl") ] == [
+        "grpcio-1.43.0-cp39-none-any.whl",
+        "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl",
+    ]
+

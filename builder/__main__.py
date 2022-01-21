@@ -15,6 +15,7 @@ from builder.infra import (
     check_available_binary,
     create_wheels_folder,
     create_wheels_index,
+    remove_local_wheels,
 )
 from builder.pip import (
     build_wheels_local,
@@ -38,6 +39,9 @@ from builder.wheel import copy_wheels_from_cache, fix_wheels_name, run_auditwhee
 @click.option("--index", required=True, help="Index URL of remote wheels repository.")
 @click.option(
     "--skip-binary", default=":none:", help="List of packages to skip wheels from pypi."
+)
+@click.option(
+    "--skip-exists", default="", help="List of packages to skip upload/rsync if already exist in remote wheels repository."
 )
 @click.option(
     "--requirement",
@@ -89,6 +93,7 @@ def builder(
     pip: str,
     index: str,
     skip_binary: str,
+    skip_exists: str,
     requirement: Optional[Path],
     requirement_diff: Optional[Path],
     constraint: Optional[Path],
@@ -134,8 +139,7 @@ def builder(
             skip_binary = check_available_binary(
                 wheels_index,
                 skip_binary,
-                packages,
-                constraints,
+                packages + constraints,
             )
             for package in packages:
                 print(f"Process package: {package}", flush=True)
@@ -163,8 +167,7 @@ def builder(
             skip_binary = check_available_binary(
                 wheels_index,
                 skip_binary,
-                packages,
-                constraints,
+                packages + constraints,
             )
             try:
                 build_wheels_requirement(
@@ -186,6 +189,15 @@ def builder(
             run_auditwheel(wheels_dir)
 
         fix_wheels_name(wheels_dir)
+
+        if skip_exists:
+            # Some wheels that already exist should not be overwritten in case we replace with
+            # a wheel that came from pypi rather than a wheel built from source with extra flags.
+            # When --skip-binary and --skip-exists are set a wheel is only built from source once.
+            packages = extract_packages(requirement, requirement_diff)
+            constraints = parse_requirements(constraint) if constraint else []
+            remove_local_wheels(wheels_index, skip_exists.split(","), packages + constraints, wheels_dir)
+
         if not test:
             run_upload(upload, output, remote)
 
