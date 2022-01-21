@@ -46,9 +46,7 @@ def check_existing_packages(index: str, package_map: Dict[str, str]) -> Set[str]
     return found
 
 
-def check_available_binary(
-    index: str, skip_binary: str, packages: List[str]
-) -> str:
+def check_available_binary(index: str, skip_binary: str, packages: List[str]) -> str:
     """Check if binary exists and ignore this skip."""
     if skip_binary == ":none:":
         return skip_binary
@@ -62,7 +60,10 @@ def check_available_binary(
     binary_package_map = {}
     for binary in list_binary:
         if not (package := package_map.get(binary)):
-            print(f"Skip binary '{binary}' not in packages/constraints; Can't determine desired version", flush=True)
+            print(
+                f"Skip binary '{binary}' not in packages/constraints; Can't determine desired version",
+                flush=True,
+            )
             continue
         binary_package_map[binary] = package
 
@@ -80,11 +81,16 @@ def check_available_binary(
 
 
 def remove_local_wheels(
-    index: str, skip_exists: List[str], packages: List[str], wheels_dir: Path,
+    index: str,
+    skip_exists: List[str],
+    packages: List[str],
+    wheels_dir: Path,
 ) -> str:
     """Remove existing wheels if they already exist in the index to avoid syncing."""
     package_map = create_package_map(packages)
-    binary_package_map = {name: package_map[name] for name in skip_exists if name in package_map}
+    binary_package_map = {
+        name: package_map[name] for name in skip_exists if name in package_map
+    }
     print(f"Checking if binaries already exist for packages {binary_package_map}")
     exists = check_existing_packages(index, binary_package_map)
     for binary in exists:

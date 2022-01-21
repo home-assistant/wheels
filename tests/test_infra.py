@@ -199,4 +199,3 @@ def test_remove_local_wheel_preserves_newer(tmppath: Path) -> None:
         "grpcio-1.43.0-cp39-none-any.whl",
         "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl",
     }
-

@@ -41,7 +41,9 @@ from builder.wheel import copy_wheels_from_cache, fix_wheels_name, run_auditwhee
     "--skip-binary", default=":none:", help="List of packages to skip wheels from pypi."
 )
 @click.option(
-    "--skip-exists", default="", help="List of packages to skip upload/rsync if already exist in remote wheels repository."
+    "--skip-exists",
+    default="",
+    help="List of packages to skip upload/rsync if already exist in remote wheels repository.",
 )
 @click.option(
     "--requirement",
@@ -196,7 +198,9 @@ def builder(
             # When --skip-binary and --skip-exists are set a wheel is only built from source once.
             packages = extract_packages(requirement, requirement_diff)
             constraints = parse_requirements(constraint) if constraint else []
-            remove_local_wheels(wheels_index, skip_exists.split(","), packages + constraints, wheels_dir)
+            remove_local_wheels(
+                wheels_index, skip_exists.split(","), packages + constraints, wheels_dir
+            )
 
         if not test:
             run_upload(upload, output, remote)
