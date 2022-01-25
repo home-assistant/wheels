@@ -15,6 +15,7 @@ from builder.infra import (
     check_available_binary,
     create_wheels_folder,
     create_wheels_index,
+    remove_local_wheels,
 )
 from builder.pip import (
     build_wheels_local,
@@ -186,6 +187,17 @@ def builder(
             run_auditwheel(wheels_dir)
 
         fix_wheels_name(wheels_dir)
+
+        if skip_binary != ":none:":
+            # Some wheels that already exist should not be overwritten in case we replace with
+            # a wheel that came from pypi rather than a wheel built from source with extra flags.
+            # When --skip-binary and --skip-exists are set a wheel is only built from source once.
+            packages = extract_packages(requirement, requirement_diff)
+            constraints = parse_requirements(constraint) if constraint else []
+            remove_local_wheels(
+                wheels_index, skip_binary.split(","), packages + constraints, wheels_dir
+            )
+
         if not test:
             run_upload(upload, output, remote)
 

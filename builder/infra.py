@@ -1,7 +1,7 @@
 """Create folder structure for index."""
 from pathlib import Path
 import re
-from typing import List, Set
+from typing import List, Set, Dict
 
 import requests
 
@@ -23,6 +23,29 @@ def create_wheels_index(base_index: str) -> str:
     return f"{base_index}/{alpine_version()}/{build_arch()}/"
 
 
+def create_package_map(packages: List[str]) -> Dict[str, str]:
+    """Create a dictionary from package base name to package and version string."""
+    results = {}
+    for package in packages.copy():
+        find = _RE_REQUIREMENT.match(package)
+        if not find:
+            continue
+        package = find["package"]
+        version = find["version"]
+        results[package] = f"{package}-{version}"
+    return results
+
+
+def check_existing_packages(index: str, package_map: Dict[str, str]) -> Set[str]:
+    """Return the set of package names that already exist in the index."""
+    available_data = requests.get(index, allow_redirects=True).text
+    found: Set[str] = set({})
+    for (binary, package) in package_map.items():
+        if package in available_data:
+            found.add(binary)
+    return found
+
+
 def check_available_binary(
     index: str, skip_binary: str, packages: List[str], constraints: List[str]
 ) -> str:
@@ -31,33 +54,50 @@ def check_available_binary(
         return skip_binary
 
     list_binary = skip_binary.split(",")
-    available_data = requests.get(index, allow_redirects=True).text
 
-    list_needed: Set[str] = set()
+    # Map of package basename to the desired package version
+    package_map = create_package_map(packages + constraints)
+
+    # View of package map limited to packages in --skip-binary
+    binary_package_map = {}
     for binary in list_binary:
-        for package in packages + constraints:
-            if not package.startswith(binary):
-                continue
+        if not (package := package_map.get(binary)):
+            print(
+                f"Skip binary '{binary}' not in packages/constraints; Can't determine desired version",
+                flush=True,
+            )
+            continue
+        binary_package_map[binary] = package
 
-            # Check more details
-            find = _RE_REQUIREMENT.match(package)
-            if not find:
-                raise ValueError(f"package requirement malformed: {package}")
-
-            # Check full name
-            if binary != find["package"]:
-                continue
-
-            # Process packages
-            name = f"{binary}-{find['version']}"
-            if name in available_data:
-                continue
-
-            # Ignore binary
-            print(f"Ignore Binary {package}: {name}", flush=True)
-            list_needed.add(binary)
+    print(f"Checking if binaries already exist for packages {binary_package_map}")
+    list_found: Set[str] = check_existing_packages(index, binary_package_map)
+    print(f"Packages already exist: {list_found}")
+    list_needed = binary_package_map.keys() - list_found
 
     # Generate needed list of skip binary
     if not list_needed:
         return ":none:"
+
+    print(f"Will force binary build for {list_needed}")
     return ",".join(list_needed)
+
+
+def remove_local_wheels(
+    index: str,
+    skip_exists: List[str],
+    packages: List[str],
+    wheels_dir: Path,
+) -> str:
+    """Remove existing wheels if they already exist in the index to avoid syncing."""
+    package_map = create_package_map(packages)
+    binary_package_map = {
+        name: package_map[name] for name in skip_exists if name in package_map
+    }
+    print(f"Checking if binaries already exist for packages {binary_package_map}")
+    exists = check_existing_packages(index, binary_package_map)
+    for binary in exists:
+        package = binary_package_map[binary]
+        print(f"Found existing wheels for {binary}, removing local copy {package}")
+        for wheel in wheels_dir.glob(f"{package}-*.whl"):
+            print(f"Removing local wheel {wheel}")
+            wheel.unlink()
