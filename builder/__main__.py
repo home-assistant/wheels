@@ -132,7 +132,7 @@ def builder(
             # Build every wheel like a single installation
             packages = extract_packages(requirement, requirement_diff)
             constraints = parse_requirements(constraint) if constraint else []
-            skip_binary = check_available_binary(
+            skip_binary_new = check_available_binary(
                 wheels_index,
                 skip_binary,
                 packages,
@@ -145,7 +145,7 @@ def builder(
                         package,
                         wheels_index,
                         wheels_dir,
-                        skip_binary,
+                        skip_binary_new,
                         timeout,
                         alpine_version,
                         constraint,
@@ -161,7 +161,7 @@ def builder(
             temp_requirement = Path("/tmp/wheels_requirement.txt")
             write_requirement(temp_requirement, packages)
             constraints = parse_requirements(constraint) if constraint else []
-            skip_binary = check_available_binary(
+            skip_binary_new = check_available_binary(
                 wheels_index,
                 skip_binary,
                 packages,
@@ -172,7 +172,7 @@ def builder(
                     temp_requirement,
                     wheels_index,
                     wheels_dir,
-                    skip_binary,
+                    skip_binary_new,
                     timeout,
                     alpine_version,
                     constraint,
