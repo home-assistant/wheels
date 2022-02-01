@@ -10,7 +10,7 @@ import requests
 
 def alpine_version() -> str:
     """Return alpine version for index server."""
-    version = Path("/etc/alpine-release").read_text().split(".")
+    version = Path("/etc/alpine-release").read_text(encoding="utf-8").split(".")
 
     return f"alpine-{version[0]}.{version[1]}"
 
