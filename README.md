@@ -1,4 +1,19 @@
-# Home Assistant Wheels builder
+# Home Assistant Musl Wheels builder
+
+https://peps.python.org/pep-0656/
+
+## Platform tags
+
+### Python 3.10 / musllinux_1_2
+
+Build with Alpine 3.16
+Images: ghcr.io/home-assistant/wheels/musllinux_1_2/python3.10
+
+Version of system builds:
+
+- Numpy 1.22
+
+## Misc
 
 ```sh
 
@@ -16,4 +31,4 @@ $ python3 -m builder \
 
 ## Folder structure of index folder:
 
-`/alpine-{version}/{arch}/*`
+`/musllinux/*`

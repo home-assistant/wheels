@@ -1,10 +1,10 @@
-FROM mcr.microsoft.com/vscode/devcontainers/python:0-3.8
+FROM mcr.microsoft.com/vscode/devcontainers/python:0-3.10
 
 WORKDIR /workspace
 
 # Install Python dependencies from requirements.txt if it exists
 COPY requirements.txt requirements_tests.txt /workspace/
-RUN pip install pip==20.2 \
-    && pip install -r requirements.txt \
+RUN \
+    pip install -r requirements.txt \
     && pip3 install -r requirements_tests.txt \
     && pip install tox

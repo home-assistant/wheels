@@ -14,7 +14,7 @@ ARCH_PLAT = {
     "i386": "linux_i686",
     "aarch64": "linux_aarch64",
     "armhf": "linux_armv7l",
-    "armv7": "linux_armv7l",
+    "armv7": "linux_armv6l",
 }
 
 
@@ -36,11 +36,7 @@ def copy_wheels_from_cache(cache_folder: Path, wheels_folder: Path) -> None:
 
 def run_auditwheel(wheels_folder: Path) -> None:
     """Run auditwheel to include shared library."""
-    platform = ARCH_PLAT[build_arch()]
-
     for wheel_file in wheels_folder.glob("*.whl"):
-        if not RE_WHEEL_PLATFORM.match(wheel_file.name):
+        if "musllinux" in wheel_file.name:
             continue
-        run_command(
-            f"auditwheel repair --plat {platform} --no-update-tags -w {wheels_folder} {wheel_file}"
-        )
+        run_command(f"auditwheel repair -w {wheels_folder} {wheel_file}")

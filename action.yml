@@ -46,9 +46,6 @@ inputs:
   skip-binary:
     description: "Skip binaries"
     default: ""
-  audit:
-    description: "Audit wheels"
-    default: false
   wheels-key:
     description: "SSH keys for the wheels host"
     required: false
@@ -123,9 +120,6 @@ runs:
         fi
         if [[ "${{ inputs.test }}" =~ true|True ]]; then
           build+=("--test")
-        fi
-        if [[ "${{ inputs.audit }}" =~ true|True ]]; then
-          build+=("--auditwheel")
         fi
         if [ -n "${{ inputs.skip-binary }}" ]; then
           build+=("--skip-binary ${{ inputs.skip-binary }}")
