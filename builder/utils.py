@@ -8,17 +8,6 @@ from typing import Dict, Optional
 import requests
 
 
-_MAP_PEP_ARCHS = {
-    "amd64": "x86_64",
-    "i386": "i686",
-    "aarch64": "aarch64",
-    "armv7": "armv7l",
-    "armhf": "armv6l",
-}
-
-_MAP_PEP_TAG = {"3.16": "musllinux_1_2"}
-
-
 def alpine_version() -> str:
     """Return alpine version for index server."""
     version = Path("/etc/alpine-release").read_text(encoding="utf-8").split(".")
