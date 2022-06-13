@@ -112,7 +112,7 @@ runs:
         if [ -d "${{ inputs.prebuild-dir }}" ]; then
           build+=("--prebuild-dir ${{ github.workspace }}/${{ inputs.prebuild-dir }}")
         fi
-        if  [[ "${{ inputs.single }}" =~ true|True ]]; then
+        if [[ "${{ inputs.single }}" =~ true|True ]]; then
           build+=("--single")
         fi
         if [[ "${{ inputs.local }}" =~ true|True ]]; then
@@ -126,7 +126,7 @@ runs:
         fi
 
         # Qemu armv6 CPU fix
-        if [ "${{ inputs.arch }}" == "armhf" ]; then
+        if [[ "${{ inputs.arch }}" == "armhf" ]]; then
           docker+=("-e QEMU_CPU=arm1176")
         fi
 

@@ -39,8 +39,7 @@ def run_auditwheel(wheels_folder: Path) -> None:
                 continue
             run_command(f"auditwheel repair -w {temp_dir} {wheel_file}")
 
-        # Fix architecture
-        # Align to Alpine arch / Qemu issues on CI
+        # Copy back wheels & make sure ARCH is correct
         target_arch = _ARCH_PLAT[build_arch()]
         for wheel_file in Path(temp_dir).glob("*.whl"):
             package = _RE_MUSLLINUX_PLATFORM.match(wheel_file.name)
