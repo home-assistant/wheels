@@ -49,8 +49,7 @@ def run_auditwheel(wheels_folder: Path) -> None:
             if package["arch"] == target_arch:
                 shutil.copy(wheel_file, wheels_folder)
             else:
-                fix_name = wheel_file.name.replace(package["arch"], target_arch)
-                shutil.copy(wheel_file, wheels_folder.joinpath(fix_name))
+                raise RuntimeError(f"Wheel have wrong platform {package['arch']}")
 
     # Cleanup linux_ARCH tags
     for wheel_file in wheels_folder.glob("*.whl"):
