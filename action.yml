@@ -125,6 +125,11 @@ runs:
           build+=("--skip-binary ${{ inputs.skip-binary }}")
         fi
 
+        # Qemu armv6 CPU fix
+        if [ "${{ inputs.arch }}" == "armhf" ]; then
+          docker+=("-e QEMU_CPU=arm1176")
+        fi
+
         echo "::set-output name=build::${build[@]}"
         echo "::set-output name=docker::${docker[@]}"
         echo "::set-output name=path::$data_path"
