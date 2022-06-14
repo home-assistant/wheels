@@ -2,17 +2,20 @@ name: "Home Assistant wheels builder"
 description: "Builds and publishes python wheels"
 inputs:
   tag:
-    description: "The tag for the builder that should be used"
-    default: "dev"
+    description: "The musllinux tag for the builder that should be used"
+    required: true
+  abi:
+    description: "CPython ABI that is used"
+    required: true
   arch:
     description: "Build architecture"
     required: true
   apk:
     description: "apk packages that should be installed"
-    default: "build-base"
+    default: ""
   pip:
     description: "pip packages that should be installed"
-    default: "Cython"
+    default: ""
   path:
     description: "The path to be used for the builder"
     default: ""
@@ -63,6 +66,15 @@ runs:
   using: "composite"
   steps:
     - shell: bash
+      id: version
+      run: |
+        input=$(echo "${{ github.action_path }}" | cut -d"/" -f8 )
+        if [[ "${input}" == "master" ]] || [[ -z "${input}" ]]; then
+          input="latest"
+        fi
+        echo "::set-output name=version::${input}"
+
+    - shell: bash
       run: |
         if [[ "${{ inputs.test }}" =~ false|False ]]; then
           # Write Key
@@ -79,7 +91,7 @@ runs:
     - shell: bash
       id: pull
       run: |
-        name="homeassistant/${{ inputs.arch }}-base-python:${{ inputs.tag }}"
+        name="ghcr.io/home-assistant/wheels/${{ inputs.arch }}/${{ inputs.tag }}/${{ inputs.abi }}:${{ steps.version.outputs.version }}"
         docker pull "$name"
         echo "::set-output name=name::$name"
 
@@ -124,6 +136,12 @@ runs:
         if [ -n "${{ inputs.skip-binary }}" ]; then
           build+=("--skip-binary ${{ inputs.skip-binary }}")
         fi
+        if [ -n "${{ inputs.apk }}" ]; then
+          build+=("--apk ${{ inputs.apk }}")
+        fi
+        if [ -n "${{ inputs.pip }}" ]; then
+          build+=("--pip ${{ inputs.pip }}")
+        fi
 
         # Qemu armv6 CPU fix
         if [[ "${{ inputs.arch }}" == "armhf" ]]; then
@@ -140,27 +158,16 @@ runs:
 
     - shell: bash
       run: |
-        echo "Build image"
-        docker build ${{ github.action_path }} \
-          -t wheels-builder \
-          --build-arg BUILD_FROM=${{ steps.pull.outputs.name }} \
-          --build-arg BUILD_ARCH=${{ inputs.arch }}
-
-    - shell: bash
-      run: |
         echo "Create container"
         docker create --name "${{ inputs.name }}" -t \
           --workdir /data \
           ${{ steps.options.outputs.docker }} \
           "wheels-builder" \
-          --apk "${{ inputs.apk }}" \
-          --pip "${{ inputs.pip }}" \
           --index "${{ inputs.wheels-index }}" \
           --upload rsync \
           --remote "${{ inputs.wheels-user }}@${{ inputs.wheels-host }}:/opt/wheels" \
-          --arch "${{ inputs.arch }}" \
           --tag "${{ inputs.tag }}" \
-          ${{ steps.options.outputs.build }}
+          ${{ steps.pull.outputs.name }}
 
     - shell: bash
       run: |

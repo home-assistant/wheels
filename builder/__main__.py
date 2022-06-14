@@ -34,7 +34,6 @@ from builder.wheel import copy_wheels_from_cache, fix_wheels_name, run_auditwhee
 @click.command("builder")
 @click.option("--apk", default="build-base", help="APKs they are needed to build this.")
 @click.option("--tag", default="", help="The tag used.")
-@click.option("--arch", default="amd64", help="The architecture we build for.")
 @click.option("--pip", default="Cython", help="PiPy modules needed to build this.")
 @click.option("--index", required=True, help="Index URL of remote wheels repository.")
 @click.option(
@@ -100,7 +99,6 @@ def builder(
     test: bool,
     upload: str,
     tag: str,
-    arch: str,
     remote: str,
     timeout: int,
 ):

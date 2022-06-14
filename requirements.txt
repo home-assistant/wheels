@@ -1,8 +1,7 @@
-auditwheel==5.1.2
 awesomeversion>=21.2.2
 click==8.1.3
 click-pathlib==2020.3.13.0
 requests==2.28.0
 wheel==0.37.1
 setuptools==62.3.3
-pip==20.2.4
+pip==22.1.2
