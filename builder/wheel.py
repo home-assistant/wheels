@@ -21,8 +21,6 @@ _ARCH_PLAT = {
     "armv7": "armv6l",
 }
 
-_ALPINE_MUSL_TAG = {"3.16": "musllinux_1_2"}
-
 
 def copy_wheels_from_cache(cache_folder: Path, wheels_folder: Path) -> None:
     """Preserve wheels from cache on timeout error."""
@@ -35,23 +33,22 @@ def run_auditwheel(wheels_folder: Path) -> None:
     """Run auditwheel to include shared library."""
     with TemporaryDirectory() as temp_dir:
         for wheel_file in wheels_folder.glob("*.whl"):
-            if not _RE_LINUX_PLATFORM.match(wheel_file.name):
+            if not _RE_LINUX_PLATFORM.search(wheel_file.name):
                 continue
             run_command(f"auditwheel repair -w {temp_dir} {wheel_file}")
 
         # Copy back wheels & make sure ARCH is correct
         target_arch = _ARCH_PLAT[build_arch()]
         for wheel_file in Path(temp_dir).glob("*.whl"):
-            package = _RE_MUSLLINUX_PLATFORM.match(wheel_file.name)
+            package = _RE_MUSLLINUX_PLATFORM.search(wheel_file.name)
             if not package:
                 raise RuntimeError(f"Wheel format error {wheel_file}")
-            if package["arch"] == target_arch:
-                shutil.copy(wheel_file, wheels_folder)
-            else:
+            if package["arch"] != target_arch:
                 raise RuntimeError(f"Wheel have wrong platform {package['arch']}")
+            shutil.copy(wheel_file, wheels_folder)
 
     # Cleanup linux_ARCH tags
     for wheel_file in wheels_folder.glob("*.whl"):
-        if not _RE_LINUX_PLATFORM.match(wheel_file.name):
+        if not _RE_LINUX_PLATFORM.search(wheel_file.name):
             continue
         wheel_file.unlink()
