@@ -6,7 +6,6 @@ import sys
 from tempfile import TemporaryDirectory
 from typing import Optional
 
-from awesomeversion import AwesomeVersion
 import click
 import click_pathlib
 
@@ -28,7 +27,7 @@ from builder.pip import (
 )
 from builder.upload import run_upload
 from builder.utils import check_url
-from builder.wheel import copy_wheels_from_cache, fix_wheels_name, run_auditwheel
+from builder.wheel import copy_wheels_from_cache, run_auditwheel
 
 
 @click.command("builder")
@@ -175,10 +174,7 @@ def builder(
                 exit_code = 80
                 copy_wheels_from_cache(Path("/root/.cache/pip/wheels"), wheels_dir)
 
-        if auditwheel:
-            run_auditwheel(wheels_dir)
-
-        fix_wheels_name(wheels_dir)
+        run_auditwheel(wheels_dir)
 
         if skip_binary != ":none:":
             # Some wheels that already exist should not be overwritten in case we replace with

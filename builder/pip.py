@@ -2,7 +2,6 @@
 import os
 from pathlib import Path
 from typing import List, Optional
-from awesomeversion import AwesomeVersion
 
 from .utils import run_command
 

@@ -5,9 +5,9 @@ from typing import List, Set, Dict, Final
 
 import requests
 
-from .utils import alpine_version, build_arch
-
-_RE_REQUIREMENT: Final = re.compile(r"(?P<package>.+)(?:==|>|<|<=|>=|~=)(?P<version>.+)")
+_RE_REQUIREMENT: Final = re.compile(
+    r"(?P<package>.+)(?:==|>|<|<=|>=|~=)(?P<version>.+)"
+)
 _MUSLLINUX: Final = "musllinux"
 
 
