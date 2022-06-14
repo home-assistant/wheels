@@ -4,6 +4,7 @@ FROM ${BUILD_FROM}
 ARG \
     BUILD_ARCH \
     CPYTHON_ABI \
+    QEMU_CPU \
     AUDITWHEEL_VERSION=5.1.2 \
 
 WORKDIR /usr/src

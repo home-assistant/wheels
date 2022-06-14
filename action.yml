@@ -70,7 +70,7 @@ runs:
       run: |
         input=$(echo "${{ github.action_path }}" | cut -d"/" -f8 )
         if [[ "${input}" == "master" ]] || [[ -z "${input}" ]]; then
-          input="latest"
+          input="dev"
         fi
         echo "::set-output name=version::${input}"
 
