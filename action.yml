@@ -166,7 +166,6 @@ runs:
           --index "${{ inputs.wheels-index }}" \
           --upload rsync \
           --remote "${{ inputs.wheels-user }}@${{ inputs.wheels-host }}:/opt/wheels" \
-          --tag "${{ inputs.tag }}" \
           ${{ steps.pull.outputs.name }}
 
     - shell: bash

@@ -32,9 +32,8 @@ from builder.wheel import copy_wheels_from_cache, fix_wheels_name, run_auditwhee
 
 
 @click.command("builder")
-@click.option("--apk", default="build-base", help="APKs they are needed to build this.")
-@click.option("--tag", default="", help="The tag used.")
-@click.option("--pip", default="Cython", help="PiPy modules needed to build this.")
+@click.option("--apk", default="", help="APKs they are needed to build this.")
+@click.option("--pip", default="", help="PiPy modules needed to build this.")
 @click.option("--index", required=True, help="Index URL of remote wheels repository.")
 @click.option(
     "--skip-binary", default=":none:", help="List of packages to skip wheels from pypi."
@@ -98,15 +97,12 @@ def builder(
     local: bool,
     test: bool,
     upload: str,
-    tag: str,
     remote: str,
     timeout: int,
 ):
     """Build wheels precompiled for Home Assistant container."""
     install_apks(apk)
     check_url(index)
-
-    alpine_version = AwesomeVersion(tag.split("alpine")[-1])
 
     exit_code = 0
     with TemporaryDirectory() as temp_dir:
@@ -121,7 +117,7 @@ def builder(
 
         if local:
             # Build wheels in a local folder/src
-            build_wheels_local(wheels_index, wheels_dir, alpine_version)
+            build_wheels_local(wheels_index, wheels_dir)
         elif prebuild_dir:
             # Prepare allready builded wheels for upload
             for whl_file in prebuild_dir.glob("*.whl"):
@@ -145,7 +141,6 @@ def builder(
                         wheels_dir,
                         skip_binary_new,
                         timeout,
-                        alpine_version,
                         constraint,
                     )
                 except CalledProcessError:
@@ -172,7 +167,6 @@ def builder(
                     wheels_dir,
                     skip_binary_new,
                     timeout,
-                    alpine_version,
                     constraint,
                 )
             except CalledProcessError:
