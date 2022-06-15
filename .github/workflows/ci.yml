@@ -38,11 +38,10 @@ jobs:
       - name: Check out code from GitHub
         uses: actions/checkout@v3.0.2
 
-      - name: Run Hadolint
-        run: |
-          docker run --rm -i \
-            -v $(pwd)/.hadolint.yaml:/.hadolint.yaml:ro \
-            hadolint/hadolint:${{ env.HADOLINT_VERSION }} < Dockerfile
+      - name: Lint Dockerfile
+        uses: hadolint/hadolint-action@master
+        with:
+          dockerfile: "Dockerfile"
 
   test:
     name: Test wheels ${{ matrix.arch }}-${{ matrix.abi }}-${{ matrix.tag }}
