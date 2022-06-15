@@ -74,6 +74,12 @@ jobs:
             --build-arg "CPYTHON_ABI=${{ matrix.abi }}" \
             .
 
+      - name: Signing image
+        uses: home-assistant/actions/helpers/codenotary@master
+        with:
+          source: docker://${{ steps.info.outputs.name }}:${{ steps.info.outputs.version }}
+          token: ${{ secrets.CAS_TOKEN }}
+
       - shell: bash
         run: |
           docker push ${{ steps.info.outputs.name }}:${{ steps.info.outputs.version }}
