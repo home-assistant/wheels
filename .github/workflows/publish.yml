@@ -31,6 +31,8 @@ jobs:
       - shell: bash
         id: info
         run: |
+          declare -a docker
+
           name="ghcr.io/home-assistant/wheels/${{ matrix.arch }}/${{ matrix.tag }}/${{ matrix.abi }}"
 
           version=$(echo "${{ github.ref }}" | awk -F"/" '{print $NF}' )
@@ -43,13 +45,13 @@ jobs:
 
           cpu=
           if [ "${{ matrix.arch }}" = "armhf" ]; then
-            cpu=arm1176
+            docker+=("--build-arg QEMU_CPU=arm1176")
           fi
 
           echo "::set-output name=name::$name"
           echo "::set-output name=version::$version"
           echo "::set-output name=base::$base"
-          echo "::set-output name=cpu::$cpu"
+          echo "::set-output name=docker::${docker[@]}"
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2.0.0
@@ -66,9 +68,9 @@ jobs:
         run: |
           docker build \
             -t ${{ steps.info.outputs.name }}:${{ steps.info.outputs.version }} \
+            ${{ steps.info.outputs.docker }} \
             --build-arg "BUILD_FROM=${{ steps.info.outputs.base }}" \
             --build-arg "BUILD_ARCH=${{ matrix.arch }}" \
-            --build-arg "QEMU_CPU=${{ steps.info.outputs.cpu }}" \
             --build-arg "CPYTHON_ABI=${{ matrix.abi }}" \
             .
 
