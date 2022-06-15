@@ -34,18 +34,18 @@ RUN \
     && rm -f *.txt
 
 # Install auditwheel
-COPY 0001-Support-musllinux-armv6l.patch .
+COPY 0001-Support-musllinux-armv6l.patch /usr/src/
 RUN \
     set -x \
     && git clone --depth 1 -b ${AUDITWHEEL_VERSION} \
         https://github.com/pypa/auditwheel \
     && cd auditwheel \
     && git apply ../0001-Support-musllinux-armv6l.patch \
-    && pip install . \
+    && pip install --no-cache-dir . \
     && rm -rf /usr/src/*
 
 # Install builder
-COPY . builder/
+COPY . /usr/src/builder/
 RUN \
     set -x \
     && pip3 install --no-cache-dir builder/ \
