@@ -179,7 +179,7 @@ runs:
           --index "${{ inputs.wheels-index }}" \
           --upload rsync \
           --remote "${{ inputs.wheels-user }}@${{ inputs.wheels-host }}:/opt/wheels" \
-          ${{ steps.options.outputs.build }} \
+          ${{ steps.options.outputs.build }}
 
     - shell: bash
       run: |
