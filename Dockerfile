@@ -53,7 +53,7 @@ RUN \
 COPY . /usr/src/builder/
 RUN \
     set -x \
-    && pip3 install --no-cache-dir builder/ \
+    && pip3 install --no-cache-dir /usr/src/builder/ \
     && rm -rf /usr/src/*
 
 # Runtime
