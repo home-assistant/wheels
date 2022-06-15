@@ -25,9 +25,6 @@ jobs:
       - name: Check out code from GitHub
         uses: actions/checkout@v3.0.2
 
-      - name: Prepare requirements
-        run: cat requirements.txt requirements_${{ matrix.abi }}.txt > requirements_all.txt
-
       - name: Build wheels
         uses: ./
         with:
@@ -35,5 +32,4 @@ jobs:
           tag: ${{ matrix.tag }}
           arch: ${{ matrix.arch }}
           wheels-key: ${{ secrets.WHEELS_KEY }}
-          apk: "libffi-dev;openssl-dev"
-          requirements: "requirements_all.txt"
+          requirements: "requirements.txt"
