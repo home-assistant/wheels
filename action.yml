@@ -147,7 +147,7 @@ runs:
           build+=("--test")
         fi
         if [ -n "${{ inputs.skip-binary }}" ]; then
-          build+=("--skip-binary ${{ inputs.skip-binary }}")
+          build+=("--skip-binary \"${{ inputs.skip-binary }}\"")
         fi
         if [ -n "${{ inputs.apk }}" ]; then
           build+=("--apk \"${{ inputs.apk }}\"")
