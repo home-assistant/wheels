@@ -39,7 +39,6 @@ jobs:
 
           base="ghcr.io/home-assistant/${{ matrix.arch }}-base-python:${{ matrix.base }}"
 
-          cpu=
           if [ "${{ matrix.arch }}" = "armhf" ]; then
             docker+=("--build-arg QEMU_CPU=arm1176")
           fi
