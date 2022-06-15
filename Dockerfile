@@ -31,7 +31,7 @@ RUN \
     && apk add --no-cache --virtual .build-dependencies \
         libffi-dev \
     && if [ "${BUILD_ARCH}" = "i386" ]; then \
-        export NPY_DISABLE_SVML=1;
+        export NPY_DISABLE_SVML=1; \
     fi \
     && pip3 install --no-cache-dir \
         -r /usr/src/requirements.txt \
