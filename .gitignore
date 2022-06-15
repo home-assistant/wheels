@@ -88,6 +88,9 @@ ENV/
 # Rope project settings
 .ropeproject
 
+# pytest
+.pytest_cache/
+
 # pylint
 .pylint.d/
 

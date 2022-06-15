@@ -3,28 +3,23 @@ from contextlib import suppress
 from pathlib import Path
 import re
 import shutil
+from tempfile import TemporaryDirectory
 
 from .utils import run_command, build_arch
 
-RE_WHEEL_PLATFORM = re.compile(r"^(?P<name>.*-)cp\d{2}m?-linux_\w+\.whl$")
 
+_RE_LINUX_PLATFORM = re.compile(r"-linux_\w+\.whl$")
+_RE_MUSLLINUX_PLATFORM = re.compile(
+    r"-musllinux_(?P<major>\d)_(?P<minor>\d)_(?P<arch>\w+)\.whl$"
+)
 
-ARCH_PLAT = {
-    "amd64": "linux_x86_64",
-    "i386": "linux_i686",
-    "aarch64": "linux_aarch64",
-    "armhf": "linux_armv7l",
-    "armv7": "linux_armv7l",
+_ARCH_PLAT = {
+    "amd64": "x86_64",
+    "i386": "i686",
+    "aarch64": "aarch64",
+    "armhf": "armv6l",
+    "armv7": "armv7l",
 }
-
-
-def fix_wheels_name(wheels_folder: Path) -> None:
-    """Remove platform tag from filename."""
-    for package in wheels_folder.glob("*.whl"):
-        match = RE_WHEEL_PLATFORM.match(package.name)
-        if not match:
-            continue
-        package.rename(Path(package.parent, f"{match.group('name')}none-any.whl"))
 
 
 def copy_wheels_from_cache(cache_folder: Path, wheels_folder: Path) -> None:
@@ -36,11 +31,24 @@ def copy_wheels_from_cache(cache_folder: Path, wheels_folder: Path) -> None:
 
 def run_auditwheel(wheels_folder: Path) -> None:
     """Run auditwheel to include shared library."""
-    platform = ARCH_PLAT[build_arch()]
+    with TemporaryDirectory() as temp_dir:
+        for wheel_file in wheels_folder.glob("*.whl"):
+            if not _RE_LINUX_PLATFORM.search(wheel_file.name):
+                continue
+            run_command(f"auditwheel repair -w {temp_dir} {wheel_file}")
 
+        # Copy back wheels & make sure ARCH is correct
+        target_arch = _ARCH_PLAT[build_arch()]
+        for wheel_file in Path(temp_dir).glob("*.whl"):
+            package = _RE_MUSLLINUX_PLATFORM.search(wheel_file.name)
+            if not package:
+                raise RuntimeError(f"Wheel format error {wheel_file}")
+            if package["arch"] != target_arch:
+                raise RuntimeError(f"Wheel have wrong platform {package['arch']}")
+            shutil.copy(wheel_file, wheels_folder)
+
+    # Cleanup linux_ARCH tags
     for wheel_file in wheels_folder.glob("*.whl"):
-        if not RE_WHEEL_PLATFORM.match(wheel_file.name):
+        if not _RE_LINUX_PLATFORM.search(wheel_file.name):
             continue
-        run_command(
-            f"auditwheel repair --plat {platform} --no-update-tags -w {wheels_folder} {wheel_file}"
-        )
+        wheel_file.unlink()

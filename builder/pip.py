@@ -2,7 +2,6 @@
 import os
 from pathlib import Path
 from typing import List, Optional
-from awesomeversion import AwesomeVersion
 
 from .utils import run_command
 
@@ -13,7 +12,6 @@ def build_wheels_package(
     output: Path,
     skip_binary: str,
     timeout: int,
-    alpine: AwesomeVersion,
     constraint: Optional[Path] = None,
 ) -> None:
     """Build wheels from a requirements file into output."""
@@ -22,9 +20,6 @@ def build_wheels_package(
     # Modify speed
     build_env = os.environ.copy()
     build_env["MAKEFLAGS"] = f"-j{cpu}"
-
-    if alpine < "3.13":
-        build_env["CRYPTOGRAPHY_DONT_BUILD_RUST"] = "1"
 
     # Add constraint
     constraint_cmd = f"--constraint {constraint}" if constraint else ""
@@ -42,7 +37,6 @@ def build_wheels_requirement(
     output: Path,
     skip_binary: str,
     timeout: int,
-    alpine: AwesomeVersion,
     constraint: Optional[Path] = None,
 ) -> None:
     """Build wheels from a requirements file into output."""
@@ -51,9 +45,6 @@ def build_wheels_requirement(
     # Modify speed
     build_env = os.environ.copy()
     build_env["MAKEFLAGS"] = f"-j{cpu}"
-
-    if alpine < "3.13":
-        build_env["CRYPTOGRAPHY_DONT_BUILD_RUST"] = "1"
 
     # Add constraint
     constraint_cmd = f"--constraint {constraint}" if constraint else ""
@@ -68,7 +59,6 @@ def build_wheels_requirement(
 def build_wheels_local(
     index: str,
     output: Path,
-    alpine: AwesomeVersion,
 ) -> None:
     """Build wheels from a requirements file into output."""
     cpu = os.cpu_count() or 4
@@ -76,9 +66,6 @@ def build_wheels_local(
     # Modify speed
     build_env = os.environ.copy()
     build_env["MAKEFLAGS"] = f"-j{cpu}"
-
-    if alpine < "3.13":
-        build_env["CRYPTOGRAPHY_DONT_BUILD_RUST"] = "1"
 
     run_command(
         f"pip3 wheel --disable-pip-version-check --progress-bar off --no-clean --wheel-dir {output} --find-links {index} .",

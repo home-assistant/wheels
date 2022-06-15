@@ -8,11 +8,11 @@ from typing import Dict, Optional
 import requests
 
 
-def alpine_version() -> str:
+def alpine_version() -> (str, str):
     """Return alpine version for index server."""
     version = Path("/etc/alpine-release").read_text(encoding="utf-8").split(".")
 
-    return f"alpine-{version[0]}.{version[1]}"
+    return (version[0], version[1])
 
 
 def build_arch() -> str:

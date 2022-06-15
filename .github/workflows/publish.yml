@@ -1,0 +1,84 @@
+name: "Publish"
+
+on:
+  release:
+    types: [published]
+  push:
+    branches:
+      - master
+
+jobs:
+  publish:
+    name: Publish builder
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: False
+      matrix:
+        abi: ["cp310"]
+        tag: ["musllinux_1_2"]
+        arch: ["aarch64", "armhf", "armv7", "amd64", "i386"]
+        include:
+          - abi: cp310
+            tag: musllinux_1_2
+            base: 3.10-alpine3.16
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+
+      - shell: bash
+        id: info
+        run: |
+          declare -a docker
+
+          name="ghcr.io/home-assistant/wheels/${{ matrix.arch }}/${{ matrix.tag }}/${{ matrix.abi }}"
+
+          version=$(echo "${{ github.ref }}" | awk -F"/" '{print $NF}' )
+          if [ "${version}" = "master" ]; then
+            version=dev
+          fi
+
+          base="ghcr.io/home-assistant/${{ matrix.arch }}-base-python:${{ matrix.base }}"
+
+          if [ "${{ matrix.arch }}" = "armhf" ]; then
+            docker+=("--build-arg QEMU_CPU=arm1176")
+          fi
+
+          if docker pull "$name:dev" > /dev/null 2>&1; then
+            docker+=("--cache-from $name:dev")
+          fi
+
+          echo "::set-output name=name::$name"
+          echo "::set-output name=version::$version"
+          echo "::set-output name=base::$base"
+          echo "::set-output name=docker::${docker[@]}"
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2.0.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - shell: bash
+        run: |
+          docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
+      - shell: bash
+        run: |
+          docker build \
+            -t ${{ steps.info.outputs.name }}:${{ steps.info.outputs.version }} \
+            ${{ steps.info.outputs.docker }} \
+            --build-arg "BUILD_FROM=${{ steps.info.outputs.base }}" \
+            --build-arg "BUILD_ARCH=${{ matrix.arch }}" \
+            --build-arg "CPYTHON_ABI=${{ matrix.abi }}" \
+            .
+
+      - name: Signing image
+        uses: home-assistant/actions/helpers/codenotary@master
+        with:
+          source: docker://${{ steps.info.outputs.name }}:${{ steps.info.outputs.version }}
+          token: ${{ secrets.CAS_TOKEN }}
+
+      - shell: bash
+        run: |
+          docker push ${{ steps.info.outputs.name }}:${{ steps.info.outputs.version }}

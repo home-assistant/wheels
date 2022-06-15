@@ -9,9 +9,7 @@ on:
       - master
 
 env:
-  PYTHON_VERSION: 3.8
-  HADOLINT_VERSION: "v1.16.3"
-  VIRTUALENV_PIP: "20.2"
+  PYTHON_VERSION: "3.10"
 
 jobs:
   tox:
@@ -39,19 +37,19 @@ jobs:
       - name: Check out code from GitHub
         uses: actions/checkout@v3.0.2
 
-      - name: Run Hadolint
-        run: |
-          docker run --rm -i \
-            -v $(pwd)/.hadolint.yaml:/.hadolint.yaml:ro \
-            hadolint/hadolint:${{ env.HADOLINT_VERSION }} < Dockerfile
+      - name: Lint Dockerfile
+        uses: hadolint/hadolint-action@v2.1.0
+        with:
+          dockerfile: "Dockerfile"
+          failure-threshold: warning
 
   test:
-    name: Test wheels ${{ matrix.arch }}-python${{ matrix.python }}-alpine${{ matrix.alpine }}
+    name: Test wheels ${{ matrix.arch }}-${{ matrix.abi }}-${{ matrix.tag }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: ["3.8", "3.9"]
-        alpine: ["3.11", "3.12", "3.13"]
+        abi: ["cp310"]
+        tag: ["musllinux_1_2"]
         arch: ["aarch64", "armhf", "armv7", "amd64", "i386"]
 
     steps:
@@ -70,10 +68,10 @@ jobs:
       - name: Build wheels
         uses: ./
         with:
-          tag: ${{ matrix.python }}-alpine${{ matrix.alpine }}
+          abi: ${{ matrix.abi }}
+          tag: ${{ matrix.tag }}
           arch: ${{ matrix.arch }}
-          wheels-host: wheels.hass.io
-          apk: "build-base;libffi-dev;openssl-dev"
+          apk: "libffi-dev;openssl-dev"
           skip-binary: aiohttp
           env-file: True
           test: True

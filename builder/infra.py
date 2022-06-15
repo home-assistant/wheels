@@ -1,18 +1,19 @@
 """Create folder structure for index."""
 from pathlib import Path
 import re
-from typing import List, Set, Dict
+from typing import List, Set, Dict, Final
 
 import requests
 
-from .utils import alpine_version, build_arch
-
-_RE_REQUIREMENT = re.compile(r"(?P<package>.+)(?:==|>|<|<=|>=|~=)(?P<version>.+)")
+_RE_REQUIREMENT: Final = re.compile(
+    r"(?P<package>.+)(?:==|>|<|<=|>=|~=)(?P<version>.+)"
+)
+_MUSLLINUX: Final = "musllinux"
 
 
 def create_wheels_folder(base_folder: Path) -> Path:
     """Create index structure."""
-    wheels_dir = Path(base_folder, alpine_version(), build_arch())
+    wheels_dir = Path(base_folder, _MUSLLINUX)
 
     wheels_dir.mkdir(parents=True, exist_ok=True)
     return wheels_dir
@@ -20,7 +21,7 @@ def create_wheels_folder(base_folder: Path) -> Path:
 
 def create_wheels_index(base_index: str) -> str:
     """Create wheels specific URL."""
-    return f"{base_index}/{alpine_version()}/{build_arch()}/"
+    return f"{base_index}/{_MUSLLINUX}/"
 
 
 def create_package_map(packages: List[str]) -> Dict[str, str]:

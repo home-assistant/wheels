@@ -6,7 +6,6 @@ import sys
 from tempfile import TemporaryDirectory
 from typing import Optional
 
-from awesomeversion import AwesomeVersion
 import click
 import click_pathlib
 
@@ -28,14 +27,12 @@ from builder.pip import (
 )
 from builder.upload import run_upload
 from builder.utils import check_url
-from builder.wheel import copy_wheels_from_cache, fix_wheels_name, run_auditwheel
+from builder.wheel import copy_wheels_from_cache, run_auditwheel
 
 
 @click.command("builder")
-@click.option("--apk", default="build-base", help="APKs they are needed to build this.")
-@click.option("--tag", default="", help="The tag used.")
-@click.option("--arch", default="amd64", help="The architecture we build for.")
-@click.option("--pip", default="Cython", help="PiPy modules needed to build this.")
+@click.option("--apk", type=str, help="APKs they are needed to build this.")
+@click.option("--pip", type=str, help="PiPy modules needed to build this.")
 @click.option("--index", required=True, help="Index URL of remote wheels repository.")
 @click.option(
     "--skip-binary", default=":none:", help="List of packages to skip wheels from pypi."
@@ -67,12 +64,6 @@ from builder.wheel import copy_wheels_from_cache, fix_wheels_name, run_auditwhee
     help="Install every package as single requirement.",
 )
 @click.option(
-    "--auditwheel",
-    is_flag=True,
-    default=False,
-    help="Use auditwheel to include dynamic linked library.",
-)
-@click.option(
     "--local", is_flag=True, default=False, help="Build wheel from local folder setup."
 )
 @click.option(
@@ -86,8 +77,8 @@ from builder.wheel import copy_wheels_from_cache, fix_wheels_name, run_auditwhee
     "--timeout", default=345, type=int, help="Max runtime for pip before abort."
 )
 def builder(
-    apk: str,
-    pip: str,
+    apk: Optional[str],
+    pip: Optional[str],
     index: str,
     skip_binary: str,
     requirement: Optional[Path],
@@ -95,35 +86,32 @@ def builder(
     constraint: Optional[Path],
     prebuild_dir: Optional[Path],
     single: bool,
-    auditwheel: bool,
     local: bool,
     test: bool,
     upload: str,
-    tag: str,
-    arch: str,
     remote: str,
     timeout: int,
 ):
     """Build wheels precompiled for Home Assistant container."""
-    install_apks(apk)
     check_url(index)
-
-    alpine_version = AwesomeVersion(tag.split("alpine")[-1])
 
     exit_code = 0
     with TemporaryDirectory() as temp_dir:
         output = Path(temp_dir)
+        timeout = timeout * 60
 
         wheels_dir = create_wheels_folder(output)
         wheels_index = create_wheels_index(index)
 
         # Setup build helper
-        install_pips(wheels_index, pip)
-        timeout = timeout * 60
+        if apk:
+            install_apks(apk)
+        if pip:
+            install_pips(wheels_index, pip)
 
         if local:
             # Build wheels in a local folder/src
-            build_wheels_local(wheels_index, wheels_dir, alpine_version)
+            build_wheels_local(wheels_index, wheels_dir)
         elif prebuild_dir:
             # Prepare allready builded wheels for upload
             for whl_file in prebuild_dir.glob("*.whl"):
@@ -147,7 +135,6 @@ def builder(
                         wheels_dir,
                         skip_binary_new,
                         timeout,
-                        alpine_version,
                         constraint,
                     )
                 except CalledProcessError:
@@ -174,7 +161,6 @@ def builder(
                     wheels_dir,
                     skip_binary_new,
                     timeout,
-                    alpine_version,
                     constraint,
                 )
             except CalledProcessError:
@@ -183,10 +169,7 @@ def builder(
                 exit_code = 80
                 copy_wheels_from_cache(Path("/root/.cache/pip/wheels"), wheels_dir)
 
-        if auditwheel:
-            run_auditwheel(wheels_dir)
-
-        fix_wheels_name(wheels_dir)
+        run_auditwheel(wheels_dir)
 
         if skip_binary != ":none:":
             # Some wheels that already exist should not be overwritten in case we replace with
