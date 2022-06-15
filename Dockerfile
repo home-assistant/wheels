@@ -12,7 +12,7 @@ WORKDIR /usr/src
 # Install requirements
 COPY \
     requirements.txt \
-    requirements_${CPYTHON_ABI} \
+    requirements_${CPYTHON_ABI}.txt \
     /usr/src/
 RUN \
     set -x \
