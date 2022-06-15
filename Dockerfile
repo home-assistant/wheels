@@ -29,9 +29,9 @@ RUN \
         cargo \
     && pip3 install --no-cache-dir --find-links \
         "https://wheels.home-assistant.io/musllinux/" \
-        -r requirements.txt \
-        -r requirements_${CPYTHON_ABI}.txt \
-    && rm -f *.txt
+        -r /usr/src/requirements.txt \
+        -r /usr/src/requirements_${CPYTHON_ABI}.txt \
+    && rm -rf /usr/src/*
 
 # Install auditwheel
 COPY 0001-Support-musllinux-armv6l.patch /usr/src/
@@ -49,7 +49,7 @@ COPY . /usr/src/builder/
 RUN \
     set -x \
     && pip3 install --no-cache-dir builder/ \
-    && rm -fr builder
+    && rm -rf /usr/src/*
 
 # Runtime
 WORKDIR /data
