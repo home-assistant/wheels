@@ -10,7 +10,10 @@ ARG \
 WORKDIR /usr/src
 
 # Install requirements
-COPY requirements.txt requirements_${CPYTHON_ABI} .
+COPY \
+    requirements.txt \
+    requirements_${CPYTHON_ABI} \
+    /usr/src/
 RUN \
     set -x \
     && apk add --no-cache \
@@ -39,7 +42,7 @@ RUN \
     && cd auditwheel \
     && git apply ../0001-Support-musllinux-armv6l.patch \
     && pip install . \
-    && rm -rf ../*
+    && rm -rf /usr/src/*
 
 # Install builder
 COPY . builder/
