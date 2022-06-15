@@ -64,12 +64,6 @@ from builder.wheel import copy_wheels_from_cache, run_auditwheel
     help="Install every package as single requirement.",
 )
 @click.option(
-    "--auditwheel",
-    is_flag=True,
-    default=False,
-    help="Use auditwheel to include dynamic linked library.",
-)
-@click.option(
     "--local", is_flag=True, default=False, help="Build wheel from local folder setup."
 )
 @click.option(
