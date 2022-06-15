@@ -27,9 +27,9 @@ RUN \
         autoconf \
         automake \
         cargo \
+        libffi \
     && apk add --no-cache --virtual .build-dependencies \
         libffi-dev \
-        openssl-dev \
     && pip3 install --no-cache-dir --find-links \
         "https://wheels.home-assistant.io/musllinux/" \
         -r /usr/src/requirements.txt \
