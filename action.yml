@@ -175,7 +175,7 @@ runs:
         docker create --name "${{ inputs.name }}" -t \
           --workdir /data \
           ${{ steps.options.outputs.docker }} \
-          ${{ steps.pull.outputs.name }}
+          ${{ steps.pull.outputs.name }} \
           --index "${{ inputs.wheels-index }}" \
           --upload rsync \
           --remote "${{ inputs.wheels-user }}@${{ inputs.wheels-host }}:/opt/wheels" \
