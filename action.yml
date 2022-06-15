@@ -150,10 +150,10 @@ runs:
           build+=("--skip-binary ${{ inputs.skip-binary }}")
         fi
         if [ -n "${{ inputs.apk }}" ]; then
-          build+=("--apk ${{ inputs.apk }}")
+          build+=("--apk \"${{ inputs.apk }}\"")
         fi
         if [ -n "${{ inputs.pip }}" ]; then
-          build+=("--pip ${{ inputs.pip }}")
+          build+=("--pip \"${{ inputs.pip }}\"")
         fi
 
         # Qemu armv6 CPU fix
