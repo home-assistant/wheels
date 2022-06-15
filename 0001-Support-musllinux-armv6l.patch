@@ -1,12 +1,12 @@
-From 2dfa9c2eaebb2a8107c8baf9b6a9ec6f9ec0b0a8 Mon Sep 17 00:00:00 2001
+From 28c643373935846303a96d1f06638344776fb443 Mon Sep 17 00:00:00 2001
 From: Pascal Vizeli <pvizeli@syshack.ch>
-Date: Mon, 13 Jun 2022 14:59:28 +0000
-Subject: [PATCH] Support musllinux armv6l
+Date: Wed, 15 Jun 2022 12:48:56 +0000
+Subject: [PATCH 1/1] Support musllinux armv6l
 
 ---
  src/auditwheel/policy/__init__.py           | 1 +
- src/auditwheel/policy/musllinux-policy.json | 5 +++++
- 2 files changed, 6 insertions(+)
+ src/auditwheel/policy/musllinux-policy.json | 4 ++++
+ 2 files changed, 5 insertions(+)
 
 diff --git a/src/auditwheel/policy/__init__.py b/src/auditwheel/policy/__init__.py
 index 19ff9eb..cdc6ecd 100644
@@ -21,10 +21,10 @@ index 19ff9eb..cdc6ecd 100644
          }
      }
 diff --git a/src/auditwheel/policy/musllinux-policy.json b/src/auditwheel/policy/musllinux-policy.json
-index b103099..f261377 100644
+index b103099..9365636 100644
 --- a/src/auditwheel/policy/musllinux-policy.json
 +++ b/src/auditwheel/policy/musllinux-policy.json
-@@ -20,9 +20,12 @@
+@@ -20,6 +20,8 @@
        },
        "s390x": {
        },
@@ -33,7 +33,7 @@ index b103099..f261377 100644
        "armv7l": {
        }
      },
-@@ -41,6 +44,8 @@
+@@ -41,6 +43,8 @@
        },
        "s390x": {
        },
@@ -42,6 +42,6 @@ index b103099..f261377 100644
        "armv7l": {
        }
      },
---
+-- 
 2.30.2
 
