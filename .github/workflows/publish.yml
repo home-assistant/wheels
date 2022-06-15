@@ -65,7 +65,8 @@ jobs:
             --build-arg "BUILD_FROM=${{ steps.info.outputs.base }}" \
             --build-arg "BUILD_ARCH=${{ matrix.arch }}" \
             --build-arg "QEMU_CPU=${{ steps.info.outputs.cpu }}" \
-            --build-arg "CPYTHON_ABI=${{ matrix.abi }}"
+            --build-arg "CPYTHON_ABI=${{ matrix.abi }}" \
+            .
 
       - shell: bash
         run: |
