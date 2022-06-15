@@ -31,8 +31,8 @@ from builder.wheel import copy_wheels_from_cache, run_auditwheel
 
 
 @click.command("builder")
-@click.option("--apk", default="", help="APKs they are needed to build this.")
-@click.option("--pip", default="", help="PiPy modules needed to build this.")
+@click.option("--apk", type=str, help="APKs they are needed to build this.")
+@click.option("--pip", type=str, help="PiPy modules needed to build this.")
 @click.option("--index", required=True, help="Index URL of remote wheels repository.")
 @click.option(
     "--skip-binary", default=":none:", help="List of packages to skip wheels from pypi."
@@ -77,8 +77,8 @@ from builder.wheel import copy_wheels_from_cache, run_auditwheel
     "--timeout", default=345, type=int, help="Max runtime for pip before abort."
 )
 def builder(
-    apk: str,
-    pip: str,
+    apk: Optional[str],
+    pip: Optional[str],
     index: str,
     skip_binary: str,
     requirement: Optional[Path],
