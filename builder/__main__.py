@@ -92,7 +92,6 @@ def builder(
     constraint: Optional[Path],
     prebuild_dir: Optional[Path],
     single: bool,
-    auditwheel: bool,
     local: bool,
     test: bool,
     upload: str,
@@ -100,19 +99,21 @@ def builder(
     timeout: int,
 ):
     """Build wheels precompiled for Home Assistant container."""
-    install_apks(apk)
     check_url(index)
 
     exit_code = 0
     with TemporaryDirectory() as temp_dir:
         output = Path(temp_dir)
+        timeout = timeout * 60
 
         wheels_dir = create_wheels_folder(output)
         wheels_index = create_wheels_index(index)
 
         # Setup build helper
-        install_pips(wheels_index, pip)
-        timeout = timeout * 60
+        if apk:
+            install_apks(apk)
+        if pip:
+            install_pips(wheels_index, pip)
 
         if local:
             # Build wheels in a local folder/src

@@ -6,6 +6,9 @@ on:
   push:
     branches:
       - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
   publish:
@@ -36,6 +39,7 @@ jobs:
           if [ "${version}" = "master" ]; then
             version=dev
           fi
+          version=dev
 
           base="ghcr.io/home-assistant/${{ matrix.arch }}-base-python:${{ matrix.base }}"
 
