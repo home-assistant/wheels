@@ -62,10 +62,10 @@ jobs:
         run: |
           docker build \
             -t ${{ steps.info.outputs.name }}:${{ steps.info.outputs.version }} \
-            --build-args "BUILD_FROM=${{ steps.info.outputs.base }}" \
-            --build-args "BUILD_ARCH=${{ matrix.arch }}" \
-            --build-args "QEMU_CPU=${{ steps.info.outputs.cpu }}" \
-            --build-args "CPYTHON_ABI=${{ matrix.abi }}"
+            --build-arg "BUILD_FROM=${{ steps.info.outputs.base }}" \
+            --build-arg "BUILD_ARCH=${{ matrix.arch }}" \
+            --build-arg "QEMU_CPU=${{ steps.info.outputs.cpu }}" \
+            --build-arg "CPYTHON_ABI=${{ matrix.abi }}"
 
       - shell: bash
         run: |
