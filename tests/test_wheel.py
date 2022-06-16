@@ -1,6 +1,8 @@
 """Tests for pip module."""
 import pytest
+
 from builder import wheel
+
 
 # pylint: disable=protected-access
 
@@ -53,3 +55,28 @@ def test_linux_regex(test):
 def test_linux_regex_wrong(test):
     """Test linux regex not found."""
     assert wheel._RE_LINUX_PLATFORM.search(test) is None
+
+
+@pytest.mark.parametrize(
+    "abi,platform",
+    [
+        ("cp310", "musllinux_1_2_amd64"),
+        ("none", "any"),
+    ],
+)
+def test_working_abi_platform(abi, platform):
+    """Test working abi/platform variations."""
+    assert wheel.check_abi_platform(abi, platform)
+
+
+@pytest.mark.parametrize(
+    "abi,platform",
+    [
+        ("cp311", "musllinux_1_2_amd64"),
+        ("cp310", "musllinux_1_2_i686"),
+        ("cp310", "musllinux_1_1_amd64"),
+    ],
+)
+def test_not_working_abi_platform(abi, platform):
+    """Test not working abi/platform variations."""
+    assert not wheel.check_abi_platform(abi, platform)

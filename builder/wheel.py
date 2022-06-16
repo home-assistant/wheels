@@ -5,7 +5,7 @@ import re
 import shutil
 from tempfile import TemporaryDirectory
 
-from .utils import run_command, build_arch
+from .utils import run_command, build_arch, build_abi, alpine_version
 
 
 _RE_LINUX_PLATFORM = re.compile(r"-linux_\w+\.whl$")
@@ -20,6 +20,29 @@ _ARCH_PLAT = {
     "armhf": "armv6l",
     "armv7": "armv7l",
 }
+
+_ALPINE_PLATFORM = {("3", "16"): "musllinux_1_2"}
+
+
+def check_abi_platform(abi: str, platform: str) -> bool:
+    """Return True if abi and platform work."""
+    arch = build_arch()
+    sys_abi = build_abi()
+    sys_platform = _ALPINE_PLATFORM[alpine_version()]
+
+    # Check platform
+    if platform == "any":
+        pass
+    elif platform != f"{sys_platform}_{arch}":
+        return False
+
+    # Check abi
+    if abi == "none":
+        pass
+    elif abi != sys_abi:
+        return False
+
+    return True
 
 
 def copy_wheels_from_cache(cache_folder: Path, wheels_folder: Path) -> None:

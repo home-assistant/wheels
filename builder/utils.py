@@ -1,23 +1,32 @@
 """Some utils for builder."""
+from functools import cache
 import os
 from pathlib import Path
 import subprocess
 import sys
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 
 import requests
 
 
-def alpine_version() -> (str, str):
+@cache
+def alpine_version() -> Tuple[str, str]:
     """Return alpine version for index server."""
     version = Path("/etc/alpine-release").read_text(encoding="utf-8").split(".")
 
     return (version[0], version[1])
 
 
+@cache
 def build_arch() -> str:
     """Return build arch for wheels."""
     return os.environ["ARCH"]
+
+
+@cache
+def build_abi() -> str:
+    """Return build abi for wheels."""
+    return os.environ["ABI"]
 
 
 def check_url(url: str) -> None:

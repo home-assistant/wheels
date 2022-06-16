@@ -11,6 +11,7 @@ import click_pathlib
 
 from builder.apk import install_apks
 from builder.infra import (
+    extract_packages_from_index,
     check_available_binary,
     create_wheels_folder,
     create_wheels_index,
@@ -103,6 +104,8 @@ def builder(
         wheels_dir = create_wheels_folder(output)
         wheels_index = create_wheels_index(index)
 
+        package_index = extract_packages_from_index(wheels_index)
+
         # Setup build helper
         if apk:
             install_apks(apk)
@@ -121,7 +124,7 @@ def builder(
             packages = extract_packages(requirement, requirement_diff)
             constraints = parse_requirements(constraint) if constraint else []
             skip_binary_new = check_available_binary(
-                wheels_index,
+                package_index,
                 skip_binary,
                 packages,
                 constraints,
@@ -149,7 +152,7 @@ def builder(
             write_requirement(temp_requirement, packages)
             constraints = parse_requirements(constraint) if constraint else []
             skip_binary_new = check_available_binary(
-                wheels_index,
+                package_index,
                 skip_binary,
                 packages,
                 constraints,
@@ -178,7 +181,10 @@ def builder(
             packages = extract_packages(requirement, requirement_diff)
             constraints = parse_requirements(constraint) if constraint else []
             remove_local_wheels(
-                wheels_index, skip_binary.split(","), packages + constraints, wheels_dir
+                package_index,
+                skip_binary.split(";"),
+                packages + constraints,
+                wheels_dir,
             )
 
         if not test:

@@ -58,5 +58,8 @@ RUN \
 
 # Runtime
 WORKDIR /data
-ENV ARCH=${BUILD_ARCH}
+ENV \
+    ARCH=${BUILD_ARCH} \
+    ABI=${CPYTHON_ABI}
+
 ENTRYPOINT [ "python3", "-m", "builder" ]
