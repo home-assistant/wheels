@@ -139,8 +139,8 @@ def remove_local_wheels(
     print(f"Checking if binaries already exist for packages {binary_package_map}")
     exists = check_existing_packages(package_index, binary_package_map)
     for binary in exists:
-        package = binary_package_map[binary]
-        print(f"Found existing wheels for {binary}, removing local copy {package}")
-        for wheel in wheels_dir.glob(f"{package}-*.whl"):
+        version = binary_package_map[binary]
+        print(f"Found existing wheels for {binary}, removing local copy {version}")
+        for wheel in wheels_dir.glob(f"{binary}-*.whl"):
             print(f"Removing local wheel {wheel}")
             wheel.unlink()
