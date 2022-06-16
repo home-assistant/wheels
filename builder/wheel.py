@@ -32,7 +32,7 @@ _ALPINE_PLATFORM = {("3", "16"): "musllinux_1_2"}
 
 def check_abi_platform(abi: str, platform: str) -> bool:
     """Return True if abi and platform work."""
-    arch = build_arch()
+    arch = _ARCH_PLAT[build_arch()]
     sys_abi = build_abi()
     sys_platform = _ALPINE_PLATFORM[alpine_version()]
 

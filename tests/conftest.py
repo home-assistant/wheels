@@ -10,11 +10,11 @@ import pytest
 # versions to exercise different corner cases.
 TEST_INDEX_FILES = [
     "aiohttp-3.6.0-cp310-cp310-musllinux_1_2_i686.whl",
-    "aiohttp-3.6.1-cp310-cp310-musllinux_1_2_amd64.whl",
-    "aiohttp-3.7.3-cp310-cp310-musllinux_1_2_amd64.whl",
-    "aiohttp-3.7.4-cp310-cp310-musllinux_1_2_amd64.whl",
+    "aiohttp-3.6.1-cp310-cp310-musllinux_1_2_x86_64.whl",
+    "aiohttp-3.7.3-cp310-cp310-musllinux_1_2_x86_64.whl",
+    "aiohttp-3.7.4-cp310-cp310-musllinux_1_2_x86_64.whl",
     "google_cloud_pubsub-2.1.0-py2.py3-none-any.whl",
-    "grpcio-1.31.0-cp310-cp310-musllinux_1_2_amd64.whl",
+    "grpcio-1.31.0-cp310-cp310-musllinux_1_2_x86_64.whl",
     "aioconsole-0.4.1-py3-none-any.whl",
     "aioconsole-0.4.2-py3-none-any.whl",
 ]
@@ -37,8 +37,8 @@ def mock_index_data():
 @pytest.fixture(autouse=True)
 def sys_arch():
     """Patch system arch."""
-    with patch("builder.utils.build_arch", return_value="amd64"), patch(
-        "builder.wheel.build_arch", return_value="amd64"
+    with patch("builder.utils.build_arch", return_value="x86_64"), patch(
+        "builder.wheel.build_arch", return_value="x86_64"
     ):
         yield
 
