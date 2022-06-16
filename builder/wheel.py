@@ -21,6 +21,8 @@ _ARCH_PLAT = {
     "armv7": "armv7l",
 }
 
+_ALPINE_PLATFORM = {("3", "16"): "musllinux_1_2"}
+
 
 def copy_wheels_from_cache(cache_folder: Path, wheels_folder: Path) -> None:
     """Preserve wheels from cache on timeout error."""

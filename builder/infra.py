@@ -1,14 +1,31 @@
 """Create folder structure for index."""
+from __future__ import annotations
+
+from dataclasses import dataclass
 from pathlib import Path
 import re
 from typing import List, Set, Dict, Final
 
+from awesomeversion import AwesomeVersion
 import requests
 
 _RE_REQUIREMENT: Final = re.compile(
     r"(?P<package>.+)(?:==|>|<|<=|>=|~=)(?P<version>.+)"
 )
+_RE_PACKAGE_INDEX: Final = re.compile(
+    r"\"(?P<namever>(?P<name>.+?)-(?P<ver>.+?))(-(?P<build>\d[^-]*))?-(?P<pyver>.+?)-(?P<abi>.+?)-(?P<plat>.+?)\.whl\""
+)
 _MUSLLINUX: Final = "musllinux"
+
+
+@dataclass
+class WhlPackage:
+    """Represent a wheel information from index."""
+
+    name: str
+    version: AwesomeVersion
+    abi: str
+    platform: str
 
 
 def create_wheels_folder(base_folder: Path) -> Path:
@@ -37,6 +54,13 @@ def create_package_map(packages: List[str]) -> Dict[str, str]:
     return results
 
 
+def extract_packages_from_index(index: str) -> Dict[str, WhlPackage]:
+    """Extract packages from index which match the supported."""
+    available_data = requests.get(index, allow_redirects=True).text
+
+    for match in _RE_PACKAGE_INDEX.finditer(available_data):
+
+
 def check_existing_packages(index: str, package_map: Dict[str, str]) -> Set[str]:
     """Return the set of package names that already exist in the index."""
     available_data = requests.get(index, allow_redirects=True).text
@@ -54,7 +78,7 @@ def check_available_binary(
     if skip_binary == ":none:":
         return skip_binary
 
-    list_binary = skip_binary.split(",")
+    list_binary = skip_binary.split(";")
 
     # Map of package basename to the desired package version
     package_map = create_package_map(packages + constraints)
