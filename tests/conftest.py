@@ -37,8 +37,8 @@ def mock_index_data():
 @pytest.fixture(autouse=True)
 def sys_arch():
     """Patch system arch."""
-    with patch("builder.utils.build_arch", return_value="x86_64"), patch(
-        "builder.wheel.build_arch", return_value="x86_64"
+    with patch("builder.utils.build_arch", return_value="amd64"), patch(
+        "builder.wheel.build_arch", return_value="amd64"
     ):
         yield
 
