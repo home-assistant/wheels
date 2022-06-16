@@ -59,6 +59,9 @@ def extract_packages_from_index(index: str) -> Dict[str, WhlPackage]:
     available_data = requests.get(index, allow_redirects=True).text
 
     for match in _RE_PACKAGE_INDEX.finditer(available_data):
+        package = WhlPackage(
+            match["name"], AwesomeVersion(match["ver"]), match["abi"], match["plat"]
+        )
 
 
 def check_existing_packages(index: str, package_map: Dict[str, str]) -> Set[str]:
