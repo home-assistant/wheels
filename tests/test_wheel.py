@@ -73,7 +73,7 @@ def test_working_abi_platform(abi, platform):
     "abi,platform",
     [
         ("cp311", "musllinux_1_2_amd64"),
-        ("cp310", "musllinux_1_2_i386"),
+        ("cp310", "musllinux_1_2_i686"),
         ("cp310", "musllinux_1_1_amd64"),
     ],
 )

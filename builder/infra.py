@@ -79,7 +79,9 @@ def check_existing_packages(
     """Return the set of package names that already exist in the index."""
     found: Set[str] = set({})
     for package, version in package_map.items():
-        if package in package_index and package_index[package] == version:
+        if package in package_index and any(
+            sub_package.version == version for sub_package in package_index[package]
+        ):
             found.add(package)
     return found
 
@@ -102,13 +104,13 @@ def check_available_binary(
     # View of package map limited to packages in --skip-binary
     binary_package_map = {}
     for binary in list_binary:
-        if not (package := package_map.get(binary)):
+        if not (version := package_map.get(binary)):
             print(
                 f"Skip binary '{binary}' not in packages/constraints; Can't determine desired version",
                 flush=True,
             )
             continue
-        binary_package_map[binary] = package
+        binary_package_map[binary] = version
 
     print(f"Checking if binaries already exist for packages {binary_package_map}")
     list_found: Set[str] = check_existing_packages(package_index, binary_package_map)
