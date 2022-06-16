@@ -184,10 +184,8 @@ def builder(
         run_auditwheel(wheels_dir)
 
         # Check if all wheels are on our min requirements
-        if (
-            package_wrong := fix_wheels_unmatch_requirements(wheels_dir)
-            and exit_code == 0
-        ):
+        package_wrong = fix_wheels_unmatch_requirements(wheels_dir)
+        if package_wrong and exit_code == 0:
             for package, version in package_wrong.items():
                 build_wheels_package(
                     f"{package}=={str(version)}",
