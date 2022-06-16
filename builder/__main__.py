@@ -72,6 +72,9 @@ from builder.wheel import (
     "--local", is_flag=True, default=False, help="Build wheel from local folder setup."
 )
 @click.option(
+    "--legacy", is_flag=True, default=False, help="Run pip with legacy resolver."
+)
+@click.option(
     "--test", is_flag=True, default=False, help="Test building wheels, no upload."
 )
 @click.option("--upload", default="rsync", help="Upload plugin to upload wheels.")
@@ -92,6 +95,7 @@ def builder(
     prebuild_dir: Optional[Path],
     single: bool,
     local: bool,
+    legacy: bool,
     test: bool,
     upload: str,
     remote: str,
@@ -169,6 +173,7 @@ def builder(
                     skip_binary_new,
                     timeout,
                     constraint,
+                    legacy,
                 )
             except CalledProcessError:
                 exit_code = 109
@@ -179,7 +184,10 @@ def builder(
         run_auditwheel(wheels_dir)
 
         # Check if all wheels are on our min requirements
-        if package_wrong := fix_wheels_unmatch_requirements(wheels_dir):
+        if (
+            package_wrong := fix_wheels_unmatch_requirements(wheels_dir)
+            and exit_code == 0
+        ):
             for package, version in package_wrong.items():
                 build_wheels_package(
                     f"{package}=={str(version)}",

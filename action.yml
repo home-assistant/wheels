@@ -43,6 +43,9 @@ inputs:
   single:
     description: "Set to true if should build each wheel as a single prosess"
     default: false
+  legacy:
+    description: "Enable pip legacy resolver for requirement file"
+    default: false
   name:
     description: "Job name"
     default: "Wheels"
@@ -139,6 +142,9 @@ runs:
         fi
         if [[ "${{ inputs.single }}" =~ true|True ]]; then
           build+=("--single")
+        fi
+        if [[ "${{ inputs.legacy }}" =~ true|True ]]; then
+          build+=("--legacy")
         fi
         if [[ "${{ inputs.local }}" =~ true|True ]]; then
           build+=("--local")
