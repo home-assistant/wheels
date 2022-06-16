@@ -4,12 +4,18 @@ from pathlib import Path
 import re
 import shutil
 from tempfile import TemporaryDirectory
+from typing import Dict, Final
+
+from awesomeversion import AwesomeVersion
 
 from .utils import run_command, build_arch, build_abi, alpine_version
 
 
-_RE_LINUX_PLATFORM = re.compile(r"-linux_\w+\.whl$")
-_RE_MUSLLINUX_PLATFORM = re.compile(
+_RE_PACKAGE_FULL: Final = re.compile(
+    r"^(?P<namever>(?P<name>.+?)-(?P<ver>.+?))(-(?P<build>\d[^-]*))?-(?P<pyver>.+?)-(?P<abi>.+?)-(?P<plat>.+?)\.whl$"
+)
+_RE_LINUX_PLATFORM: Final = re.compile(r"-linux_\w+\.whl$")
+_RE_MUSLLINUX_PLATFORM: Final = re.compile(
     r"-musllinux_(?P<major>\d)_(?P<minor>\d)_(?P<arch>\w+)\.whl$"
 )
 
@@ -43,6 +49,27 @@ def check_abi_platform(abi: str, platform: str) -> bool:
         return False
 
     return True
+
+
+def fix_wheels_unmatch_requirements(wheels_folder: Path) -> Dict[str, AwesomeVersion]:
+    """Check Wheels against our min requirements."""
+    result = {}
+    for wheel_file in wheels_folder.glob("*.whl"):
+        package = _RE_PACKAGE_FULL.fullmatch(wheel_file.name)
+        if not package:
+            raise RuntimeError(f"Error on parse wheel {wheel_file.name}")
+
+        if check_abi_platform(package["abi"], package["plat"]):
+            continue
+
+        print(
+            f"Found wheel {wheel_file.name} that not match our min requirements",
+            flush=True,
+        )
+        result[package["name"]] = AwesomeVersion(package["ver"])
+        wheel_file.unlink()
+
+    return result
 
 
 def copy_wheels_from_cache(cache_folder: Path, wheels_folder: Path) -> None:

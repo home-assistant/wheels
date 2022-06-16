@@ -146,11 +146,6 @@ def test_check_available_binary_for_missing_constraint() -> None:
     )
 
 
-@pytest.fixture
-def tmppath(tmpdir):
-    return Path(tmpdir)
-
-
 def test_remove_local_wheel(tmppath: Path) -> None:
     """Test removing an existing wheel."""
     package_index = infra.extract_packages_from_index("https://example.com")

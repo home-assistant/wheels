@@ -1,4 +1,5 @@
 """Common test functions."""
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -58,3 +59,8 @@ def sys_alpine():
         "builder.wheel.alpine_version", return_value=("3", "16")
     ):
         yield
+
+
+@pytest.fixture
+def tmppath(tmpdir):
+    return Path(tmpdir)

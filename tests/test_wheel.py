@@ -1,4 +1,6 @@
 """Tests for pip module."""
+from pathlib import Path
+
 import pytest
 
 from builder import wheel
@@ -80,3 +82,23 @@ def test_working_abi_platform(abi, platform):
 def test_not_working_abi_platform(abi, platform):
     """Test not working abi/platform variations."""
     assert not wheel.check_abi_platform(abi, platform)
+
+
+def test_fix_wheel_unmatch(tmppath: Path) -> None:
+    """Test removing an existing wheel that are not match requirements."""
+
+    p = tmppath / "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl"
+    p.touch()
+    p = tmppath / "grpcio-1.31.0-cp310-cp310-musllinux_1_1_amd64.whl"
+    p.touch()
+    assert {p.name for p in tmppath.glob("*.whl")} == {
+        "grpcio-1.31.0-cp310-cp310-musllinux_1_1_amd64.whl",
+        "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl",
+    }
+
+    assert wheel.fix_wheels_unmatch_requirements(tmppath) == {"grpcio": "1.31.0"}
+
+    # grpc is removed
+    assert {p.name for p in tmppath.glob("*.whl")} == {
+        "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl",
+    }
