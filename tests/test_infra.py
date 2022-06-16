@@ -1,8 +1,6 @@
 """Tests for infra module."""
 from pathlib import Path
 
-import pytest
-
 from builder import infra
 
 
@@ -146,21 +144,16 @@ def test_check_available_binary_for_missing_constraint() -> None:
     )
 
 
-@pytest.fixture
-def tmppath(tmpdir):
-    return Path(tmpdir)
-
-
 def test_remove_local_wheel(tmppath: Path) -> None:
     """Test removing an existing wheel."""
     package_index = infra.extract_packages_from_index("https://example.com")
 
     p = tmppath / "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl"
     p.touch()
-    p = tmppath / "grpcio-1.31.0-cp310-cp310-musllinux_1_2_amd64.whl"
+    p = tmppath / "grpcio-1.31.0-cp310-cp310-musllinux_1_2_x86_64.whl"
     p.touch()
     assert {p.name for p in tmppath.glob("*.whl")} == {
-        "grpcio-1.31.0-cp310-cp310-musllinux_1_2_amd64.whl",
+        "grpcio-1.31.0-cp310-cp310-musllinux_1_2_x86_64.whl",
         "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl",
     }
 
@@ -186,10 +179,10 @@ def test_remove_local_wheel_preserves_newer(tmppath: Path) -> None:
 
     p = tmppath / "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl"
     p.touch()
-    p = tmppath / "grpcio-1.43.0-cp310-cp310-musllinux_1_2_amd64.whl"
+    p = tmppath / "grpcio-1.43.0-cp310-cp310-musllinux_1_2_x86_64.whl"
     p.touch()
     assert {p.name for p in tmppath.glob("*.whl")} == {
-        "grpcio-1.43.0-cp310-cp310-musllinux_1_2_amd64.whl",
+        "grpcio-1.43.0-cp310-cp310-musllinux_1_2_x86_64.whl",
         "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl",
     }
 
@@ -205,6 +198,6 @@ def test_remove_local_wheel_preserves_newer(tmppath: Path) -> None:
 
     # grpc is removed
     assert {p.name for p in tmppath.glob("*.whl")} == {
-        "grpcio-1.43.0-cp310-cp310-musllinux_1_2_amd64.whl",
+        "grpcio-1.43.0-cp310-cp310-musllinux_1_2_x86_64.whl",
         "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl",
     }
