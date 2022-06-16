@@ -6,6 +6,23 @@ import pytest
 from builder import infra
 
 
+def test_extract_packages_from_index() -> None:
+    """Test index package extraction."""
+    package_index = infra.extract_packages_from_index("https://example.com")
+    assert list(package_index.keys()) == [
+        "aiohttp",
+        "google_cloud_pubsub",
+        "grpcio",
+        "aioconsole",
+    ]
+
+    assert list(str(package.version) for package in package_index["aiohttp"]) == [
+        "3.6.1",
+        "3.7.3",
+        "3.7.4",
+    ]
+
+
 def test_check_available_binary_none() -> None:
     """No-op when no binaries specified to skip."""
     package_index = infra.extract_packages_from_index("https://example.com")
