@@ -37,15 +37,15 @@ def check_abi_platform(abi: str, platform: str) -> bool:
     sys_platform = _ALPINE_PLATFORM[alpine_version()]
 
     # Check platform
-    if platform == "any":
+    if platform in ("any", f"{sys_platform}_{arch}"):
         pass
-    elif platform != f"{sys_platform}_{arch}":
+    else:
         return False
 
     # Check abi
-    if abi == "none":
+    if abi in ("none", "abi3", sys_abi):
         pass
-    elif abi != sys_abi:
+    else:
         return False
 
     return True

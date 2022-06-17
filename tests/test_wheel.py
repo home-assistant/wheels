@@ -63,6 +63,7 @@ def test_linux_regex_wrong(test):
     "abi,platform",
     [
         ("cp310", "musllinux_1_2_x86_64"),
+        ("abi3", "musllinux_1_2_x86_64"),
         ("none", "any"),
     ],
 )
@@ -77,6 +78,7 @@ def test_working_abi_platform(abi, platform):
         ("cp311", "musllinux_1_2_x86_64"),
         ("cp310", "musllinux_1_2_i686"),
         ("cp310", "musllinux_1_1_x86_64"),
+        ("abi3", "musllinux_1_1_x86_64"),
     ],
 )
 def test_not_working_abi_platform(abi, platform):
