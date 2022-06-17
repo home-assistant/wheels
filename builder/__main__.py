@@ -181,11 +181,12 @@ def builder(
                 exit_code = 80
                 copy_wheels_from_cache(Path("/root/.cache/pip/wheels"), wheels_dir)
 
-        run_auditwheel(wheels_dir)
+        if not run_auditwheel(wheels_dir):
+            exit_code = 109
 
         # Check if all wheels are on our min requirements
         package_wrong = fix_wheels_unmatch_requirements(wheels_dir)
-        if package_wrong and exit_code == 0:
+        if package_wrong and exit_code != 80:
             for package, version in package_wrong.items():
                 build_wheels_package(
                     f"{package}=={str(version)}",
@@ -194,7 +195,8 @@ def builder(
                     package,
                     timeout,
                 )
-            run_auditwheel(wheels_dir)
+            if not run_auditwheel(wheels_dir):
+                exit_code = 109
 
         if skip_binary != ":none:":
             # Some wheels that already exist should not be overwritten in case we replace with

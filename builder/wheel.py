@@ -3,6 +3,7 @@ from contextlib import suppress
 from pathlib import Path
 import re
 import shutil
+from subprocess import CalledProcessError
 from tempfile import TemporaryDirectory
 from typing import Dict, Final
 
@@ -79,13 +80,19 @@ def copy_wheels_from_cache(cache_folder: Path, wheels_folder: Path) -> None:
             shutil.copy(wheel_file, wheels_folder)
 
 
-def run_auditwheel(wheels_folder: Path) -> None:
+def run_auditwheel(wheels_folder: Path) -> bool:
     """Run auditwheel to include shared library."""
+    success = True
     with TemporaryDirectory() as temp_dir:
         for wheel_file in wheels_folder.glob("*.whl"):
             if not _RE_LINUX_PLATFORM.search(wheel_file.name):
                 continue
-            run_command(f"auditwheel repair -w {temp_dir} {wheel_file}")
+            try:
+                run_command(f"auditwheel repair -w {temp_dir} {wheel_file}")
+            except CalledProcessError as err:
+                print(f"Issues auditwheel {wheel_file.name}: {str(err)}")
+                success = False
+                wheel_file.unlink()
 
         # Copy back wheels & make sure ARCH is correct
         target_arch = _ARCH_PLAT[build_arch()]
@@ -102,3 +109,5 @@ def run_auditwheel(wheels_folder: Path) -> None:
         if not _RE_LINUX_PLATFORM.search(wheel_file.name):
             continue
         wheel_file.unlink()
+
+    return success
