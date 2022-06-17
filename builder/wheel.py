@@ -90,7 +90,7 @@ def run_auditwheel(wheels_folder: Path) -> bool:
             try:
                 run_command(f"auditwheel repair -w {temp_dir} {wheel_file}")
             except CalledProcessError as err:
-                print(f"Issues auditwheel {wheel_file.name}: {str(err)}")
+                print(f"Issues auditwheel {wheel_file.name}: {str(err)}", flush=True)
                 success = False
                 wheel_file.unlink()
 
