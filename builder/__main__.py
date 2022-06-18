@@ -152,7 +152,6 @@ def builder(
                     exit_code = 109
                 except TimeoutExpired:
                     exit_code = 80
-                    copy_wheels_from_cache(Path("/root/.cache/pip/wheels"), wheels_dir)
         else:
             # Build all needed wheels at once
             packages = extract_packages(requirement, requirement_diff)
@@ -179,7 +178,11 @@ def builder(
                 exit_code = 109
             except TimeoutExpired:
                 exit_code = 80
-                copy_wheels_from_cache(Path("/root/.cache/pip/wheels"), wheels_dir)
+
+        # pip copy wheels only on success over to our folder
+        # let's preserve on a error all success builds before
+        if exit_code != 0:
+            copy_wheels_from_cache(Path("/root/.cache/pip/wheels"), wheels_dir)
 
         if not run_auditwheel(wheels_dir):
             exit_code = 109
