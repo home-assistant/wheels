@@ -1,3 +1,4 @@
 requests==2.28.0
 cchardet==2.1.7
 Brotli==1.0.9
+orjson==3.7.3
