@@ -72,7 +72,7 @@ jobs:
           tag: ${{ matrix.tag }}
           arch: ${{ matrix.arch }}
           apk: "libffi-dev;openssl-dev"
-          skip-binary: aiohttp
+          skip-binary: "orjson"
           env-file: True
           test: True
           requirements: "requirements_wheels_test.txt"
