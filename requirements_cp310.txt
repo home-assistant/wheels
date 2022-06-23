@@ -1,4 +1,4 @@
 Cython==0.29.30
-numpy==1.22.4
+numpy==1.23.0
 scikit-build==0.15.0
 cffi==1.15.0
