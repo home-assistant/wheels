@@ -62,4 +62,4 @@ ENV \
     ARCH=${BUILD_ARCH} \
     ABI=${CPYTHON_ABI}
 
-ENTRYPOINT [ "python3", "-m", "builder" ]
+ENTRYPOINT [ "run-builder.sh" ]
