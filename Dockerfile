@@ -56,10 +56,13 @@ RUN \
     && pip3 install --no-cache-dir /usr/src/builder/ \
     && rm -rf /usr/src/*
 
-# Runtime
-WORKDIR /data
+# Set build environment information
 ENV \
     ARCH=${BUILD_ARCH} \
     ABI=${CPYTHON_ABI}
+
+# Runtime
+WORKDIR /data
+COPY rootfs /
 
 ENTRYPOINT [ "run-builder.sh" ]
