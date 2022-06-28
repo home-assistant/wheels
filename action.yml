@@ -168,13 +168,14 @@ runs:
 
     - shell: bash
       run: |
-        mkdir cargo-cache
-        docker run -v cargo-cache:/root/.cargo --rm --privileged multiarch/qemu-user-static --reset -p yes
+        docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
     - shell: bash
       run: |
         echo "Create container"
+        mkdir cargo-cache
         docker create --name "${{ inputs.name }}" -t \
+          -v cargo-cache:/root/.cargo \
           --workdir /data \
           ${{ steps.options.outputs.docker }} \
           ${{ steps.pull.outputs.name }} \
