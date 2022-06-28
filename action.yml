@@ -173,10 +173,7 @@ runs:
     - shell: bash
       run: |
         echo "Create container"
-        mkdir -p cargo-cache/registry/index
-        git clone --bare https://github.com/rust-lang/crates.io-index.git cargo-cache/registry/index/github.com-1ecc6299db9ec823
         docker create --name "${{ inputs.name }}" -t \
-          -v cargo-cache:/root/.cargo \
           --workdir /data \
           ${{ steps.options.outputs.docker }} \
           ${{ steps.pull.outputs.name }} \
