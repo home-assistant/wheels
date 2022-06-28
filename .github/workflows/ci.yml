@@ -65,11 +65,6 @@ jobs:
             echo "GRPC_PYTHON_BUILD_WITH_CYTHON=true"
           ) > .env_file
 
-      - name: Clear cargo index
-        shell: bash
-        run: |
-          rm -fv ~/.cargo/registry/index
-
       - name: Build wheels
         uses: ./
         with:
