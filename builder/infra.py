@@ -58,7 +58,7 @@ def create_package_map(packages: List[str]) -> Dict[str, AwesomeVersion]:
 
 def extract_packages_from_index(index: str) -> Dict[str, List[WhlPackage]]:
     """Extract packages from index which match the supported."""
-    available_data = requests.get(index, allow_redirects=True).text
+    available_data = requests.get(index, allow_redirects=True, timeout=60).text
 
     result = {}
     for match in _RE_PACKAGE_INDEX.finditer(available_data):
