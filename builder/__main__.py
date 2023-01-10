@@ -1,10 +1,12 @@
 """Hass.io Builder main application."""
+from __future__ import annotations
+
 from pathlib import Path
 import shutil
 from subprocess import CalledProcessError, TimeoutExpired
 import sys
 from tempfile import TemporaryDirectory
-from typing import Optional
+from typing import List, Optional
 
 import click
 import click_pathlib
@@ -77,13 +79,11 @@ from builder.wheel import (
 @click.option(
     "--test", is_flag=True, default=False, help="Test building wheels, no upload."
 )
-@click.option("--upload", default="rsync", help="Upload plugin to upload wheels.")
-@click.option(
-    "--remote", required=True, type=str, help="Remote URL pass to upload plugin."
-)
+@click.option("--upload", default=["rsync"], multiple=True, help="Upload plugin to upload wheels.")
 @click.option(
     "--timeout", default=345, type=int, help="Max runtime for pip before abort."
 )
+@click.option("--remote", type=str, help="Remote URL pass to upload plugin.")
 def builder(
     apk: Optional[str],
     pip: Optional[str],
@@ -97,9 +97,9 @@ def builder(
     local: bool,
     legacy: bool,
     test: bool,
-    upload: str,
-    remote: str,
+    upload: List[str],
     timeout: int,
+    remote: str | None = None,
 ):
     """Build wheels precompiled for Home Assistant container."""
     check_url(index)
@@ -215,7 +215,9 @@ def builder(
             )
 
         if not test:
-            run_upload(upload, output, remote)
+            remote_url = remote if len(upload) == 1 else None
+            for plugin in upload:
+                run_upload(plugin, output, remote_url)
 
     sys.exit(exit_code)
 
