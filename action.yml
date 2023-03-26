@@ -75,7 +75,7 @@ runs:
         if [[ "${input}" == "master" ]] || [[ -z "${input}" ]]; then
           input="dev"
         fi
-        echo "::set-output name=version::${input}"
+        echo "version=${input}" >> $GITHUB_OUTPUT
 
     - shell: bash
       run: |
@@ -98,7 +98,7 @@ runs:
       run: |
         name="ghcr.io/home-assistant/wheels/${{ inputs.arch }}/${{ inputs.tag }}/${{ inputs.abi }}:${{ steps.version.outputs.version }}"
         docker pull "$name"
-        echo "::set-output name=name::$name"
+        echo "name=$name" >> $GITHUB_OUTPUT
 
     - shell: bash
       run: |
@@ -162,9 +162,9 @@ runs:
           build+=("--pip \"${{ inputs.pip }}\"")
         fi
 
-        echo "::set-output name=build::${build[@]}"
-        echo "::set-output name=docker::${docker[@]}"
-        echo "::set-output name=path::$data_path"
+        echo "build=${build[@]}" >> $GITHUB_OUTPUT
+        echo "docker=${docker[@]}" >> $GITHUB_OUTPUT
+        echo "path=$data_path" >> $GITHUB_OUTPUT
 
     - shell: bash
       run: |
@@ -203,7 +203,7 @@ runs:
           fi
           break
         done
-        echo "::set-output name=return_val::$return_val"
+        echo "return_val=$return_val" >> $GITHUB_OUTPUT
 
     - shell: bash
       run: |
