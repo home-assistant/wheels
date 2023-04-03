@@ -1,4 +1,4 @@
-Cython==0.29.33
+Cython==0.29.34
 numpy==1.22.4
 scikit-build==0.16.7
 cffi==1.15.1
