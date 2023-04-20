@@ -28,7 +28,10 @@ _ARCH_PLAT = {
     "armv7": "armv7l",
 }
 
-_ALPINE_PLATFORM = {("3", "16"): "musllinux_1_2"}
+_ALPINE_PLATFORM = {
+    ("3", "16"): "musllinux_1_2",
+    ("3", "17"): "musllinux_1_2",
+}
 
 
 def check_abi_platform(abi: str, platform: str) -> bool:
