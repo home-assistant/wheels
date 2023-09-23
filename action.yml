@@ -91,25 +91,12 @@ runs:
           chmod 600 .ssh/*
         fi
 
-    - uses: home-assistant/actions/helpers/cas@master
-
     - shell: bash
       id: pull
       run: |
         name="ghcr.io/home-assistant/wheels/${{ inputs.arch }}/${{ inputs.tag }}/${{ inputs.abi }}:${{ steps.version.outputs.version }}"
         docker pull "$name"
         echo "name=$name" >> $GITHUB_OUTPUT
-
-    - shell: bash
-      run: |
-        for j in {1..15}; do
-          if CAS_API_KEY= cas authenticate --silent --signerID notary@home-assistant.io docker://${{ steps.pull.outputs.name }}; then
-            exit 0
-          fi
-          sleep $((5 * j))
-        done
-        echo "Invalid signature!"
-        exit 1
 
     - shell: bash
       id: options
