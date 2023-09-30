@@ -40,7 +40,7 @@ def create_wheels_folder(base_folder: Path) -> Path:
 
 def create_wheels_index(base_index: str) -> str:
     """Create wheels specific URL."""
-    return f"{base_index}/{_MUSLLINUX}/"
+    return f"{base_index}/{_MUSLLINUX}-index/"
 
 
 def create_package_map(packages: List[str]) -> Dict[str, AwesomeVersion]:
