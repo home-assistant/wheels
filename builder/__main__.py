@@ -11,6 +11,7 @@ import click_pathlib
 
 from builder.apk import install_apks
 from builder.infra import (
+    create_wheels_list,
     extract_packages_from_index,
     check_available_binary,
     create_wheels_folder,
@@ -111,8 +112,8 @@ def builder(
 
         wheels_dir = create_wheels_folder(output)
         wheels_index = create_wheels_index(index)
-
-        package_index = extract_packages_from_index(wheels_index)
+        wheels_list = create_wheels_list(index)
+        package_index = extract_packages_from_index(wheels_list)
 
         # Setup build helper
         if apk:

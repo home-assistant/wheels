@@ -39,8 +39,13 @@ def create_wheels_folder(base_folder: Path) -> Path:
 
 
 def create_wheels_index(base_index: str) -> str:
-    """Create wheels specific URL."""
+    """Create wheels specific URL with a PEP 503 index."""
     return f"{base_index}/{_MUSLLINUX}-index/"
+
+
+def create_wheels_list(base_index: str) -> str:
+    """Create wheels specific URL that has a list of all wheel files."""
+    return f"{base_index}/{_MUSLLINUX}/"
 
 
 def create_package_map(packages: List[str]) -> Dict[str, AwesomeVersion]:
