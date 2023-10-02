@@ -1,4 +1,4 @@
 flake8==6.1.0
-pylint==2.17.6
+pylint==2.17.7
 black==23.9.1
 pytest==7.4.2
