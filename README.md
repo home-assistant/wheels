@@ -14,18 +14,32 @@ Compile utilities:
 - automake
 - cargo
 
+### Python 3.12 / musllinux_1_2
+
+Build with Alpine 3.18
+Images: ghcr.io/home-assistant/wheels/ARCH/musllinux_1_2/cp312:VERSION
+
+Version of system builds:
+
+- GCC 12.2.1
+- Cython 3.0.3
+- numpy 1.26.0
+- scikit-build 0.17.1
+- cffi 1.16.0
+
+
 ### Python 3.11 / musllinux_1_2
 
-Build with Alpine 3.17
+Build with Alpine 3.18
 Images: ghcr.io/home-assistant/wheels/ARCH/musllinux_1_2/cp311:VERSION
 
 Version of system builds:
 
-- GCC 11.2.1
-- Cython 0.29.34
+- GCC 12.2.1
+- Cython 3.0.3
 - numpy 1.24.2
 - scikit-build 0.17.1
-- cffi 1.15.1
+- cffi 1.16.0
 
 ## Misc
 
