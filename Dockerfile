@@ -9,14 +9,15 @@ ARG \
 
 WORKDIR /usr/src
 
+SHELL ["/bin/bash", "-exo", "pipefail", "-c"]
+
 # Install requirements
 COPY \
     requirements.txt \
     requirements_${CPYTHON_ABI}.txt \
     /usr/src/
 RUN \
-    set -xo pipefail \
-    && apk add --no-cache \
+    apk add --no-cache \
         rsync \
         openssh-client \
         patchelf \
