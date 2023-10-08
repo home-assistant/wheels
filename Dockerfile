@@ -15,7 +15,7 @@ COPY \
     requirements_${CPYTHON_ABI}.txt \
     /usr/src/
 RUN \
-    set -x \
+    set -xo pipefail \
     && apk add --no-cache \
         rsync \
         openssh-client \
