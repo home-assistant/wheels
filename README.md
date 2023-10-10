@@ -37,7 +37,7 @@ Version of system builds:
 
 - GCC 12.2.1
 - Cython 3.0.3
-- numpy 1.24.2
+- numpy 1.26.0
 - scikit-build 0.17.1
 - cffi 1.16.0
 
