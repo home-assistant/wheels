@@ -26,7 +26,7 @@ jobs:
             base: 3.12-alpine3.18
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v4.1.1
 
       - shell: bash
         id: info
