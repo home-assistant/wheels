@@ -25,7 +25,7 @@ def build_wheels_package(
     constraint_cmd = f"--constraint {constraint}" if constraint else ""
 
     run_command(
-        f'pip3 wheel --disable-pip-version-check --progress-bar off --no-clean --no-binary "{skip_binary}" --wheel-dir {output} --extra-index-url {index} {constraint_cmd} "{package}"',
+        f'pip3 wheel --no-clean --no-binary "{skip_binary}" --wheel-dir {output} --extra-index-url {index} {constraint_cmd} "{package}"',
         env=build_env,
         timeout=timeout,
     )
@@ -50,7 +50,7 @@ def build_wheels_requirement(
     constraint_cmd = f"--constraint {constraint}" if constraint else ""
 
     run_command(
-        f'pip3 wheel --disable-pip-version-check --progress-bar off --no-clean --no-binary "{skip_binary}" --wheel-dir {output} --extra-index-url {index} {constraint_cmd} --requirement {requirement}',
+        f'pip3 wheel --no-clean --no-binary "{skip_binary}" --wheel-dir {output} --extra-index-url {index} {constraint_cmd} --requirement {requirement}',
         env=build_env,
         timeout=timeout,
     )
@@ -68,7 +68,7 @@ def build_wheels_local(
     build_env["MAKEFLAGS"] = f"-j{cpu}"
 
     run_command(
-        f"pip3 wheel --disable-pip-version-check --progress-bar off --no-clean --wheel-dir {output} --extra-index-url {index} .",
+        f"pip3 wheel --no-clean --wheel-dir {output} --extra-index-url {index} .",
         env=build_env,
     )
 
@@ -119,5 +119,5 @@ def install_pips(index: str, pips: str) -> None:
     packages = " ".join(pips.split(";"))
 
     run_command(
-        f"pip install --disable-pip-version-check --progress-bar off --upgrade --no-cache-dir --prefer-binary --extra-index-url {index} {packages}",
+        f"pip install --upgrade --extra-index-url {index} {packages}",
     )

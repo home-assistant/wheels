@@ -5,11 +5,14 @@ ARG \
     BUILD_ARCH \
     CPYTHON_ABI \
     QEMU_CPU \
-    AUDITWHEEL_VERSION=5.1.2
+    AUDITWHEEL_VERSION=5.1.2 \
+    PIP_EXTRA_INDEX_URL=https://wheels.home-assistant.io/musllinux-index/ \
 
 WORKDIR /usr/src
 
 SHELL ["/bin/bash", "-exo", "pipefail", "-c"]
+
+COPY rootfs /
 
 # Install requirements
 COPY \
@@ -38,10 +41,9 @@ RUN \
         apk add --no-cache --virtual .build-dependencies2 \
             openblas-dev; \
     fi \
-    && pip3 install --no-cache-dir \
+    && pip3 install \
         -r /usr/src/requirements.txt \
         -r /usr/src/requirements_${CPYTHON_ABI}.txt \
-        --extra-index-url "https://wheels.home-assistant.io/musllinux-index/" \
     && rm -rf /usr/src/*
 
 # Install auditwheel
@@ -52,14 +54,14 @@ RUN \
         https://github.com/pypa/auditwheel \
     && cd auditwheel \
     && git apply /usr/src/0001-Support-musllinux-armv6l.patch \
-    && pip install --no-cache-dir . \
+    && pip install . \
     && rm -rf /usr/src/*
 
 # Install builder
 COPY . /usr/src/builder/
 RUN \
     set -x \
-    && pip3 install --no-cache-dir /usr/src/builder/ \
+    && pip3 install /usr/src/builder/ \
     && rm -rf /usr/src/*
 
 # Set build environment information
@@ -69,6 +71,5 @@ ENV \
 
 # Runtime
 WORKDIR /data
-COPY rootfs /
 
 ENTRYPOINT [ "run-builder.sh" ]
