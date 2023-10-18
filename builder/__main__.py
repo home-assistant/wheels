@@ -73,9 +73,6 @@ from builder.wheel import (
     "--local", is_flag=True, default=False, help="Build wheel from local folder setup."
 )
 @click.option(
-    "--legacy", is_flag=True, default=False, help="Run pip with legacy resolver."
-)
-@click.option(
     "--test", is_flag=True, default=False, help="Test building wheels, no upload."
 )
 @click.option("--upload", default="rsync", help="Upload plugin to upload wheels.")
@@ -96,7 +93,6 @@ def builder(
     prebuild_dir: Optional[Path],
     single: bool,
     local: bool,
-    legacy: bool,
     test: bool,
     upload: str,
     remote: str,
@@ -173,7 +169,6 @@ def builder(
                     skip_binary_new,
                     timeout,
                     constraint,
-                    legacy,
                 )
             except CalledProcessError:
                 exit_code = 109
