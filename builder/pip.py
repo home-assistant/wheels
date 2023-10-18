@@ -38,7 +38,6 @@ def build_wheels_requirement(
     skip_binary: str,
     timeout: int,
     constraint: Optional[Path] = None,
-    legacy: bool = False,
 ) -> None:
     """Build wheels from a requirements file into output."""
     cpu = os.cpu_count() or 4
@@ -50,11 +49,8 @@ def build_wheels_requirement(
     # Add constraint
     constraint_cmd = f"--constraint {constraint}" if constraint else ""
 
-    # Add legacy resolver
-    legacy_cmd = "--use-deprecated=legacy-resolver" if legacy else ""
-
     run_command(
-        f'pip3 wheel --disable-pip-version-check --progress-bar off {legacy_cmd} --no-clean --no-binary "{skip_binary}" --wheel-dir {output} --extra-index-url {index} {constraint_cmd} --requirement {requirement}',
+        f'pip3 wheel --disable-pip-version-check --progress-bar off --no-clean --no-binary "{skip_binary}" --wheel-dir {output} --extra-index-url {index} {constraint_cmd} --requirement {requirement}',
         env=build_env,
         timeout=timeout,
     )
