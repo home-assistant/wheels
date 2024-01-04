@@ -72,7 +72,7 @@ jobs:
           abi: ${{ matrix.abi }}
           tag: ${{ matrix.tag }}
           arch: ${{ matrix.arch }}
-          apk: "libffi-dev;openssl-dev"
+          apk: "mariadb-dev;postgresql-dev;libffi-dev;openssl-dev"
           skip-binary: "orjson"
           env-file: True
           test: True
