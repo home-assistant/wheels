@@ -16,7 +16,7 @@ Compile utilities:
 
 ### Python 3.12 / musllinux_1_2
 
-Build with Alpine 3.18
+Build with Alpine 3.19
 Images: ghcr.io/home-assistant/wheels/ARCH/musllinux_1_2/cp312:VERSION
 
 Version of system builds:
@@ -30,7 +30,7 @@ Version of system builds:
 
 ### Python 3.11 / musllinux_1_2
 
-Build with Alpine 3.18
+Build with Alpine 3.19
 Images: ghcr.io/home-assistant/wheels/ARCH/musllinux_1_2/cp311:VERSION
 
 Version of system builds:
