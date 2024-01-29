@@ -1,4 +1,5 @@
 """Create folder structure for index."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass

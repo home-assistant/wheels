@@ -1,4 +1,5 @@
 """Tests for infra module."""
+
 from pathlib import Path
 
 from builder import infra

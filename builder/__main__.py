@@ -1,4 +1,5 @@
 """Hass.io Builder main application."""
+
 from pathlib import Path
 import shutil
 from subprocess import CalledProcessError, TimeoutExpired
