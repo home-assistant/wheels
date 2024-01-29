@@ -1,4 +1,5 @@
 """Utils for wheel."""
+
 from contextlib import suppress
 from pathlib import Path
 import re

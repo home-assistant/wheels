@@ -1,4 +1,5 @@
 """Tests for pip module."""
+
 from pathlib import Path
 
 import pytest
