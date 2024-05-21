@@ -1,4 +1,4 @@
-requests==2.31.0
+requests==2.32.1
 Brotli==1.1.0
 orjson==3.10.3
 faust-cchardet==2.1.19
