@@ -20,7 +20,7 @@ jobs:
         include:
           - abi: cp312
             tag: musllinux_1_2
-            base: 3.12-alpine3.19
+            base: 3.12-alpine3.20
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4.1.7
