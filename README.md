@@ -16,30 +16,17 @@ Compile utilities:
 
 ### Python 3.12 / musllinux_1_2
 
-Build with Alpine 3.19
+Build with Alpine 3.20
 Images: ghcr.io/home-assistant/wheels/ARCH/musllinux_1_2/cp312:VERSION
 
 Version of system builds:
 
-- GCC 12.2.1
-- Cython 3.0.7
-- numpy 1.26.0
-- scikit-build 0.17.1
-- cffi 1.16.0
-
-
-### Python 3.11 / musllinux_1_2
-
-Build with Alpine 3.19
-Images: ghcr.io/home-assistant/wheels/ARCH/musllinux_1_2/cp311:VERSION
-
-Version of system builds:
-
-- GCC 12.2.1
-- Cython 3.0.7
+- GCC 13.2.1
+- Cython 3.0.10
 - numpy 1.26.3
-- scikit-build 0.17.1
+- scikit-build 0.18.0
 - cffi 1.16.0
+
 
 ## Misc
 
