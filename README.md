@@ -27,6 +27,19 @@ Version of system builds:
 - scikit-build 0.18.1
 - cffi 1.17.1
 
+### Python 3.13 / musllinux_1_2
+
+Build with Alpine 3.20
+Images: ghcr.io/home-assistant/wheels/ARCH/musllinux_1_2/cp313:VERSION
+
+Version of system builds:
+
+- GCC 13.2.1
+- Cython 3.0.11
+- numpy 2.1.2
+- scikit-build 0.18.1
+- cffi 1.17.1
+
 
 ## Misc
 

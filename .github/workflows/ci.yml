@@ -47,8 +47,9 @@ jobs:
     name: Test wheels ${{ matrix.arch }}-${{ matrix.abi }}-${{ matrix.tag }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        abi: ["cp312"]
+        abi: ["cp312", "cp313"]
         tag: ["musllinux_1_2"]
         arch: ["aarch64", "armhf", "armv7", "amd64", "i386"]
 
