@@ -1,5 +1,7 @@
 """Install APKs for build on host system."""
 
+from __future__ import annotations
+
 import subprocess
 import sys
 

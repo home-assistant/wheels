@@ -1,11 +1,12 @@
 """Hass.io Builder main application."""
 
+from __future__ import annotations
+
 from pathlib import Path
 import shutil
 from subprocess import CalledProcessError, TimeoutExpired
 import sys
 from tempfile import TemporaryDirectory
-from typing import Optional
 
 import click
 import click_pathlib
@@ -84,14 +85,14 @@ from builder.wheel import (
     "--timeout", default=345, type=int, help="Max runtime for pip before abort."
 )
 def builder(
-    apk: Optional[str],
-    pip: Optional[str],
+    apk: str | None,
+    pip: str | None,
     index: str,
     skip_binary: str,
-    requirement: Optional[Path],
-    requirement_diff: Optional[Path],
-    constraint: Optional[Path],
-    prebuild_dir: Optional[Path],
+    requirement: Path | None,
+    requirement_diff: Path | None,
+    constraint: Path | None,
+    prebuild_dir: Path | None,
     single: bool,
     local: bool,
     test: bool,

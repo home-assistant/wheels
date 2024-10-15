@@ -1,5 +1,7 @@
 """Upload plugin rsync."""
 
+from __future__ import annotations
+
 from pathlib import Path
 
 from ..utils import run_command
