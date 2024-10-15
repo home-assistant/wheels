@@ -63,7 +63,7 @@ from builder.wheel import (
 @click.option(
     "--prebuild-dir",
     type=click_pathlib.Path(exists=True),
-    help="Folder with include allready builded wheels for upload.",
+    help="Folder which includes already built wheels for upload.",
 )
 @click.option(
     "--single",

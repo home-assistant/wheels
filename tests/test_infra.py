@@ -127,7 +127,7 @@ def test_check_available_binary_skip_constraint() -> None:
 
 
 def test_check_available_binary_for_missing_constraint() -> None:
-    """Test case where skip binary is for constraint notin the index."""
+    """Test case where skip binary is for constraint not in the index."""
     package_index = infra.extract_packages_from_index("https://example.com")
     assert (
         infra.check_available_binary(
@@ -168,7 +168,7 @@ def test_remove_local_wheel(tmppath: Path) -> None:
         wheels_dir=tmppath,
     )
 
-    # grpc is removed
+    # grpcio is removed
     assert {p.name for p in tmppath.glob("*.whl")} == {
         "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl",
     }
@@ -197,7 +197,7 @@ def test_remove_local_wheel_preserves_newer(tmppath: Path) -> None:
         wheels_dir=tmppath,
     )
 
-    # grpc is removed
+    # grpcio is not removed
     assert {p.name for p in tmppath.glob("*.whl")} == {
         "grpcio-1.43.0-cp310-cp310-musllinux_1_2_x86_64.whl",
         "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl",

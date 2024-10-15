@@ -7,7 +7,7 @@ import sys
 
 
 def install_apks(apks: str) -> None:
-    """Install all apk string formated as 'package1;package2'."""
+    """Install all apk string formatted as 'package1;package2'."""
     packages = " ".join(apks.split(";"))
 
     subprocess.run(

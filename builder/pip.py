@@ -117,7 +117,7 @@ def write_requirement(requirement: Path, packages: list[str]) -> None:
 
 
 def install_pips(index: str, pips: str) -> None:
-    """Install all pipy string formated as 'package1;package2'."""
+    """Install all pipy string formatted as 'package1;package2'."""
     packages = " ".join(pips.split(";"))
 
     run_command(
