@@ -1,8 +1,9 @@
 """Pip build commands."""
 
+from __future__ import annotations
+
 import os
 from pathlib import Path
-from typing import List, Optional
 
 from .utils import run_command
 
@@ -13,7 +14,7 @@ def build_wheels_package(
     output: Path,
     skip_binary: str,
     timeout: int,
-    constraint: Optional[Path] = None,
+    constraint: Path | None = None,
 ) -> None:
     """Build wheels from a requirements file into output."""
     cpu = os.cpu_count() or 4
@@ -38,7 +39,7 @@ def build_wheels_requirement(
     output: Path,
     skip_binary: str,
     timeout: int,
-    constraint: Optional[Path] = None,
+    constraint: Path | None = None,
 ) -> None:
     """Build wheels from a requirements file into output."""
     cpu = os.cpu_count() or 4
@@ -74,9 +75,9 @@ def build_wheels_local(
     )
 
 
-def parse_requirements(requirement: Path) -> List[str]:
+def parse_requirements(requirement: Path) -> list[str]:
     """Parse a requirement files into an array."""
-    requirement_list = set()
+    requirement_list: set[str] = set()
     with requirement.open("r") as data:
         for line in data:
             line = line.strip()
@@ -96,8 +97,8 @@ def parse_requirements(requirement: Path) -> List[str]:
 
 
 def extract_packages(
-    requirement: Path, requirement_diff: Optional[Path] = None
-) -> List[str]:
+    requirement: Path, requirement_diff: Path | None = None
+) -> list[str]:
     """Extract packages they need build."""
     packages = parse_requirements(requirement)
 
@@ -110,13 +111,13 @@ def extract_packages(
     return list(set(packages) - set(packages_diff))
 
 
-def write_requirement(requirement: Path, packages: List[str]) -> None:
+def write_requirement(requirement: Path, packages: list[str]) -> None:
     """Write packages list to a requirement file."""
     requirement.write_text("\n".join(packages))
 
 
 def install_pips(index: str, pips: str) -> None:
-    """Install all pipy string formated as 'package1;package2'."""
+    """Install all pipy string formatted as 'package1;package2'."""
     packages = " ".join(pips.split(";"))
 
     run_command(

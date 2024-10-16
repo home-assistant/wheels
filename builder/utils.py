@@ -1,17 +1,18 @@
 """Some utils for builder."""
 
+from __future__ import annotations
+
 from functools import cache
 import os
 from pathlib import Path
 import subprocess
 import sys
-from typing import Dict, Optional, Tuple
 
 import requests
 
 
 @cache
-def alpine_version() -> Tuple[str, str]:
+def alpine_version() -> tuple[str, str]:
     """Return alpine version for index server."""
     version = Path("/etc/alpine-release").read_text(encoding="utf-8").split(".")
 
@@ -37,7 +38,7 @@ def check_url(url: str) -> None:
 
 
 def run_command(
-    cmd: str, env: Optional[Dict[str, str]] = None, timeout: Optional[int] = None
+    cmd: str, env: dict[str, str] | None = None, timeout: int | None = None
 ) -> None:
     """Implement subprocess.run but handle timeout different."""
     subprocess.run(

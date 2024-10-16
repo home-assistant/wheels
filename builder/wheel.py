@@ -1,12 +1,14 @@
 """Utils for wheel."""
 
+from __future__ import annotations
+
 from contextlib import suppress
 from pathlib import Path
 import re
 import shutil
 from subprocess import CalledProcessError
 from tempfile import TemporaryDirectory
-from typing import Dict, Final
+from typing import Final
 
 from awesomeversion import AwesomeVersion
 
@@ -59,9 +61,9 @@ def check_abi_platform(abi: str, platform: str) -> bool:
     return True
 
 
-def fix_wheels_unmatch_requirements(wheels_folder: Path) -> Dict[str, AwesomeVersion]:
+def fix_wheels_unmatch_requirements(wheels_folder: Path) -> dict[str, AwesomeVersion]:
     """Check Wheels against our min requirements."""
-    result = {}
+    result: dict[str, AwesomeVersion] = {}
     for wheel_file in wheels_folder.glob("*.whl"):
         package = _RE_PACKAGE_FULL.fullmatch(wheel_file.name)
         if not package:

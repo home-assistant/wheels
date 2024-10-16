@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 import re
-from typing import List, Set, Dict, Final
+from typing import Final
 
 from awesomeversion import AwesomeVersion
 import requests
@@ -49,9 +49,9 @@ def create_wheels_list(base_index: str) -> str:
     return f"{base_index}/{_MUSLLINUX}/"
 
 
-def create_package_map(packages: List[str]) -> Dict[str, AwesomeVersion]:
+def create_package_map(packages: list[str]) -> dict[str, AwesomeVersion]:
     """Create a dictionary from package base name to package and version string."""
-    results = {}
+    results: dict[str, AwesomeVersion] = {}
     for package in packages.copy():
         find = _RE_REQUIREMENT.match(package)
         if not find:
@@ -62,11 +62,11 @@ def create_package_map(packages: List[str]) -> Dict[str, AwesomeVersion]:
     return results
 
 
-def extract_packages_from_index(index: str) -> Dict[str, List[WhlPackage]]:
+def extract_packages_from_index(index: str) -> dict[str, list[WhlPackage]]:
     """Extract packages from index which match the supported."""
     available_data = requests.get(index, allow_redirects=True, timeout=60).text
 
-    result = {}
+    result: dict[str, list[WhlPackage]] = {}
     for match in _RE_PACKAGE_INDEX.finditer(available_data):
         package = WhlPackage(
             match["name"], AwesomeVersion(match["ver"]), match["abi"], match["plat"]
@@ -80,10 +80,10 @@ def extract_packages_from_index(index: str) -> Dict[str, List[WhlPackage]]:
 
 
 def check_existing_packages(
-    package_index: Dict[str, List[WhlPackage]], package_map: Dict[str, AwesomeVersion]
-) -> Set[str]:
+    package_index: dict[str, list[WhlPackage]], package_map: dict[str, AwesomeVersion]
+) -> set[str]:
     """Return the set of package names that already exist in the index."""
-    found: Set[str] = set({})
+    found: set[str] = set({})
     for package, version in package_map.items():
         if package in package_index and any(
             sub_package.version == version for sub_package in package_index[package]
@@ -93,10 +93,10 @@ def check_existing_packages(
 
 
 def check_available_binary(
-    package_index: Dict[str, List[WhlPackage]],
+    package_index: dict[str, list[WhlPackage]],
     skip_binary: str,
-    packages: List[str],
-    constraints: List[str],
+    packages: list[str],
+    constraints: list[str],
 ) -> str:
     """Check if binary exists and ignore this skip."""
     if skip_binary == ":none:":
@@ -108,7 +108,7 @@ def check_available_binary(
     package_map = create_package_map(packages + constraints)
 
     # View of package map limited to packages in --skip-binary
-    binary_package_map = {}
+    binary_package_map: dict[str, AwesomeVersion] = {}
     for binary in list_binary:
         if not (version := package_map.get(binary)):
             print(
@@ -119,7 +119,7 @@ def check_available_binary(
         binary_package_map[binary] = version
 
     print(f"Checking if binaries already exist for packages {binary_package_map}")
-    list_found: Set[str] = check_existing_packages(package_index, binary_package_map)
+    list_found = check_existing_packages(package_index, binary_package_map)
     print(f"Packages already exist: {list_found}")
     list_needed = binary_package_map.keys() - list_found
 
@@ -132,11 +132,11 @@ def check_available_binary(
 
 
 def remove_local_wheels(
-    package_index: Dict[str, List[WhlPackage]],
-    skip_exists: List[str],
-    packages: List[str],
+    package_index: dict[str, list[WhlPackage]],
+    skip_exists: list[str],
+    packages: list[str],
     wheels_dir: Path,
-) -> str:
+) -> None:
     """Remove existing wheels if they already exist in the index to avoid syncing."""
     package_map = create_package_map(packages)
     binary_package_map = {
