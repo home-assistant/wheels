@@ -7,8 +7,12 @@ ARG \
     QEMU_CPU \
     AUDITWHEEL_VERSION=5.1.2 \
     PIP_EXTRA_INDEX_URL=https://wheels.home-assistant.io/musllinux-index/ \
+    UV_EXTRA_INDEX_URL=https://wheels.home-assistant.io/musllinux-index/ \
 
 WORKDIR /usr/src
+
+# Install uv
+RUN pip3 install uv==0.4.28
 
 SHELL ["/bin/bash", "-exo", "pipefail", "-c"]
 
@@ -41,7 +45,7 @@ RUN \
         apk add --no-cache --virtual .build-dependencies2 \
             openblas-dev; \
     fi \
-    && pip3 install \
+    && uv pip install \
         -r /usr/src/requirements.txt \
         -r /usr/src/requirements_${CPYTHON_ABI}.txt \
     && rm -rf /usr/src/*
@@ -54,14 +58,14 @@ RUN \
         https://github.com/pypa/auditwheel \
     && cd auditwheel \
     && git apply /usr/src/0001-Support-musllinux-armv6l.patch \
-    && pip install . \
+    && uv pip install . \
     && rm -rf /usr/src/*
 
 # Install builder
 COPY . /usr/src/builder/
 RUN \
     set -x \
-    && pip3 install /usr/src/builder/ \
+    && uv pip install /usr/src/builder/ \
     && rm -rf /usr/src/*
 
 # Set build environment information

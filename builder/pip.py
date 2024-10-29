@@ -121,5 +121,5 @@ def install_pips(index: str, pips: str) -> None:
     packages = " ".join(pips.split(";"))
 
     run_command(
-        f"pip install --upgrade --extra-index-url {index} {packages}",
+        f"uv pip install --upgrade --extra-index-url {index} {packages}",
     )
