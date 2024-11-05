@@ -9,7 +9,7 @@ from typing import Final
 
 from awesomeversion import AwesomeVersion
 from packaging.tags import Tag
-from packaging.utils import parse_wheel_filename
+from packaging.utils import canonicalize_name, parse_wheel_filename
 import requests
 
 from .wheel import check_abi_platform
@@ -55,7 +55,7 @@ def create_package_map(packages: list[str]) -> dict[str, AwesomeVersion]:
         find = _RE_REQUIREMENT.match(package)
         if not find:
             continue
-        package = find["package"]
+        package = canonicalize_name(find["package"])
         version = AwesomeVersion(find["version"])
         results[package] = version
     return results
@@ -77,6 +77,15 @@ def extract_packages_from_index(index: str) -> dict[str, list[WhlPackage]]:
             continue
         result.setdefault(package.name, []).append(package)
 
+    return result
+
+
+def extract_package_names_from_wheels(wheels_dir: Path) -> dict[str, list[Path]]:
+    """Map wheel paths to normalized package names."""
+    result: dict[str, list[Path]] = {}
+    for wheel in wheels_dir.glob("*.whl"):
+        name, _, _, _ = parse_wheel_filename(wheel.name)
+        result.setdefault(name, []).append(wheel)
     return result
 
 
@@ -103,7 +112,7 @@ def check_available_binary(
     if skip_binary == ":none:":
         return skip_binary
 
-    list_binary = skip_binary.split(";")
+    list_binary = list(map(canonicalize_name, skip_binary.split(";")))
 
     # Map of package basename to the desired package version
     package_map = create_package_map(packages + constraints)
@@ -134,20 +143,22 @@ def check_available_binary(
 
 def remove_local_wheels(
     package_index: dict[str, list[WhlPackage]],
-    skip_exists: list[str],
+    skip_exists: str,
     packages: list[str],
     wheels_dir: Path,
 ) -> None:
     """Remove existing wheels if they already exist in the index to avoid syncing."""
     package_map = create_package_map(packages)
+    list_exists = list(map(canonicalize_name, skip_exists.split(";")))
     binary_package_map = {
-        name: package_map[name] for name in skip_exists if name in package_map
+        name: package_map[name] for name in list_exists if name in package_map
     }
     print(f"Checking if binaries already exist for packages {binary_package_map}")
     exists = check_existing_packages(package_index, binary_package_map)
+    wheel_map = extract_package_names_from_wheels(wheels_dir)
     for binary in exists:
         version = binary_package_map[binary]
         print(f"Found existing wheels for {binary}, removing local copy {version}")
-        for wheel in wheels_dir.glob(f"{binary}-*.whl"):
+        for wheel in wheel_map[binary]:
             print(f"Removing local wheel {wheel}")
             wheel.unlink()

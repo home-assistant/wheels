@@ -160,7 +160,7 @@ def test_remove_local_wheel(tmppath: Path) -> None:
 
     infra.remove_local_wheels(
         package_index,
-        skip_exists=["grpcio"],
+        skip_exists="grpcio",
         packages=[
             "google_cloud_pubsub==2.9.0",
             "grpcio==1.31.0",  # Exists in index
@@ -189,7 +189,7 @@ def test_remove_local_wheel_preserves_newer(tmppath: Path) -> None:
 
     infra.remove_local_wheels(
         package_index,
-        skip_exists=["grpcio"],
+        skip_exists="grpcio",
         packages=[
             "google_cloud_pubsub==2.9.0",
             "grpcio==1.43.0",  # Newer than index

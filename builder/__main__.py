@@ -207,7 +207,7 @@ def builder(
             constraints = parse_requirements(constraint) if constraint else []
             remove_local_wheels(
                 package_index,
-                skip_binary.split(";"),
+                skip_binary,
                 packages + constraints,
                 wheels_dir,
             )
