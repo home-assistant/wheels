@@ -10,7 +10,7 @@ def test_extract_packages_from_index() -> None:
     package_index = infra.extract_packages_from_index("https://example.com")
     assert list(package_index.keys()) == [
         "aiohttp",
-        "google_cloud_pubsub",
+        "google-cloud-pubsub",
         "grpcio",
         "aioconsole",
     ]

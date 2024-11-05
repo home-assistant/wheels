@@ -8,6 +8,8 @@ import re
 from typing import Final
 
 from awesomeversion import AwesomeVersion
+from packaging.tags import Tag
+from packaging.utils import parse_wheel_filename
 import requests
 
 from .wheel import check_abi_platform
@@ -15,9 +17,7 @@ from .wheel import check_abi_platform
 _RE_REQUIREMENT: Final = re.compile(
     r"(?P<package>.+)(?:==|>|<|<=|>=|~=)(?P<version>.+)"
 )
-_RE_PACKAGE_INDEX: Final = re.compile(
-    r"\"(?P<namever>(?P<name>.+?)-(?P<ver>.+?))(-(?P<build>\d[^-]*))?-(?P<pyver>.+?)-(?P<abi>.+?)-(?P<plat>.+?)\.whl\""
-)
+_RE_PACKAGE_INDEX: Final = re.compile(r"\"(.+\.whl)\"")
 _MUSLLINUX: Final = "musllinux"
 
 
@@ -27,8 +27,7 @@ class WhlPackage:
 
     name: str
     version: AwesomeVersion
-    abi: str
-    platform: str
+    tags: frozenset[Tag]
 
 
 def create_wheels_folder(base_folder: Path) -> Path:
@@ -67,12 +66,14 @@ def extract_packages_from_index(index: str) -> dict[str, list[WhlPackage]]:
     available_data = requests.get(index, allow_redirects=True, timeout=60).text
 
     result: dict[str, list[WhlPackage]] = {}
-    for match in _RE_PACKAGE_INDEX.finditer(available_data):
-        package = WhlPackage(
-            match["name"], AwesomeVersion(match["ver"]), match["abi"], match["plat"]
-        )
+    for wheel_name in _RE_PACKAGE_INDEX.finditer(available_data):
+        name, version, _build_tag, tags = parse_wheel_filename(wheel_name[1])
+        package = WhlPackage(name, AwesomeVersion(str(version)), tags)
 
-        if not check_abi_platform(package.abi, package.platform):
+        for tag in package.tags:
+            if check_abi_platform(tag.abi, tag.platform):
+                break
+        else:
             continue
         result.setdefault(package.name, []).append(package)
 
