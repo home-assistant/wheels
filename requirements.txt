@@ -4,4 +4,5 @@ click-pathlib==2020.3.13.0
 requests==2.32.3
 wheel==0.44.0
 setuptools==75.3.0
+packaging==24.1
 pip==24.3.1
