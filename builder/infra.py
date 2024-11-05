@@ -51,7 +51,7 @@ def create_wheels_list(base_index: str) -> str:
 def create_package_map(packages: list[str]) -> dict[str, AwesomeVersion]:
     """Create a dictionary from package base name to package and version string."""
     results: dict[str, AwesomeVersion] = {}
-    for package in packages.copy():
+    for package in packages:
         find = _RE_REQUIREMENT.match(package)
         if not find:
             continue
@@ -84,7 +84,7 @@ def check_existing_packages(
     package_index: dict[str, list[WhlPackage]], package_map: dict[str, AwesomeVersion]
 ) -> set[str]:
     """Return the set of package names that already exist in the index."""
-    found: set[str] = set({})
+    found: set[str] = set()
     for package, version in package_map.items():
         if package in package_index and any(
             sub_package.version == version for sub_package in package_index[package]
