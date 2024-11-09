@@ -162,6 +162,6 @@ def remove_local_wheels(
     for binary in exists:
         version = binary_package_map[binary]
         print(f"Found existing wheels for {binary}, removing local copy {version}")
-        for wheel in wheel_map[binary]:
+        for wheel in wheel_map.get(binary, ()):
             print(f"Removing local wheel {wheel}")
             wheel.unlink()

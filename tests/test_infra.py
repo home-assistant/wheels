@@ -259,3 +259,18 @@ def test_remove_local_wheel_normalized_package_names(tmppath: Path) -> None:
 
     # grpcio and google-cloud-pubsub are removed
     assert {p.name for p in tmppath.glob("*.whl")} == set()
+
+
+def test_remove_local_wheel_no_build_wheels(tmppath: Path) -> None:
+    """Test remove_local_wheels does not fail with skip_exists and no build wheels."""
+    package_index = infra.extract_packages_from_index("https://example.com")
+    assert {p.name for p in tmppath.glob("*.whl")} == set()
+
+    infra.remove_local_wheels(
+        package_index,
+        skip_exists="grpcio",
+        packages=[
+            "grpcio==1.31.0",  # Exists in index
+        ],
+        wheels_dir=tmppath,
+    )
