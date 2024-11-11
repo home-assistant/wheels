@@ -2,7 +2,7 @@ awesomeversion>=21.2.2
 click==8.1.7
 click-pathlib==2020.3.13.0
 requests==2.32.3
-wheel==0.44.0
+wheel==0.45.0
 setuptools==75.3.0
 packaging==24.2
 pip==24.3.1
