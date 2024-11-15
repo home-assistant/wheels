@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name    = "builder"
+version = "2.1.0"
+license = {text = "Apache-2.0"}
+description = "Home Assistant Python wheels builder."
+authors = [
+    {name = "The Home Assistant Authors", email = "hello@home-assistant.io"}
+]
+keywords = ["docker", "home-assistant"]
+classifiers = [
+    "Intended Audience :: Developers",
+    "Operating System :: POSIX :: Linux",
+    "Topic :: Home Automation",
+    "Development Status :: 5 - Production/Stable",
+]
+
+[project.urls]
+"Homepage" = "https://home-assistant.io/"
+
+[tool.setuptools.packages.find]
+include = ["builder*"]
