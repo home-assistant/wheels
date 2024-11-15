@@ -1,0 +1,37 @@
+name: Build wheels
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+    paths:
+      - ".github/workflows/build-wheels.yml"
+      - "requirements_wheels.txt"
+
+jobs:
+  wheels:
+    name: Build basic wheels
+    if: github.repository_owner == 'home-assistant'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        abi: ["cp312", "cp313"]
+        arch: ["aarch64", "armhf", "armv7", "amd64", "i386"]
+    steps:
+      - name: Check out code from GitHub
+        uses: actions/checkout@v4.2.2
+
+      - name: Build wheels
+        uses: ./
+        with:
+          abi: ${{ matrix.abi }}
+          tag: musllinux_1_2
+          arch: ${{ matrix.arch }}
+          wheels-key: ${{ secrets.WHEELS_KEY }}
+          apk: "mariadb-dev;postgresql-dev;libffi-dev;openblas-dev"
+          skip-binary: "cython"
+          requirements: "requirements_wheels.txt"
