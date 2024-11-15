@@ -61,9 +61,6 @@ jobs:
         shell: bash
         run: |
           (
-            echo "GRPC_BUILD_WITH_BORING_SSL_ASM=false"
-            echo "GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=true"
-            echo "GRPC_PYTHON_BUILD_WITH_CYTHON=true"
             echo "CARGO_NET_GIT_FETCH_WITH_CLI=true"
           ) > .env_file
 
