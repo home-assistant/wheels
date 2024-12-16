@@ -37,6 +37,7 @@ _ALPINE_PLATFORM = {
     ("3", "18"): "musllinux_1_2",
     ("3", "19"): "musllinux_1_2",
     ("3", "20"): "musllinux_1_2",
+    ("3", "21"): "musllinux_1_2",
 }
 
 
