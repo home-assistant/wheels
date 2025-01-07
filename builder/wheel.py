@@ -29,6 +29,7 @@ _ARCH_PLAT = {
     "aarch64": "aarch64",
     "armhf": "armv6l",
     "armv7": "armv7l",
+    "riscv64": "riscv64",
 }
 
 _ALPINE_PLATFORM = {
