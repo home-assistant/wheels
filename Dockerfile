@@ -5,7 +5,7 @@ ARG \
     BUILD_ARCH \
     CPYTHON_ABI \
     QEMU_CPU \
-    AUDITWHEEL_VERSION=6.1.0 \
+    AUDITWHEEL_VERSION=6.2.0 \
     PIP_EXTRA_INDEX_URL=https://wheels.home-assistant.io/musllinux-index/ \
 
 WORKDIR /usr/src
