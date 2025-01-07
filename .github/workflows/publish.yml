@@ -33,14 +33,14 @@ jobs:
         run: |
           declare -a docker
 
-          name="ghcr.io/home-assistant/wheels/${{ matrix.arch }}/${{ matrix.tag }}/${{ matrix.abi }}"
+          name="ghcr.io/eshattow/hass-wheels/${{ matrix.arch }}/${{ matrix.tag }}/${{ matrix.abi }}"
 
           version=$(echo "${{ github.ref }}" | awk -F"/" '{print $NF}' )
           if [ "${version}" = "master" ]; then
             version=dev
           fi
 
-          base="ghcr.io/home-assistant/${{ matrix.arch }}-base-python:${{ matrix.base }}"
+          base="ghcr.io/eshattow/${{ matrix.arch }}-base-python:${{ matrix.base }}"
 
           if [ "${{ matrix.arch }}" = "armhf" ]; then
             docker+=("--build-arg QEMU_CPU=arm1176")
