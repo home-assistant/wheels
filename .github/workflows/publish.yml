@@ -40,7 +40,7 @@ jobs:
             version=dev
           fi
 
-          base="ghcr.io/eshattow/${{ matrix.arch }}-base-python:${{ matrix.base }}"
+          base="ghcr.io/home-assistant/${{ matrix.arch }}-base-python:${{ matrix.base }}"
 
           if [ "${{ matrix.arch }}" = "armhf" ]; then
             docker+=("--build-arg QEMU_CPU=arm1176")
