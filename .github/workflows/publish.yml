@@ -33,7 +33,7 @@ jobs:
         run: |
           declare -a docker
 
-          name="ghcr.io/eshattow/hass-wheels/${{ matrix.arch }}/${{ matrix.tag }}/${{ matrix.abi }}"
+          name="ghcr.io/home-assistant/wheels/${{ matrix.arch }}/${{ matrix.tag }}/${{ matrix.abi }}"
 
           version=$(echo "${{ github.ref }}" | awk -F"/" '{print $NF}' )
           if [ "${version}" = "master" ]; then
