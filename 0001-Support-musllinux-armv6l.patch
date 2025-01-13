@@ -1,4 +1,4 @@
-From 61997d54a968ac9df4e7df5de0a792f7b03881f8 Mon Sep 17 00:00:00 2001
+From 1c9bba7af44d2465d3657f7a63f8a0ffdca3239b Mon Sep 17 00:00:00 2001
 From: Pascal Vizeli <pvizeli@syshack.ch>
 Date: Wed, 15 Jun 2022 12:48:56 +0000
 Subject: [PATCH] Support musllinux armv6l
@@ -9,19 +9,19 @@ Subject: [PATCH] Support musllinux armv6l
  2 files changed, 5 insertions(+)
 
 diff --git a/src/auditwheel/policy/__init__.py b/src/auditwheel/policy/__init__.py
-index 7c9b158..90c7e17 100644
+index f38ab43..8ed9db8 100644
 --- a/src/auditwheel/policy/__init__.py
 +++ b/src/auditwheel/policy/__init__.py
-@@ -279,6 +279,7 @@ def _fixup_musl_libc_soname(libc: Libc, arch: str, whitelist):
+@@ -285,6 +285,7 @@ def _fixup_musl_libc_soname(libc: Libc, arch: str, whitelist):
              "aarch64": "libc.musl-aarch64.so.1",
              "s390x": "libc.musl-s390x.so.1",
              "ppc64le": "libc.musl-ppc64le.so.1",
 +            "armv6l": "libc.musl-armvhf.so.1",
              "armv7l": "libc.musl-armv7.so.1",
+             "riscv64": "libc.musl-riscv64.so.1",
          }
-     }
 diff --git a/src/auditwheel/policy/musllinux-policy.json b/src/auditwheel/policy/musllinux-policy.json
-index b103099..9365636 100644
+index f2f6a06..c02436e 100644
 --- a/src/auditwheel/policy/musllinux-policy.json
 +++ b/src/auditwheel/policy/musllinux-policy.json
 @@ -20,6 +20,8 @@
@@ -31,16 +31,18 @@ index b103099..9365636 100644
 +      "armv6l": {
 +      },
        "armv7l": {
-       }
-     },
-@@ -41,6 +43,8 @@
+       },
+       "riscv64": {
+@@ -43,6 +45,8 @@
        },
        "s390x": {
        },
 +      "armv6l": {
 +      },
        "armv7l": {
-       }
-     },
---
-2.47.1
+       },
+       "riscv64": {
+
+base-commit: 7d50cf2e4ba1d46ec9ac361661e563fea84c6eca
+-- 
+2.45.2
