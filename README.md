@@ -23,7 +23,7 @@ Version of system builds:
 
 - GCC 13.2.1
 - Cython 3.0.11
-- numpy 2.2.1
+- numpy 2.2.2
 - scikit-build 0.18.1
 - cffi 1.17.1
 
@@ -36,7 +36,7 @@ Version of system builds:
 
 - GCC 13.2.1
 - Cython 3.0.11
-- numpy 2.2.1
+- numpy 2.2.2
 - scikit-build 0.18.1
 - cffi 1.17.1
 
