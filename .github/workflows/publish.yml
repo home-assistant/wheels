@@ -14,13 +14,10 @@ jobs:
     strategy:
       fail-fast: False
       matrix:
-        abi: ["cp312", "cp313"]
+        abi: ["cp313"]
         tag: ["musllinux_1_2"]
         arch: ["aarch64", "armhf", "armv7", "amd64", "i386"]
         include:
-          - abi: cp312
-            tag: musllinux_1_2
-            base: 3.12-alpine3.21
           - abi: cp313
             tag: musllinux_1_2
             base: 3.13-alpine3.21
