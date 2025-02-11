@@ -9,7 +9,7 @@ on:
       - master
 
 env:
-  PYTHON_VERSION: "3.12"
+  PYTHON_VERSION: "3.13"
 
 jobs:
   tox:
@@ -49,7 +49,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        abi: ["cp312", "cp313"]
+        abi: ["cp313"]
         tag: ["musllinux_1_2"]
         arch: ["aarch64", "armhf", "armv7", "amd64", "i386"]
 
