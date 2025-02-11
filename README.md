@@ -35,7 +35,7 @@ Images: ghcr.io/home-assistant/wheels/ARCH/musllinux_1_2/cp313:VERSION
 Version of system builds:
 
 - GCC 13.2.1
-- Cython 3.0.11
+- Cython 3.0.12
 - numpy 2.2.2
 - scikit-build 0.18.1
 - cffi 1.17.1
