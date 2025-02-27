@@ -148,6 +148,14 @@ runs:
         echo "path=$data_path" >> $GITHUB_OUTPUT
 
     - shell: bash
+      id: host-info
+      run: |
+        echo "host-machine=$(uname -m)" >> $GITHUB_OUTPUT
+
+    - shell: bash
+      if: |
+        steps.host-info.outputs.host-machine == 'x86_64'
+        && !(matrix.arch == 'amd64' || matrix.arch == 'i386')
       run: |
         docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
