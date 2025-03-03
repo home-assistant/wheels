@@ -51,6 +51,8 @@ def build_wheels_requirement(
     # Add constraint
     constraint_cmd = f"--constraint {constraint}" if constraint else ""
 
+    print("test")
+
     run_command(
         f'pip3 wheel --no-clean --no-binary "{skip_binary}" --wheel-dir {output} --extra-index-url {index} {constraint_cmd} --requirement {requirement}',
         env=build_env,
@@ -121,5 +123,5 @@ def install_pips(index: str, pips: str) -> None:
     packages = " ".join(pips.split(";"))
 
     run_command(
-        f"pip install --upgrade --extra-index-url {index} {packages}",
+        f"uv pip install --upgrade --extra-index-url {index} {packages}",
     )
