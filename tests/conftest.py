@@ -65,6 +65,13 @@ def sys_alpine():
         yield
 
 
+@pytest.fixture(autouse=True)
+def sys_musl_version():
+    """Patch alpine musl version lookup table."""
+    with patch("builder.wheel._ALPINE_MUSL_VERSION", new={("3", "16"): (1, 2)}):
+        yield
+
+
 @pytest.fixture
 def tmppath(tmpdir):
     return Path(tmpdir)
