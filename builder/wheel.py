@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from contextlib import suppress
+from functools import cache
 from pathlib import Path
 import re
 import shutil
@@ -31,24 +32,33 @@ _ARCH_PLAT = {
     "armv7": "armv7l",
 }
 
-_ALPINE_PLATFORM = {
-    ("3", "16"): "musllinux_1_2",
-    ("3", "17"): "musllinux_1_2",
-    ("3", "18"): "musllinux_1_2",
-    ("3", "19"): "musllinux_1_2",
-    ("3", "20"): "musllinux_1_2",
-    ("3", "21"): "musllinux_1_2",
+_ALPINE_MUSL_VERSION = {
+    ("3", "16"): (1, 2),
+    ("3", "17"): (1, 2),
+    ("3", "18"): (1, 2),
+    ("3", "19"): (1, 2),
+    ("3", "20"): (1, 2),
+    ("3", "21"): (1, 2),
 }
+
+
+@cache
+def sys_platform(arch: str) -> set[str]:
+    """Build list of supported platform tags.
+
+    Minor musl versions are backwards compatible.
+    """
+    major, minor = _ALPINE_MUSL_VERSION[alpine_version()]
+    return {"any", *[f"musllinux_{major}_{i}_{arch}" for i in range(minor + 1)]}
 
 
 def check_abi_platform(abi: str, platform: str) -> bool:
     """Return True if abi and platform work."""
     arch = _ARCH_PLAT[build_arch()]
     sys_abi = build_abi()
-    sys_platform = _ALPINE_PLATFORM[alpine_version()]
 
     # Check platform
-    if platform in ("any", f"{sys_platform}_{arch}"):
+    if platform in sys_platform(arch):
         pass
     else:
         return False

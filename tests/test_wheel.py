@@ -64,7 +64,11 @@ def test_linux_regex_wrong(test):
     "abi,platform",
     [
         ("cp310", "musllinux_1_2_x86_64"),
+        ("cp310", "musllinux_1_1_x86_64"),
+        ("cp310", "musllinux_1_0_x86_64"),
         ("abi3", "musllinux_1_2_x86_64"),
+        ("abi3", "musllinux_1_1_x86_64"),
+        ("abi3", "musllinux_1_0_x86_64"),
         ("none", "any"),
     ],
 )
@@ -78,8 +82,8 @@ def test_working_abi_platform(abi, platform):
     [
         ("cp311", "musllinux_1_2_x86_64"),
         ("cp310", "musllinux_1_2_i686"),
-        ("cp310", "musllinux_1_1_x86_64"),
-        ("abi3", "musllinux_1_1_x86_64"),
+        ("cp310", "musllinux_1_3_x86_64"),
+        ("abi3", "musllinux_1_3_x86_64"),
     ],
 )
 def test_not_working_abi_platform(abi, platform):
@@ -92,10 +96,10 @@ def test_fix_wheel_unmatch(tmppath: Path) -> None:
 
     p = tmppath / "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl"
     p.touch()
-    p = tmppath / "grpcio-1.31.0-cp310-cp310-musllinux_1_1_x86_64.whl"
+    p = tmppath / "grpcio-1.31.0-cp39-cp39-musllinux_1_1_x86_64.whl"
     p.touch()
     assert {p.name for p in tmppath.glob("*.whl")} == {
-        "grpcio-1.31.0-cp310-cp310-musllinux_1_1_x86_64.whl",
+        "grpcio-1.31.0-cp39-cp39-musllinux_1_1_x86_64.whl",
         "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl",
     }
 
