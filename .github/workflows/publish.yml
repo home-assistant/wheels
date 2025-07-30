@@ -14,13 +14,23 @@ jobs:
     strategy:
       fail-fast: False
       matrix:
-        abi: ["cp313"]
+        abi: ["cp313", "cp314"]
         tag: ["musllinux_1_2"]
         arch: ["aarch64", "armhf", "armv7", "amd64", "i386"]
         include:
           - abi: cp313
             tag: musllinux_1_2
             base: 3.13-alpine3.22
+          - abi: cp314
+            tag: musllinux_1_2
+            base: 3.14-alpine3.22
+        exclude:
+          - abi: cp314
+            arch: armhf
+          - abi: cp314
+            arch: armv7
+          - abi: cp314
+            arch: i386
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v5.0.0
