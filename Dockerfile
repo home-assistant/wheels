@@ -20,7 +20,8 @@ COPY \
     requirements_${CPYTHON_ABI}.txt \
     /usr/src/
 RUN \
-    apk add --no-cache \
+    apk upgrade --no-cache \
+    && apk add --no-cache \
         rsync \
         openssh-client \
         patchelf \
