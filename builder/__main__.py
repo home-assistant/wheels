@@ -9,7 +9,6 @@ import sys
 from tempfile import TemporaryDirectory
 
 import click
-import click_pathlib
 
 from builder.apk import install_apks
 from builder.infra import (
@@ -47,22 +46,22 @@ from builder.wheel import (
 )
 @click.option(
     "--requirement",
-    type=click_pathlib.Path(exists=True),
+    type=click.Path(exists=True, path_type=Path),
     help="Python requirement file.",
 )
 @click.option(
     "--requirement-diff",
-    type=click_pathlib.Path(exists=True),
+    type=click.Path(exists=True, path_type=Path),
     help="Python requirement file to calc the different for selective builds.",
 )
 @click.option(
     "--constraint",
-    type=click_pathlib.Path(exists=True),
+    type=click.Path(exists=True, path_type=Path),
     help="Python constraint file.",
 )
 @click.option(
     "--prebuild-dir",
-    type=click_pathlib.Path(exists=True),
+    type=click.Path(exists=True, path_type=Path),
     help="Folder which includes already built wheels for upload.",
 )
 @click.option(
