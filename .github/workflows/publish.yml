@@ -89,6 +89,7 @@ jobs:
         with:
           context: . # So action will not pull the repository again
           push: ${{ github.event_name != 'pull_request' }}
+          pull: true
           platforms: ${{ matrix.platform }}
           cache-from: type=registry,ref=${{ steps.info.outputs.name }}:dev
           build-args: |
