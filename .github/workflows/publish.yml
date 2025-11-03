@@ -6,6 +6,9 @@ on:
   push:
     branches:
       - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
   publish:
@@ -33,7 +36,7 @@ jobs:
             arch: i386
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
       - shell: bash
         id: info
@@ -63,26 +66,35 @@ jobs:
           echo "docker=${docker[@]}" >> $GITHUB_OUTPUT
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3.6.0
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - shell: bash
-        run: |
-          docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3.6.0
 
-      - shell: bash
-        run: |
-          docker build \
-            -t ${{ steps.info.outputs.name }}:${{ steps.info.outputs.version }} \
-            ${{ steps.info.outputs.docker }} \
-            --build-arg "BUILD_FROM=${{ steps.info.outputs.base }}" \
-            --build-arg "BUILD_ARCH=${{ matrix.arch }}" \
-            --build-arg "CPYTHON_ABI=${{ matrix.abi }}" \
-            .
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
 
-      - shell: bash
-        run: |
-          docker push ${{ steps.info.outputs.name }}:${{ steps.info.outputs.version }}
+      - name: Build Docker image
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        with:
+          context: . # So action will not pull the repository again
+          load: true
+          tags: ${{ steps.info.outputs.name }}:${{ steps.info.outputs.version }}
+          push: false
+          build-args: |
+            BUILD_FROM=${{ steps.info.outputs.base }}
+            BUILD_ARCH=${{ matrix.arch }}
+            CPYTHON_ABI=${{ matrix.abi }}
+
+      - name: Push Docker image
+        if: github.event_name != 'pull_request'
+        id: push
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        with:
+          context: . # So action will not pull the repository again
+          push: false
+          tags: ${{ steps.info.outputs.name }}:${{ steps.info.outputs.version }}
