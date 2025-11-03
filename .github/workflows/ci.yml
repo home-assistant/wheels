@@ -78,7 +78,7 @@ jobs:
           tag: ${{ matrix.tag }}
           arch: ${{ matrix.arch }}
           apk: "mariadb-dev;postgresql-dev;libffi-dev;openssl-dev"
-          skip-binary: "orjson"
+          skip-binary: ""
           env-file: True
           test: True
           requirements: "requirements_wheels_test.txt"
