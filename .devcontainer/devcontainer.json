@@ -1,29 +1,35 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
   "name": "Wheels",
-  "context": "..",
-  "dockerFile": "Dockerfile",
-  "extensions": [
-    "ms-python.python",
-    "ms-python.vscode-pylance",
-    "visualstudioexptteam.vscodeintellicode",
-    "esbenp.prettier-vscode"
-  ],
-  "settings": {
-    "editor.formatOnPaste": false,
-    "editor.formatOnSave": true,
-    "editor.formatOnType": true,
-    "files.trimTrailingWhitespace": true,
-    "python.pythonPath": "/usr/local/bin/python3",
-    "python.linting.pylintEnabled": true,
-    "python.linting.enabled": true,
-    "python.formatting.provider": "black",
-    "python.formatting.blackArgs": ["--target-version", "py310"],
-    "python.formatting.blackPath": "/usr/local/bin/black",
-    "python.linting.banditPath": "/usr/local/bin/bandit",
-    "python.linting.flake8Path": "/usr/local/bin/flake8",
-    "python.linting.mypyPath": "/usr/local/bin/mypy",
-    "python.linting.pylintPath": "/usr/local/bin/pylint",
-    "python.linting.pydocstylePath": "/usr/local/bin/pydocstyle"
-  }
+  "image": "mcr.microsoft.com/devcontainers/python:3.13",
+  "postStartCommand": "pip install -r requirements.txt -r requirements_tests.txt",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "visualstudioexptteam.vscodeintellicode",
+        "esbenp.prettier-vscode"
+      ],
+      "settings": {
+        "editor.formatOnPaste": false,
+        "editor.formatOnSave": true,
+        "editor.formatOnType": true,
+        "files.trimTrailingWhitespace": true,
+        "python.pythonPath": "/usr/local/bin/python3",
+        "python.linting.pylintEnabled": true,
+        "python.linting.enabled": true,
+        "python.formatting.provider": "black",
+        "python.formatting.blackArgs": ["--target-version", "py310"],
+        "python.formatting.blackPath": "/usr/local/bin/black",
+        "python.linting.banditPath": "/usr/local/bin/bandit",
+        "python.linting.flake8Path": "/usr/local/bin/flake8",
+        "python.linting.mypyPath": "/usr/local/bin/mypy",
+        "python.linting.pylintPath": "/usr/local/bin/pylint",
+        "python.linting.pydocstylePath": "/usr/local/bin/pydocstyle"
+      }
+    }
+  },
+  "remoteUser": "vscode",
+  "runArgs": ["-e", "GIT_EDITOR=code --wait"]
 }

@@ -2,6 +2,8 @@
 
 from pathlib import Path
 
+from packaging.utils import canonicalize_name
+
 from builder import infra
 
 
@@ -15,7 +17,9 @@ def test_extract_packages_from_index() -> None:
         "aioconsole",
     ]
 
-    assert list(str(package.version) for package in package_index["aiohttp"]) == [
+    assert list(
+        str(package.version) for package in package_index[canonicalize_name("aiohttp")]
+    ) == [
         "3.6.1",
         "3.7.3",
         "3.7.4",

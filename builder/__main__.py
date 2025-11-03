@@ -126,6 +126,9 @@ def builder(
             # Prepare allready builded wheels for upload
             for whl_file in prebuild_dir.glob("*.whl"):
                 shutil.copy(whl_file, Path(wheels_dir, whl_file.name))
+        elif not requirement:
+            print("No requirement file provided, nothing to build.")
+            sys.exit(2)  # ERROR_FILE_NOT_FOUND
         elif single:
             # Build every wheel like a single installation
             packages = extract_packages(requirement, requirement_diff)
@@ -200,6 +203,9 @@ def builder(
                 exit_code = 109
 
         if skip_binary != ":none:":
+            if not requirement:
+                print("No requirement file provided, cannot remove local wheels.")
+                sys.exit(2)  # ERROR_FILE_NOT_FOUND
             # Some wheels that already exist should not be overwritten in case we replace with
             # a wheel that came from pypi rather than a wheel built from source with extra flags.
             # When --skip-binary and --skip-exists are set a wheel is only built from source once.
