@@ -66,19 +66,12 @@ jobs:
             version=dev
           fi
 
-          base="ghcr.io/home-assistant/${{ matrix.arch }}-base-python:${{ matrix.base }}"
-
           if [ "${{ matrix.arch }}" = "armhf" ]; then
-            docker+=("--build-arg QEMU_CPU=arm1176")
-          fi
-
-          if docker pull "$name:dev" > /dev/null 2>&1; then
-            docker+=("--cache-from $name:dev")
+            docker+=("QEMU_CPU=arm1176")
           fi
 
           echo "name=$name" >> $GITHUB_OUTPUT
           echo "version=$version" >> $GITHUB_OUTPUT
-          echo "base=$base" >> $GITHUB_OUTPUT
           echo "docker=${docker[@]}" >> $GITHUB_OUTPUT
 
       - name: Login to GitHub Container Registry
@@ -97,10 +90,12 @@ jobs:
           context: . # So action will not pull the repository again
           push: ${{ github.event_name != 'pull_request' }}
           platforms: ${{ matrix.platform }}
+          cache-from: type=registry,ref=${{ steps.info.outputs.name }}:dev
           build-args: |
-            BUILD_FROM=${{ steps.info.outputs.base }}
+            BUILD_FROM=ghcr.io/home-assistant/${{ matrix.arch }}-base-python:${{ matrix.base }}
             BUILD_ARCH=${{ matrix.arch }}
             CPYTHON_ABI=${{ matrix.abi }}
+            ${{ steps.info.outputs.docker }}
           tags: |
             ${{ steps.info.outputs.name }}:${{ steps.info.outputs.version }}
             ${{ steps.info.outputs.name }}:${{ github.sha }}
