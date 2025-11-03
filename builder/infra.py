@@ -2,20 +2,22 @@
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from pathlib import Path
-import re
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
-from awesomeversion import AwesomeVersion
-from packaging.tags import Tag
-from packaging.utils import NormalizedName, canonicalize_name, parse_wheel_filename
 import requests
+from awesomeversion import AwesomeVersion
+from packaging.utils import NormalizedName, canonicalize_name, parse_wheel_filename
 
 from .wheel import check_abi_platform
 
+if TYPE_CHECKING:
+    from packaging.tags import Tag
+
 _RE_REQUIREMENT: Final = re.compile(
-    r"(?P<package>.+)(?:==|>|<|<=|>=|~=)(?P<version>.+)"
+    r"(?P<package>.+)(?:==|>|<|<=|>=|~=)(?P<version>.+)",
 )
 _RE_PACKAGE_INDEX: Final = re.compile(r"\"(.+\.whl)\"")
 _MUSLLINUX: Final = "musllinux"
@@ -55,9 +57,9 @@ def create_package_map(packages: list[str]) -> dict[NormalizedName, AwesomeVersi
         find = _RE_REQUIREMENT.match(package)
         if not find:
             continue
-        package = canonicalize_name(find["package"])
+        canonicalized_package = canonicalize_name(find["package"])
         version = AwesomeVersion(find["version"])
-        results[package] = version
+        results[canonicalized_package] = version
     return results
 
 
@@ -125,7 +127,8 @@ def check_available_binary(
     for binary in list_binary:
         if not (version := package_map.get(binary)):
             print(
-                f"Skip binary '{binary}' not in packages/constraints; Can't determine desired version",
+                f"Skip binary '{binary}' not in packages/constraints; "
+                "Can't determine desired version",
                 flush=True,
             )
             continue

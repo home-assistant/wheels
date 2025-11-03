@@ -2,26 +2,25 @@
 
 from __future__ import annotations
 
+import re
+import shutil
 from contextlib import suppress
 from functools import cache
 from pathlib import Path
-import re
-import shutil
 from subprocess import CalledProcessError
 from tempfile import TemporaryDirectory
 from typing import Final
 
 from awesomeversion import AwesomeVersion
 
-from .utils import run_command, build_arch, build_abi, alpine_version
-
+from .utils import alpine_version, build_abi, build_arch, run_command
 
 _RE_PACKAGE_FULL: Final = re.compile(
-    r"^(?P<namever>(?P<name>.+?)-(?P<ver>.+?))(-(?P<build>\d[^-]*))?-(?P<pyver>.+?)-(?P<abi>.+?)-(?P<plat>.+?)\.whl$"
+    r"^(?P<namever>(?P<name>.+?)-(?P<ver>.+?))(-(?P<build>\d[^-]*))?-(?P<pyver>.+?)-(?P<abi>.+?)-(?P<plat>.+?)\.whl$",
 )
 _RE_LINUX_PLATFORM: Final = re.compile(r"-linux_\w+\.whl$")
 _RE_MUSLLINUX_PLATFORM: Final = re.compile(
-    r"-musllinux_(?P<major>\d)_(?P<minor>\d)_(?P<arch>\w+)\.whl$"
+    r"-musllinux_(?P<major>\d)_(?P<minor>\d)_(?P<arch>\w+)\.whl$",
 )
 
 _ARCH_PLAT = {
@@ -79,7 +78,8 @@ def fix_wheels_unmatch_requirements(wheels_folder: Path) -> dict[str, AwesomeVer
     for wheel_file in wheels_folder.glob("*.whl"):
         package = _RE_PACKAGE_FULL.fullmatch(wheel_file.name)
         if not package:
-            raise RuntimeError(f"Error on parse wheel {wheel_file.name}")
+            msg = f"Error on parse wheel {wheel_file.name}"
+            raise RuntimeError(msg)
 
         if check_abi_platform(package["abi"], package["plat"]):
             continue
@@ -111,7 +111,7 @@ def run_auditwheel(wheels_folder: Path) -> bool:
             try:
                 run_command(f"auditwheel repair -w {temp_dir} {wheel_file}")
             except CalledProcessError as err:
-                print(f"Issues auditwheel {wheel_file.name}: {str(err)}", flush=True)
+                print(f"Issues auditwheel {wheel_file.name}: {err!s}", flush=True)
                 success = False
                 wheel_file.unlink()
 
@@ -120,9 +120,11 @@ def run_auditwheel(wheels_folder: Path) -> bool:
         for wheel_file in Path(temp_dir).glob("*.whl"):
             package = _RE_MUSLLINUX_PLATFORM.search(wheel_file.name)
             if not package:
-                raise RuntimeError(f"Wheel format error {wheel_file}")
+                msg = f"Wheel format error {wheel_file}"
+                raise RuntimeError(msg)
             if package["arch"] != target_arch:
-                raise RuntimeError(f"Wheel have wrong platform {package['arch']}")
+                msg = f"Wheel have wrong platform {package['arch']}"
+                raise RuntimeError(msg)
             shutil.copy(wheel_file, wheels_folder)
 
     # Cleanup linux_ARCH tags

@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from .utils import run_command
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def build_wheels_package(
@@ -27,7 +30,8 @@ def build_wheels_package(
     constraint_cmd = f"--constraint {constraint}" if constraint else ""
 
     run_command(
-        f'pip3 wheel --no-clean --no-binary "{skip_binary}" --wheel-dir {output} --extra-index-url {index} {constraint_cmd} "{package}"',
+        f'pip3 wheel --no-clean --no-binary "{skip_binary}" --wheel-dir {output} '
+        f'--extra-index-url {index} {constraint_cmd} "{package}"',
         env=build_env,
         timeout=timeout,
     )
@@ -52,7 +56,8 @@ def build_wheels_requirement(
     constraint_cmd = f"--constraint {constraint}" if constraint else ""
 
     run_command(
-        f'pip3 wheel --no-clean --no-binary "{skip_binary}" --wheel-dir {output} --extra-index-url {index} {constraint_cmd} --requirement {requirement}',
+        f'pip3 wheel --no-clean --no-binary "{skip_binary}" --wheel-dir {output} '
+        f"--extra-index-url {index} {constraint_cmd} --requirement {requirement}",
         env=build_env,
         timeout=timeout,
     )
@@ -79,8 +84,8 @@ def parse_requirements(requirement: Path) -> list[str]:
     """Parse a requirement files into an array."""
     requirement_list: set[str] = set()
     with requirement.open("r") as data:
-        for line in data:
-            line = line.strip()
+        for raw_line in data:
+            line = raw_line.strip()
 
             # Ignore comments or constraint files
             if not line or line.startswith(("#", "-c")):
@@ -97,7 +102,8 @@ def parse_requirements(requirement: Path) -> list[str]:
 
 
 def extract_packages(
-    requirement: Path, requirement_diff: Path | None = None
+    requirement: Path,
+    requirement_diff: Path | None = None,
 ) -> list[str]:
     """Extract packages they need build."""
     packages = parse_requirements(requirement)

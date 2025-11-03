@@ -1,10 +1,9 @@
 """Common test functions."""
 
-from pathlib import Path
+from collections.abc import Generator
 from unittest.mock import patch
 
 import pytest
-
 
 # The test makes a fake index with an arbitrary set of wheels and versions based on
 # behavior the tests need to exercise. The test will adjust the input packages and
@@ -22,8 +21,8 @@ TEST_INDEX_FILES = [
 
 
 @pytest.fixture(autouse=True)
-def mock_index_data():
-    """Prepares a fake existing wheel index for use in tests."""
+def mock_index_data() -> Generator[None]:
+    """Prepare a fake existing wheel index for use in tests."""
     # Mimc the HTML of a webserver autoindex.
     content = "\n".join(
         f'<a href="{wheel}">{wheel}</a>     28-May-2021 09:53  38181515'
@@ -36,7 +35,7 @@ def mock_index_data():
 
 
 @pytest.fixture(autouse=True)
-def sys_arch():
+def sys_arch() -> Generator[None]:
     """Patch system arch."""
     with (
         patch("builder.utils.build_arch", return_value="amd64"),
@@ -46,7 +45,7 @@ def sys_arch():
 
 
 @pytest.fixture(autouse=True)
-def sys_abi():
+def sys_abi() -> Generator[None]:
     """Patch system abi."""
     with (
         patch("builder.utils.build_abi", return_value="cp310"),
@@ -56,7 +55,7 @@ def sys_abi():
 
 
 @pytest.fixture(autouse=True)
-def sys_alpine():
+def sys_alpine() -> Generator[None]:
     """Patch system abi."""
     with (
         patch("builder.utils.alpine_version", return_value=("3", "16")),
@@ -66,12 +65,7 @@ def sys_alpine():
 
 
 @pytest.fixture(autouse=True)
-def sys_musl_version():
+def sys_musl_version() -> Generator[None]:
     """Patch alpine musl version lookup table."""
     with patch("builder.wheel._ALPINE_MUSL_VERSION", new={("3", "16"): (1, 2)}):
         yield
-
-
-@pytest.fixture
-def tmppath(tmpdir):
-    return Path(tmpdir)
