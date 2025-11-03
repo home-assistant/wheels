@@ -26,9 +26,16 @@ disable=
   too-many-branches,
   no-else-return
 
+[MAIN]
+load-plugins =
+    pylint_per_file_ignores
+
 [EXCEPTIONS]
 overgeneral-exceptions=builtins.Exception
 
-
 [TYPECHECK]
 ignored-modules = distutils
+
+[MESSAGES CONTROL]
+per-file-ignores =
+  tests/*:C0116

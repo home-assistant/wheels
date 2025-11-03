@@ -1,0 +1,42 @@
+repos:
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.21.0
+    hooks:
+      - id: pyupgrade
+        args:
+          - --py313-plus
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-executables-have-shebangs
+      - id: check-merge-conflict
+      - id: no-commit-to-branch
+        args: [--branch, master]
+  - repo: https://github.com/rbubley/mirrors-prettier
+    rev: v3.6.2
+    hooks:
+      - id: prettier
+        additional_dependencies:
+          - prettier@3.6.2
+          - prettier-plugin-sort-json@4.1.1
+        exclude_types:
+          - python
+        exclude: ^uv.lock$
+  - repo: local
+    hooks:
+      # Run mypy through our wrapper script in order to get the possible
+      # pyenv and/or virtualenv activated; it may not have been e.g. if
+      # committing from a GUI tool that was not launched from an activated
+      # shell.
+      - id: mypy
+        name: mypy
+        entry: script/run-in-env.sh mypy
+        language: script
+        require_serial: true
+        types_or: [python, pyi]
+      - id: pylint
+        name: pylint
+        entry: script/run-in-env.sh pylint
+        language: script
+        require_serial: true
+        types_or: [python, pyi]

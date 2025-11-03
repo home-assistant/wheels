@@ -40,7 +40,6 @@ Version of system builds:
 - scikit-build 0.18.1
 - cffi 2.0.0
 
-
 ## Misc
 
 ```sh
