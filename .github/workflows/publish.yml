@@ -13,7 +13,7 @@ on:
 jobs:
   publish:
     name: Publish builder
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: False
       matrix:
@@ -27,16 +27,22 @@ jobs:
           - abi: cp314
             tag: musllinux_1_2
             base: 3.14-alpine3.22
+
           - arch: aarch64
             platform: linux/arm64
+            runs-on: ubuntu-24.04-arm
           - arch: armhf
             platform: linux/arm/v6
+            runs-on: ubuntu-24.04-arm
           - arch: armv7
             platform: linux/arm/v7
+            runs-on: ubuntu-24.04-arm
           - arch: amd64
             platform: linux/amd64
+            runs-on: ubuntu-latest
           - arch: i386
             platform: linux/386
+            runs-on: ubuntu-latest
         exclude:
           - abi: cp314
             arch: armhf
