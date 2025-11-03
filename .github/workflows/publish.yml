@@ -33,10 +33,10 @@ jobs:
             runs-on: ubuntu-24.04-arm
           - arch: armhf
             platform: linux/arm/v6
-            runs-on: ubuntu-24.04-arm
+            runs-on: ubuntu-latest
           - arch: armv7
             platform: linux/arm/v7
-            runs-on: ubuntu-24.04-arm
+            runs-on: ubuntu-latest
           - arch: amd64
             platform: linux/amd64
             runs-on: ubuntu-latest
