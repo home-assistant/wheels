@@ -36,13 +36,31 @@ from builder.wheel import (
     fix_wheels_unmatch_requirements,
 )
 
+_DEFAULT_SKIP_BINARY = ":none:"
+# Override skip binary per index url
+_OVERRIDE_SKIP_BINARY = {
+    "https://wheels.home-assistant.io": [
+        "aiohttp",
+        "charset-normalizer",
+        "grpcio",
+        "multidict",
+        "propcache",
+        "protobuf",
+        "pymicro-vad",
+        "SQLAlchemy",
+        "yarl",
+    ]
+}
+
 
 @click.command("builder")
 @click.option("--apk", type=str, help="APKs they are needed to build this.")
 @click.option("--pip", type=str, help="PiPy modules needed to build this.")
 @click.option("--index", required=True, help="Index URL of remote wheels repository.")
 @click.option(
-    "--skip-binary", default=":none:", help="List of packages to skip wheels from pypi."
+    "--skip-binary",
+    default=_DEFAULT_SKIP_BINARY,
+    help="List of packages to skip wheels from pypi.",
 )
 @click.option(
     "--requirement",
@@ -101,6 +119,13 @@ def builder(
 ):
     """Build wheels precompiled for Home Assistant container."""
     check_url(index)
+    if (override := _OVERRIDE_SKIP_BINARY.get(index)) is not None:
+        if skip_binary != _DEFAULT_SKIP_BINARY:
+            print(
+                "WARNING: Skip binary will be ignored as override exists for this index."
+            )
+        skip_binary = ";".join(override)
+        print(f"Setting skip binary to: {skip_binary}")
 
     exit_code = 0
     with TemporaryDirectory() as temp_dir:
