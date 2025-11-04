@@ -2,21 +2,22 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 import shutil
-from subprocess import CalledProcessError, TimeoutExpired
 import sys
+from enum import IntEnum
+from pathlib import Path
+from subprocess import CalledProcessError, TimeoutExpired
 from tempfile import TemporaryDirectory
 
 import click
 
 from builder.apk import install_apks
 from builder.infra import (
-    create_wheels_list,
-    extract_packages_from_index,
     check_available_binary,
     create_wheels_folder,
     create_wheels_index,
+    create_wheels_list,
+    extract_packages_from_index,
     remove_local_wheels,
 )
 from builder.pip import (
@@ -32,9 +33,34 @@ from builder.upload import run_upload
 from builder.utils import check_url
 from builder.wheel import (
     copy_wheels_from_cache,
-    run_auditwheel,
     fix_wheels_unmatch_requirements,
+    run_auditwheel,
 )
+
+_DEFAULT_SKIP_BINARY = ":none:"
+# Override skip binary per index url
+_OVERRIDE_SKIP_BINARY = {
+    "https://wheels.home-assistant.io": [
+        "aiohttp",
+        "charset-normalizer",
+        "grpcio",
+        "multidict",
+        "propcache",
+        "protobuf",
+        "pymicro-vad",
+        "SQLAlchemy",
+        "yarl",
+    ],
+}
+
+
+class ExitCodes(IntEnum):
+    """Exit codes for builder."""
+
+    SUCCESS = 0
+    ERROR_FILE_NOT_FOUND = 2
+    ERROR_BUILD_FAILED = 109
+    ERROR_TIMEOUT = 80
 
 
 @click.command("builder")
@@ -42,7 +68,9 @@ from builder.wheel import (
 @click.option("--pip", type=str, help="PiPy modules needed to build this.")
 @click.option("--index", required=True, help="Index URL of remote wheels repository.")
 @click.option(
-    "--skip-binary", default=":none:", help="List of packages to skip wheels from pypi."
+    "--skip-binary",
+    default=_DEFAULT_SKIP_BINARY,
+    help="List of packages to skip wheels from pypi.",
 )
 @click.option(
     "--requirement",
@@ -71,19 +99,31 @@ from builder.wheel import (
     help="Install every package as single requirement.",
 )
 @click.option(
-    "--local", is_flag=True, default=False, help="Build wheel from local folder setup."
+    "--local",
+    is_flag=True,
+    default=False,
+    help="Build wheel from local folder setup.",
 )
 @click.option(
-    "--test", is_flag=True, default=False, help="Test building wheels, no upload."
+    "--test",
+    is_flag=True,
+    default=False,
+    help="Test building wheels, no upload.",
 )
 @click.option("--upload", default="rsync", help="Upload plugin to upload wheels.")
 @click.option(
-    "--remote", required=True, type=str, help="Remote URL pass to upload plugin."
+    "--remote",
+    required=True,
+    type=str,
+    help="Remote URL pass to upload plugin.",
 )
 @click.option(
-    "--timeout", default=345, type=int, help="Max runtime for pip before abort."
+    "--timeout",
+    default=345,
+    type=int,
+    help="Max runtime for pip before abort.",
 )
-def builder(
+def builder(  # noqa: C901, PLR0913, PLR0912, PLR0915
     apk: str | None,
     pip: str | None,
     index: str,
@@ -98,11 +138,19 @@ def builder(
     upload: str,
     remote: str,
     timeout: int,
-):
+) -> None:
     """Build wheels precompiled for Home Assistant container."""
     check_url(index)
+    if (override := _OVERRIDE_SKIP_BINARY.get(index)) is not None:
+        if skip_binary != _DEFAULT_SKIP_BINARY:
+            print(
+                "WARNING: Skip binary will be ignored as override exists for this "
+                "index.",
+            )
+        skip_binary = ";".join(override)
+        print(f"Setting skip binary to: {skip_binary}")
 
-    exit_code = 0
+    exit_code = ExitCodes.SUCCESS
     with TemporaryDirectory() as temp_dir:
         output = Path(temp_dir)
         timeout = timeout * 60
@@ -127,7 +175,7 @@ def builder(
                 shutil.copy(whl_file, Path(wheels_dir, whl_file.name))
         elif not requirement:
             print("No requirement file provided, nothing to build.")
-            sys.exit(2)  # ERROR_FILE_NOT_FOUND
+            sys.exit(ExitCodes.ERROR_FILE_NOT_FOUND)
         elif single:
             # Build every wheel like a single installation
             packages = extract_packages(requirement, requirement_diff)
@@ -150,13 +198,13 @@ def builder(
                         constraint,
                     )
                 except CalledProcessError:
-                    exit_code = 109
+                    exit_code = ExitCodes.ERROR_BUILD_FAILED
                 except TimeoutExpired:
-                    exit_code = 80
+                    exit_code = ExitCodes.ERROR_TIMEOUT
         else:
             # Build all needed wheels at once
             packages = extract_packages(requirement, requirement_diff)
-            temp_requirement = Path("/tmp/wheels_requirement.txt")
+            temp_requirement = Path("/tmp/wheels_requirement.txt")  # noqa: S108
             write_requirement(temp_requirement, packages)
             constraints = parse_requirements(constraint) if constraint else []
             skip_binary_new = check_available_binary(
@@ -175,39 +223,40 @@ def builder(
                     constraint,
                 )
             except CalledProcessError:
-                exit_code = 109
+                exit_code = ExitCodes.ERROR_BUILD_FAILED
             except TimeoutExpired:
-                exit_code = 80
+                exit_code = ExitCodes.ERROR_TIMEOUT
 
         # pip copy wheels only on success over to our folder
         # let's preserve on a error all success builds before
-        if exit_code != 0:
+        if exit_code != ExitCodes.SUCCESS:
             copy_wheels_from_cache(Path("/root/.cache/pip/wheels"), wheels_dir)
 
         if not run_auditwheel(wheels_dir):
-            exit_code = 109
+            exit_code = ExitCodes.ERROR_BUILD_FAILED
 
         # Check if all wheels are on our min requirements
         package_wrong = fix_wheels_unmatch_requirements(wheels_dir)
-        if package_wrong and exit_code != 80:
+        if package_wrong and exit_code != ExitCodes.ERROR_TIMEOUT:
             for package, version in package_wrong.items():
                 build_wheels_package(
-                    f"{package}=={str(version)}",
+                    f"{package}=={version!s}",
                     wheels_index,
                     wheels_dir,
                     package,
                     timeout,
                 )
             if not run_auditwheel(wheels_dir):
-                exit_code = 109
+                exit_code = ExitCodes.ERROR_BUILD_FAILED
 
         if skip_binary != ":none:":
             if not requirement:
                 print("No requirement file provided, cannot remove local wheels.")
-                sys.exit(2)  # ERROR_FILE_NOT_FOUND
-            # Some wheels that already exist should not be overwritten in case we replace with
-            # a wheel that came from pypi rather than a wheel built from source with extra flags.
-            # When --skip-binary and --skip-exists are set a wheel is only built from source once.
+                sys.exit(ExitCodes.ERROR_FILE_NOT_FOUND)
+            # Some wheels that already exist should not be overwritten in case we
+            # replace with a wheel that came from pypi rather than a wheel built from
+            # source with extra flags. When --skip-binary and --skip-exists are set a
+            # wheel is only built from source once.
             packages = extract_packages(requirement, requirement_diff)
             constraints = parse_requirements(constraint) if constraint else []
             remove_local_wheels(

@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from functools import cache
 import os
-from pathlib import Path
 import subprocess
 import sys
+from functools import cache
+from pathlib import Path
 
 import requests
 
@@ -38,10 +38,12 @@ def check_url(url: str) -> None:
 
 
 def run_command(
-    cmd: str, env: dict[str, str] | None = None, timeout: int | None = None
+    cmd: str,
+    env: dict[str, str] | None = None,
+    timeout: int | None = None,
 ) -> None:
     """Implement subprocess.run but handle timeout different."""
-    subprocess.run(
+    subprocess.run(  # noqa: S602
         cmd,
         shell=True,
         check=True,
