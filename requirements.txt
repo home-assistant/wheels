@@ -1,7 +1,0 @@
-awesomeversion>=21.2.2
-click==8.3.0
-requests==2.32.5
-wheel==0.46.1
-setuptools==80.9.0
-packaging==25.0
-pip==25.3
