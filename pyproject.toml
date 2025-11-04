@@ -23,3 +23,29 @@ classifiers = [
 
 [tool.setuptools.packages.find]
 include = ["builder*"]
+
+[tool.ruff.lint]
+select = ["ALL"]
+
+ignore = [
+    "D203",   # Conflicts with other rules
+    "D213",   # Conflicts with other rules
+
+    "FBT001",  # Boolean-typed positional argument in function definition
+
+    "T201",    # print found
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = [
+    "D100",    # Missing docstring in public module
+    "D103",    # Missing docstring in public function
+    "D104",    # Missing docstring in public package
+
+    "S101",    # Use of assert detected
+
+    "SLF001",  # Private member accessed
+]
+
+[tool.ruff.lint.pylint]
+max-args = 6

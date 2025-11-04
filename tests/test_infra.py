@@ -17,9 +17,9 @@ def test_extract_packages_from_index() -> None:
         "aioconsole",
     ]
 
-    assert list(
+    assert [
         str(package.version) for package in package_index[canonicalize_name("aiohttp")]
-    ) == [
+    ] == [
         "3.6.1",
         "3.7.3",
         "3.7.4",
@@ -44,7 +44,7 @@ def test_check_available_binary_none() -> None:
 
 
 def test_check_available_binary_all() -> None:
-    """This tool does not allow skipping all binaries."""
+    """Verify that the tool does not allow skipping all binaries."""
     package_index = infra.extract_packages_from_index("https://example.com")
     assert (
         infra.check_available_binary(
@@ -174,19 +174,19 @@ def test_check_available_binary_normalized_package_names() -> None:
     )
 
 
-def test_remove_local_wheel(tmppath: Path) -> None:
+def test_remove_local_wheel(tmp_path: Path) -> None:
     """Test removing an existing wheel."""
     package_index = infra.extract_packages_from_index("https://example.com")
 
-    p = tmppath / "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl"
+    p = tmp_path / "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl"
     p.touch()
-    p = tmppath / "grpcio-1.31.0-cp310-cp310-musllinux_1_2_x86_64.whl"
+    p = tmp_path / "grpcio-1.31.0-cp310-cp310-musllinux_1_2_x86_64.whl"
     p.touch()
-    p = tmppath / "grpcio-1.31.0-py3-none-any.whl"  # different platform tag
+    p = tmp_path / "grpcio-1.31.0-py3-none-any.whl"  # different platform tag
     p.touch()
-    p = tmppath / "some_other_file.txt"  # other files are ignored
+    p = tmp_path / "some_other_file.txt"  # other files are ignored
     p.touch()
-    assert {p.name for p in tmppath.glob("*.whl")} == {
+    assert {p.name for p in tmp_path.glob("*.whl")} == {
         "grpcio-1.31.0-cp310-cp310-musllinux_1_2_x86_64.whl",
         "grpcio-1.31.0-py3-none-any.whl",
         "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl",
@@ -199,24 +199,24 @@ def test_remove_local_wheel(tmppath: Path) -> None:
             "google_cloud_pubsub==2.9.0",
             "grpcio==1.31.0",  # Exists in index
         ],
-        wheels_dir=tmppath,
+        wheels_dir=tmp_path,
     )
 
     # both grpcio wheels are removed
-    assert {p.name for p in tmppath.glob("*.whl")} == {
+    assert {p.name for p in tmp_path.glob("*.whl")} == {
         "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl",
     }
 
 
-def test_remove_local_wheel_preserves_newer(tmppath: Path) -> None:
+def test_remove_local_wheel_preserves_newer(tmp_path: Path) -> None:
     """Test that the wheel is preserved when newer than in the index."""
     package_index = infra.extract_packages_from_index("https://example.com")
 
-    p = tmppath / "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl"
+    p = tmp_path / "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl"
     p.touch()
-    p = tmppath / "grpcio-1.43.0-cp310-cp310-musllinux_1_2_x86_64.whl"
+    p = tmp_path / "grpcio-1.43.0-cp310-cp310-musllinux_1_2_x86_64.whl"
     p.touch()
-    assert {p.name for p in tmppath.glob("*.whl")} == {
+    assert {p.name for p in tmp_path.glob("*.whl")} == {
         "grpcio-1.43.0-cp310-cp310-musllinux_1_2_x86_64.whl",
         "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl",
     }
@@ -228,25 +228,25 @@ def test_remove_local_wheel_preserves_newer(tmppath: Path) -> None:
             "google_cloud_pubsub==2.9.0",
             "grpcio==1.43.0",  # Newer than index
         ],
-        wheels_dir=tmppath,
+        wheels_dir=tmp_path,
     )
 
     # grpcio is not removed
-    assert {p.name for p in tmppath.glob("*.whl")} == {
+    assert {p.name for p in tmp_path.glob("*.whl")} == {
         "grpcio-1.43.0-cp310-cp310-musllinux_1_2_x86_64.whl",
         "google_cloud_pubsub-2.9.0-py2.py3-none-any.whl",
     }
 
 
-def test_remove_local_wheel_normalized_package_names(tmppath: Path) -> None:
+def test_remove_local_wheel_normalized_package_names(tmp_path: Path) -> None:
     """Test package names are normalized before removing existing wheels."""
     package_index = infra.extract_packages_from_index("https://example.com")
 
-    p = tmppath / "google_cloud_pubsub-2.1.0-py2.py3-none-any.whl"
+    p = tmp_path / "google_cloud_pubsub-2.1.0-py2.py3-none-any.whl"
     p.touch()
-    p = tmppath / "grpcio-1.31.0-cp310-cp310-musllinux_1_2_x86_64.whl"
+    p = tmp_path / "grpcio-1.31.0-cp310-cp310-musllinux_1_2_x86_64.whl"
     p.touch()
-    assert {p.name for p in tmppath.glob("*.whl")} == {
+    assert {p.name for p in tmp_path.glob("*.whl")} == {
         "grpcio-1.31.0-cp310-cp310-musllinux_1_2_x86_64.whl",
         "google_cloud_pubsub-2.1.0-py2.py3-none-any.whl",
     }
@@ -258,17 +258,17 @@ def test_remove_local_wheel_normalized_package_names(tmppath: Path) -> None:
             "google_cloud-PUBSUB==2.1.0",  # Exists in index
             "grpcIO==1.31.0",  # Exists in index
         ],
-        wheels_dir=tmppath,
+        wheels_dir=tmp_path,
     )
 
     # grpcio and google-cloud-pubsub are removed
-    assert {p.name for p in tmppath.glob("*.whl")} == set()
+    assert {p.name for p in tmp_path.glob("*.whl")} == set()
 
 
-def test_remove_local_wheel_no_build_wheels(tmppath: Path) -> None:
+def test_remove_local_wheel_no_build_wheels(tmp_path: Path) -> None:
     """Test remove_local_wheels does not fail with skip_exists and no build wheels."""
     package_index = infra.extract_packages_from_index("https://example.com")
-    assert {p.name for p in tmppath.glob("*.whl")} == set()
+    assert {p.name for p in tmp_path.glob("*.whl")} == set()
 
     infra.remove_local_wheels(
         package_index,
@@ -276,5 +276,5 @@ def test_remove_local_wheel_no_build_wheels(tmppath: Path) -> None:
         packages=[
             "grpcio==1.31.0",  # Exists in index
         ],
-        wheels_dir=tmppath,
+        wheels_dir=tmp_path,
     )

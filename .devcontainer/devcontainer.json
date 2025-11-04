@@ -6,12 +6,16 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        "charliermarsh.ruff",
+        "esbenp.prettier-vscode",
         "ms-python.python",
         "ms-python.vscode-pylance",
-        "visualstudioexptteam.vscodeintellicode",
-        "esbenp.prettier-vscode"
+        "visualstudioexptteam.vscodeintellicode"
       ],
       "settings": {
+        "[python]": {
+          "editor.defaultFormatter": "charliermarsh.ruff"
+        },
         "editor.formatOnPaste": false,
         "editor.formatOnSave": true,
         "editor.formatOnType": true,
@@ -19,14 +23,10 @@
         "python.pythonPath": "/usr/local/bin/python3",
         "python.linting.pylintEnabled": true,
         "python.linting.enabled": true,
-        "python.formatting.provider": "black",
-        "python.formatting.blackArgs": ["--target-version", "py310"],
-        "python.formatting.blackPath": "/usr/local/bin/black",
-        "python.linting.banditPath": "/usr/local/bin/bandit",
-        "python.linting.flake8Path": "/usr/local/bin/flake8",
+        "python.testing.pytestEnabled": true,
+        "python.testing.unittestEnabled": false,
         "python.linting.mypyPath": "/usr/local/bin/mypy",
-        "python.linting.pylintPath": "/usr/local/bin/pylint",
-        "python.linting.pydocstylePath": "/usr/local/bin/pydocstyle"
+        "python.linting.pylintPath": "/usr/local/bin/pylint"
       }
     }
   },
