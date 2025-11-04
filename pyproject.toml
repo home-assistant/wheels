@@ -17,6 +17,32 @@ classifiers = [
     "Topic :: Home Automation",
     "Development Status :: 5 - Production/Stable",
 ]
+requires-python = ">=3.13.0"
+dependencies = [
+    "awesomeversion>=21.2.2",
+    "click==8.3.0",
+    "packaging==25.0",
+    "pip==25.3",
+    "requests==2.32.5",
+    "setuptools==80.9.0",
+    "wheel==0.46.1",
+]
+
+[dependency-groups]
+cp = [
+    "cffi==2.0.0",
+    "cython==3.1.6",
+    "numpy==2.3.3",
+    "scikit-build==0.18.1",
+]
+dev = [
+    "mypy==1.18.2",
+    "prek==0.2.12",
+    "pylint==4.0.2",
+    "pylint-per-file-ignores==3.1.0",
+    "pytest==8.4.2",
+    "types-requests==2.32.4.20250913",
+]
 
 [project.urls]
 "Homepage" = "https://home-assistant.io/"
@@ -49,3 +75,5 @@ ignore = [
 
 [tool.ruff.lint.pylint]
 max-args = 6
+
+
