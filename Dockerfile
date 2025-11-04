@@ -35,22 +35,17 @@ RUN \
         libffi \
     && apk add --no-cache --virtual .build-dependencies \
         libffi-dev \
-    && if [ "${BUILD_ARCH}" = "i386" ]; then \
-        export NPY_DISABLE_SVML=1; \
-    fi \
     && pip3 install \
         -r /usr/src/requirements.txt \
         -r /usr/src/requirements_${CPYTHON_ABI}.txt \
     && rm -rf /usr/src/*
 
 # Install auditwheel
-COPY 0001-Support-musllinux-armv6l.patch /usr/src/
 RUN \
     set -x \
     && git clone --depth 1 -b ${AUDITWHEEL_VERSION} \
         https://github.com/pypa/auditwheel \
     && cd auditwheel \
-    && git apply /usr/src/0001-Support-musllinux-armv6l.patch \
     && pip install . \
     && rm -rf /usr/src/*
 
