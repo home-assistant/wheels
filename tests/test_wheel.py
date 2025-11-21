@@ -12,7 +12,7 @@ from builder import wheel
 @pytest.mark.parametrize(
     ("test", "result"),
     [
-        ("cchardet-2.1.7-cp310-cp310-musllinux_1_2_armv7l.whl", "armv7l"),
+        ("cchardet-2.1.7-cp310-cp310-musllinux_1_2_aarch64.whl", "aarch64"),
         ("cchardet-2.1.7-cp310-cp310-musllinux_1_2_x86_64.whl", "x86_64"),
     ],
 )
@@ -26,7 +26,7 @@ def test_musllinux_regex(test: str, result: str) -> None:
 @pytest.mark.parametrize(
     "test",
     [
-        "cchardet-2.1.7-cp310-cp310-linux_armv7l.whl",
+        "cchardet-2.1.7-cp310-cp310-linux_aarch64.whl",
         "cchardet-2.1.7-cp310-cp310-linux_x86_64.whl",
     ],
 )
@@ -38,7 +38,7 @@ def test_musllinux_regex_wrong(test: str) -> None:
 @pytest.mark.parametrize(
     "test",
     [
-        "cchardet-2.1.7-cp310-cp310-linux_armv7l.whl",
+        "cchardet-2.1.7-cp310-cp310-linux_aarch64.whl",
         "cchardet-2.1.7-cp310-cp310-linux_x86_64.whl",
     ],
 )
@@ -50,7 +50,7 @@ def test_linux_regex(test: str) -> None:
 @pytest.mark.parametrize(
     "test",
     [
-        "cchardet-2.1.7-cp310-cp310-musllinux_1_2_armv7l.whl",
+        "cchardet-2.1.7-cp310-cp310-musllinux_1_2_aarch64.whl",
         "cchardet-2.1.7-cp310-cp310-musllinux_1_2_x86_64.whl",
     ],
 )
