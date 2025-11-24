@@ -4,7 +4,6 @@ FROM ${BUILD_FROM}
 ARG \
     BUILD_ARCH \
     CPYTHON_ABI \
-    QEMU_CPU \
     AUDITWHEEL_VERSION=6.4.2 \
     PIP_EXTRA_INDEX_URL=https://wheels.home-assistant.io/musllinux-index/
 
