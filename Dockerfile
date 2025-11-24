@@ -7,19 +7,16 @@ ARG \
     AUDITWHEEL_VERSION=6.4.2 \
     PIP_EXTRA_INDEX_URL=https://wheels.home-assistant.io/musllinux-index/
 
-WORKDIR /usr/src
-
 SHELL ["/bin/bash", "-exo", "pipefail", "-c"]
 
 COPY rootfs /
 
 # Install requirements
-COPY \
-    requirements.txt \
-    requirements_${CPYTHON_ABI}.txt \
-    /usr/src/
 RUN \
-    apk upgrade --no-cache \
+    --mount=type=tmpfs,target=/usr/src/ \
+    --mount=type=bind,source=.,target=/usr/src/builder/,rw \
+    cd /usr/src/ \
+    && apk upgrade --no-cache \
     && apk add --no-cache \
         rsync \
         openssh-client \
@@ -35,25 +32,13 @@ RUN \
     && apk add --no-cache --virtual .build-dependencies \
         libffi-dev \
     && pip3 install \
-        -r /usr/src/requirements.txt \
-        -r /usr/src/requirements_${CPYTHON_ABI}.txt \
-    && rm -rf /usr/src/*
-
-# Install auditwheel
-RUN \
-    set -x \
+        -r /usr/src/builder/requirements.txt \
+        -r /usr/src/builder/requirements_${CPYTHON_ABI}.txt \
     && git clone --depth 1 -b ${AUDITWHEEL_VERSION} \
         https://github.com/pypa/auditwheel \
     && cd auditwheel \
     && pip install . \
-    && rm -rf /usr/src/*
-
-# Install builder
-COPY . /usr/src/builder/
-RUN \
-    set -x \
-    && pip3 install /usr/src/builder/ \
-    && rm -rf /usr/src/*
+    && pip3 install /usr/src/builder/
 
 # Set build environment information
 ENV \
