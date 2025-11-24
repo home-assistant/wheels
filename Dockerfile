@@ -4,7 +4,6 @@ FROM ${BUILD_FROM}
 ARG \
     BUILD_ARCH \
     CPYTHON_ABI \
-    QEMU_CPU \
     AUDITWHEEL_VERSION=6.4.2 \
     UV_SYSTEM_PYTHON=true \
     UV_EXTRA_INDEX_URL="https://wheels.home-assistant.io/musllinux-index/" \
@@ -17,7 +16,7 @@ SHELL ["/bin/bash", "-exo", "pipefail", "-c"]
 COPY rootfs /
 
 # Uv is only needed during build
-RUN --mount=from=ghcr.io/astral-sh/uv:0.9.7,source=/uv,target=/bin/uv \
+RUN --mount=from=ghcr.io/astral-sh/uv:latest,source=/uv,target=/bin/uv \
     # Uv creates a lock file in /tmp
     --mount=type=tmpfs,target=/tmp \
     --mount=type=bind,source=.,target=/usr/src/builder/ \
@@ -36,19 +35,19 @@ RUN --mount=from=ghcr.io/astral-sh/uv:0.9.7,source=/uv,target=/bin/uv \
         libffi \
     && apk add --no-cache --virtual .build-dependencies \
         libffi-dev \
-    && if [ "${BUILD_ARCH}" = "i386" ]; then \
-        export NPY_DISABLE_SVML=1; \
-    fi \
-    && if [ "${CPYTHON_ABI}" = "cp312" ] && [ "${BUILD_ARCH}" != "amd64" ]; then \
-        apk add --no-cache --virtual .build-dependencies2 \
-            openblas-dev; \
-    fi \
-    && uv sync --locked --group cp --no-install-project \
+    && uv sync --locked --group cp${CPYTHON_ABI} --no-install-project \
     && git clone --depth 1 -b ${AUDITWHEEL_VERSION} \
         https://github.com/pypa/auditwheel \
     && cd auditwheel \
-    && git apply /usr/src/0001-Support-musllinux-armv6l.patch \
-    && uv sync --locked
+    && uv pip install . \
+    && rm -rf /usr/src/*
+
+# Install builder
+COPY . /usr/src/builder/
+RUN \
+    set -x \
+    && pip3 install /usr/src/builder/ \
+    && rm -rf /usr/src/*
 
 # Set build environment information
 ENV \

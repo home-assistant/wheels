@@ -19,46 +19,26 @@ jobs:
       matrix:
         abi: ["cp313", "cp314"]
         tag: ["musllinux_1_2"]
-        arch: ["aarch64", "armhf", "armv7", "amd64", "i386"]
+        arch: ["aarch64", "amd64"]
         include:
           - abi: cp313
-            tag: musllinux_1_2
             base: 3.13-alpine3.22
           - abi: cp314
-            tag: musllinux_1_2
             base: 3.14-alpine3.22
 
           - arch: aarch64
             platform: linux/arm64
             runs-on: ubuntu-24.04-arm
-          - arch: armhf
-            platform: linux/arm/v6
-            runs-on: ubuntu-latest
-          - arch: armv7
-            platform: linux/arm/v7
-            runs-on: ubuntu-latest
           - arch: amd64
             platform: linux/amd64
             runs-on: ubuntu-latest
-          - arch: i386
-            platform: linux/386
-            runs-on: ubuntu-latest
-        exclude:
-          - abi: cp314
-            arch: armhf
-          - abi: cp314
-            arch: armv7
-          - abi: cp314
-            arch: i386
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
 
       - shell: bash
         id: info
         run: |
-          declare -a docker
-
           name="ghcr.io/home-assistant/wheels/${{ matrix.arch }}/${{ matrix.tag }}/${{ matrix.abi }}"
 
           version=$(echo "${{ github.ref }}" | awk -F"/" '{print $NF}' )
@@ -66,13 +46,8 @@ jobs:
             version=dev
           fi
 
-          if [ "${{ matrix.arch }}" = "armhf" ]; then
-            docker+=("QEMU_CPU=arm1176")
-          fi
-
           echo "name=$name" >> $GITHUB_OUTPUT
           echo "version=$version" >> $GITHUB_OUTPUT
-          echo "docker=${docker[@]}" >> $GITHUB_OUTPUT
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
@@ -80,9 +55,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3.6.0
 
       - name: Build Docker image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
@@ -96,7 +68,6 @@ jobs:
             BUILD_FROM=ghcr.io/home-assistant/${{ matrix.arch }}-base-python:${{ matrix.base }}
             BUILD_ARCH=${{ matrix.arch }}
             CPYTHON_ABI=${{ matrix.abi }}
-            ${{ steps.info.outputs.docker }}
           tags: |
             ${{ steps.info.outputs.name }}:${{ steps.info.outputs.version }}
             ${{ steps.info.outputs.name }}:${{ github.sha }}

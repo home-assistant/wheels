@@ -20,7 +20,7 @@ classifiers = [
 requires-python = ">=3.13.0"
 dependencies = [
     "awesomeversion>=21.2.2",
-    "click==8.3.0",
+    "click==8.3.1",
     "packaging==25.0",
     "pip==25.3",
     "requests==2.32.5",
@@ -31,16 +31,22 @@ dependencies = [
 [dependency-groups]
 cp = [
     "cffi==2.0.0",
-    "cython==3.1.6",
+    "cython==3.2.1",
     "numpy==2.3.3",
     "scikit-build==0.18.1",
 ]
+cp313 = [
+    { include-group = "cp" },
+]
+cp314 = [
+    { include-group = "cp" },
+]
 dev = [
     "mypy==1.18.2",
-    "prek==0.2.12",
-    "pylint==4.0.2",
+    "prek==0.2.18",
+    "pylint==4.0.3",
     "pylint-per-file-ignores==3.1.0",
-    "pytest==8.4.2",
+    "pytest==9.0.1",
     "types-requests==2.32.4.20250913",
 ]
 

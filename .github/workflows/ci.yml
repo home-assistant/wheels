@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code from GitHub
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@v6.0.0
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v6.0.0
@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code from GitHub
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@v6.0.0
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v6.0.0
@@ -55,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code from GitHub
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@v6.0.0
 
       - name: Lint Dockerfile
         uses: hadolint/hadolint-action@v3.3.0
@@ -65,24 +65,21 @@ jobs:
 
   test:
     name: Test wheels ${{ matrix.arch }}-${{ matrix.abi }}-${{ matrix.tag }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
       matrix:
         abi: ["cp313", "cp314"]
         tag: ["musllinux_1_2"]
-        arch: ["aarch64", "armhf", "armv7", "amd64", "i386"]
-        exclude:
-          - abi: cp314
-            arch: armhf
-          - abi: cp314
-            arch: armv7
-          - abi: cp314
-            arch: i386
+        arch: ["aarch64", "amd64"]
+        include:
+          - runs-on: ubuntu-latest
+          - arch: aarch64
+            runs-on: ubuntu-24.04-arm
 
     steps:
       - name: Check out code from GitHub
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@v6.0.0
 
       - name: Write env-file
         shell: bash
