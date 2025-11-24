@@ -24,8 +24,11 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - name: 🏗 Install uv
+        uses: astral-sh/setup-uv@1e862dfacbd1d6d858c55d9b792c756523627244 # v7.1.4
+
       - name: Install requirements
-        run: python3 -m pip install -r requirements.txt -r requirements_tests.txt
+        run: uv sync --locked --group dev
 
       - name: Run pytest
         run: pytest
@@ -42,8 +45,11 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - name: 🏗 Install uv
+        uses: astral-sh/setup-uv@1e862dfacbd1d6d858c55d9b792c756523627244 # v7.1.4
+
       - name: Install requirements
-        run: python3 -m pip install -r requirements.txt -r requirements_tests.txt
+        run: uv sync --locked --group dev
 
       - name: Run prek
         uses: j178/prek-action@91fd7d7cf70ae1dee9f4f44e7dfa5d1073fe6623 # v1.0.11
