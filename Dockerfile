@@ -35,7 +35,7 @@ RUN --mount=from=ghcr.io/astral-sh/uv:latest,source=/uv,target=/bin/uv \
         libffi \
     && apk add --no-cache --virtual .build-dependencies \
         libffi-dev \
-    && uv sync --locked --group cp${CPYTHON_ABI} --no-install-project \
+    && uv sync --locked --directory /usr/src/builder/ --group cp${CPYTHON_ABI} --no-install-project \
     && git clone --depth 1 -b ${AUDITWHEEL_VERSION} \
         https://github.com/pypa/auditwheel \
     && cd auditwheel \
