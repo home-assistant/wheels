@@ -31,7 +31,9 @@ jobs:
         run: uv sync --locked --group dev
 
       - name: Run pytest
-        run: pytest
+        run: |
+          source .venv/bin/activate
+          pytest
 
   prek:
     name: Prek
