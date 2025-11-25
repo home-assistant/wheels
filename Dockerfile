@@ -4,7 +4,6 @@ FROM ${BUILD_FROM}
 ARG \
     BUILD_ARCH \
     CPYTHON_ABI \
-    AUDITWHEEL_VERSION=6.5.0 \
     PIP_EXTRA_INDEX_URL=https://wheels.home-assistant.io/musllinux-index/
 
 SHELL ["/bin/bash", "-exo", "pipefail", "-c"]
@@ -13,10 +12,8 @@ COPY rootfs /
 
 # Install requirements
 RUN \
-    --mount=type=tmpfs,target=/usr/src/ \
     --mount=type=bind,source=.,target=/usr/src/builder/,rw \
-    cd /usr/src/ \
-    && apk upgrade --no-cache \
+    apk upgrade --no-cache \
     && apk add --no-cache \
         rsync \
         openssh-client \
@@ -34,11 +31,7 @@ RUN \
     && pip3 install \
         -r /usr/src/builder/requirements.txt \
         -r /usr/src/builder/requirements_${CPYTHON_ABI}.txt \
-    && git clone --depth 1 -b ${AUDITWHEEL_VERSION} \
-        https://github.com/pypa/auditwheel \
-    && cd auditwheel \
-    && pip install . \
-    && pip3 install /usr/src/builder/
+        /usr/src/builder/
 
 # Set build environment information
 ENV \
