@@ -4,7 +4,7 @@ FROM ${BUILD_FROM}
 ARG \
     BUILD_ARCH \
     CPYTHON_ABI \
-    AUDITWHEEL_VERSION=6.4.2 \
+    AUDITWHEEL_VERSION=6.5.0 \
     PIP_EXTRA_INDEX_URL=https://wheels.home-assistant.io/musllinux-index/
 
 SHELL ["/bin/bash", "-exo", "pipefail", "-c"]
