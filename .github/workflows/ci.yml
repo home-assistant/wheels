@@ -99,3 +99,53 @@ jobs:
           env-file: True
           test: True
           requirements: "requirements_wheels_test.txt"
+
+  test_local_repo:
+    name: Test publishing to a local repository
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code from GitHub
+        uses: actions/checkout@v6.0.0
+
+      - name: Write env-file
+        shell: bash
+        run: |
+          (
+            echo "CARGO_NET_GIT_FETCH_WITH_CLI=true"
+          ) > .env_file
+
+      - name: Build wheels
+        uses: ./
+        with:
+          abi: cp314
+          tag: musllinux_1_2
+          arch: amd64
+          apk: "mariadb-dev;postgresql-dev;libffi-dev;openssl-dev"
+          skip-binary: "orjson"
+          env-file: True
+          requirements: "requirements_wheels_test.txt"
+          local-repo-path: "/tmp/local_wheels"
+          wheels-user: ""
+          wheels-host: ""
+
+      - name: Check for local wheels
+        shell: bash
+        run: |
+          missing=0
+          while IFS= read -r line || [[ -n "$line" ]]; do
+            # Skip empty lines
+            [[ -z "$line" ]] && continue
+            # Extract package name (before ==)
+            pkg_name="${line%%==*}"
+            # Normalize: replace - with _, convert to lowercase
+            normalized=$(echo "$pkg_name" | tr '[:upper:]-' '[:lower:]_')
+            # Check if wheel exists (case-insensitive glob)
+            if ! compgen -G "/tmp/local_wheels/musllinux/${normalized}-"*.whl > /dev/null; then
+              echo "::error::Missing wheel for package: $pkg_name"
+              missing=1
+            else
+              echo "Found wheel for package: $pkg_name"
+            fi
+          done < requirements_wheels_test.txt
+          exit $missing
