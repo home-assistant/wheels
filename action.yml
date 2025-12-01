@@ -202,7 +202,7 @@ runs:
     - shell: bash
       if: ${{ inputs.local-wheels-repo-path }}
       run: |
-        docker cp "${{ inputs.name }}:/data/output" "${{ inputs.local-wheels-repo-path }}"
+        docker cp "${{ inputs.name }}:/data/output/." "${{ inputs.local-wheels-repo-path }}"
 
     - shell: bash
       run: |
