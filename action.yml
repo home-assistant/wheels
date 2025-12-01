@@ -61,6 +61,9 @@ inputs:
   wheels-index:
     description: "The wheels index URL"
     default: "https://wheels.home-assistant.io"
+  local-wheels-repo-path:
+    description: "Path to a local folder to copy the repository to (wheels-host and wheels-user must be empty)"
+    default: ""
 
 runs:
   using: "composite"
@@ -76,7 +79,7 @@ runs:
 
     - shell: bash
       run: |
-        if [[ "${{ inputs.test }}" =~ false|False ]]; then
+        if [[ "${{ inputs.test }}" =~ false|False ]] && [ -z "${{ inputs.local-wheels-repo-path }}" ]; then
           # Write Key
           mkdir -p .ssh
           echo -e "-----BEGIN RSA PRIVATE KEY-----\n${{ inputs.wheels-key }}\n-----END RSA PRIVATE KEY-----" >> .ssh/id_rsa
@@ -142,6 +145,16 @@ runs:
         if [ -n "${{ inputs.pip }}" ]; then
           build+=("--pip \"${{ inputs.pip }}\"")
         fi
+        if [ -n "${{ inputs.local-wheels-repo-path }}" ]; then
+          if [ -n "${{ inputs.wheels-user }}" ] || [ -n "${{ inputs.wheels-host }}" ]; then
+            echo "::error::Inputs wheels-user and wheels-host must be empty when local-wheels-repo-path is used"
+            exit 1
+          fi
+          build+=("--remote \"/data/output\"")
+        else
+          build+=("--remote \"${{ inputs.wheels-user }}@${{ inputs.wheels-host }}:/opt/wheels\"")
+        fi
+
 
         echo "build=${build[@]}" >> $GITHUB_OUTPUT
         echo "docker=${docker[@]}" >> $GITHUB_OUTPUT
@@ -161,14 +174,13 @@ runs:
           ${{ steps.pull.outputs.name }} \
           --index "${{ inputs.wheels-index }}" \
           --upload rsync \
-          --remote "${{ inputs.wheels-user }}@${{ inputs.wheels-host }}:/opt/wheels" \
           ${{ steps.options.outputs.build }}
 
     - shell: bash
       run: |
         echo "Copy repository and SSH files to the container"
         docker cp "${{ steps.options.outputs.path }}/." "${{ inputs.name }}:/data"
-        if [[ "${{ inputs.test }}" =~ false|False ]]; then
+        if [[ "${{ inputs.test }}" =~ false|False ]] && [ -z "${{ inputs.local-wheels-repo-path }}" ]; then
           docker cp -a .ssh/ "${{ inputs.name }}:/root/.ssh"
         fi
 
@@ -186,6 +198,11 @@ runs:
           break
         done
         echo "return_val=$return_val" >> $GITHUB_OUTPUT
+
+    - shell: bash
+      if: ${{ inputs.local-wheels-repo-path }}
+      run: |
+        docker cp "${{ inputs.name }}:/data/output" "${{ inputs.local-wheels-repo-path }}"
 
     - shell: bash
       run: |
