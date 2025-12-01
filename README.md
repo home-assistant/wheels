@@ -22,7 +22,7 @@ Images: ghcr.io/home-assistant/wheels/ARCH/musllinux_1_2/cp313:VERSION
 Version of system builds:
 
 - GCC 14.2.0
-- Cython 3.1.4
+- Cython 3.2.2
 - numpy 2.3.3
 - scikit-build 0.18.1
 - cffi 2.0.0
@@ -35,7 +35,7 @@ Images: ghcr.io/home-assistant/wheels/ARCH/musllinux_1_2/cp314:VERSION
 Version of system builds:
 
 - GCC 14.2.0
-- Cython 3.1.4
+- Cython 3.2.2
 - numpy 2.3.3
 - scikit-build 0.18.1
 - cffi 2.0.0
