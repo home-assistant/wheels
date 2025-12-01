@@ -125,7 +125,7 @@ jobs:
           skip-binary: "orjson"
           env-file: True
           requirements: "requirements_wheels_test.txt"
-          local-repo-path: "/tmp/local_wheels"
+          local-wheels-repo-path: "/tmp/local_wheels"
           wheels-user: ""
           wheels-host: ""
 

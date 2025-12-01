@@ -61,7 +61,7 @@ inputs:
   wheels-index:
     description: "The wheels index URL"
     default: "https://wheels.home-assistant.io"
-  local-repo-path:
+  local-wheels-repo-path:
     description: "Path to a local folder to copy the repository to (wheels-host and wheels-user must be empty)"
     default: ""
 
@@ -79,7 +79,7 @@ runs:
 
     - shell: bash
       run: |
-        if [[ "${{ inputs.test }}" =~ false|False ]] && [ -z "${{ inputs.local-repo-path }}" ]; then
+        if [[ "${{ inputs.test }}" =~ false|False ]] && [ -z "${{ inputs.local-wheels-repo-path }}" ]; then
           # Write Key
           mkdir -p .ssh
           echo -e "-----BEGIN RSA PRIVATE KEY-----\n${{ inputs.wheels-key }}\n-----END RSA PRIVATE KEY-----" >> .ssh/id_rsa
@@ -145,9 +145,9 @@ runs:
         if [ -n "${{ inputs.pip }}" ]; then
           build+=("--pip \"${{ inputs.pip }}\"")
         fi
-        if [ -n "${{ inputs.local-repo-path }}" ]; then
+        if [ -n "${{ inputs.local-wheels-repo-path }}" ]; then
           if [ -n "${{ inputs.wheels-user }}" ] || [ -n "${{ inputs.wheels-host }}" ]; then
-            echo "::error::Inputs wheels-user and wheels-host must be empty when local-repo-path is used"
+            echo "::error::Inputs wheels-user and wheels-host must be empty when local-wheels-repo-path is used"
             exit 1
           fi
           build+=("--remote \"/data/output\"")
@@ -180,7 +180,7 @@ runs:
       run: |
         echo "Copy repository and SSH files to the container"
         docker cp "${{ steps.options.outputs.path }}/." "${{ inputs.name }}:/data"
-        if [[ "${{ inputs.test }}" =~ false|False ]] && [ -z "${{ inputs.local-repo-path }}" ]; then
+        if [[ "${{ inputs.test }}" =~ false|False ]] && [ -z "${{ inputs.local-wheels-repo-path }}" ]; then
           docker cp -a .ssh/ "${{ inputs.name }}:/root/.ssh"
         fi
 
@@ -200,9 +200,9 @@ runs:
         echo "return_val=$return_val" >> $GITHUB_OUTPUT
 
     - shell: bash
-      if: ${{ inputs.local-repo-path }}
+      if: ${{ inputs.local-wheels-repo-path }}
       run: |
-        docker cp "${{ inputs.name }}:/data/output" "${{ inputs.local-repo-path }}"
+        docker cp "${{ inputs.name }}:/data/output" "${{ inputs.local-wheels-repo-path }}"
 
     - shell: bash
       run: |
