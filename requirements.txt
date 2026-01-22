@@ -3,6 +3,6 @@ awesomeversion>=21.2.2
 click==8.3.1
 requests==2.32.5
 wheel==0.46.1
-setuptools==80.9.0
+setuptools==80.10.1
 packaging==25.0
 pip==25.3
