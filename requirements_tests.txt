@@ -1,6 +1,6 @@
 pylint==4.0.5
 pytest==9.0.2
-mypy==1.19.1
+mypy==1.20.0
 prek==0.3.8
 types-requests==2.33.0.20260327
 pylint-per-file-ignores==3.2.0
