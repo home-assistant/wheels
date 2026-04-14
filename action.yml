@@ -80,15 +80,21 @@ runs:
     - shell: bash
       run: |
         if [[ "${{ inputs.test }}" =~ false|False ]] && [ -z "${{ inputs.local-wheels-repo-path }}" ]; then
-          # Write Key
+          umask g-rwx,o-rwx
+          chmod -f g-rwx,o-rwx .ssh .ssh/id_rsa .ssh/known_hosts .ssh/wheels-key || true
           mkdir -p .ssh
-          echo -e "-----BEGIN RSA PRIVATE KEY-----\n${{ inputs.wheels-key }}\n-----END RSA PRIVATE KEY-----" >> .ssh/id_rsa
-          chmod 600 .ssh/id_rsa
+
+          # Write valid wheels-key or wrapped with PEM header-footer
+          echo "${{ inputs.wheels-key }}" > .ssh/wheels-key
+          ssh-keygen -y -e -f .ssh/wheels-key 2>&1>/dev/null || \
+            sed -e '1i-----BEGIN RSA PRIVATE KEY-----' \
+                -e '$a-----END RSA PRIVATE KEY-----' -i .ssh/wheels-key
+          ssh-keygen -y -e -f .ssh/wheels-key 2>&1>/dev/null && \
+            cat .ssh/wheels-key >> .ssh/id_rsa && rm -f .ssh/wheels-key
 
           # Validate & update known_hosts
           ssh-keygen -y -e -f .ssh/id_rsa
-          ssh-keyscan -H ${{ inputs.wheels-host }} >> .ssh/known_hosts
-          chmod 600 .ssh/*
+          ssh-keyscan -H "${{ inputs.wheels-host }}" >> .ssh/known_hosts
         fi
 
     - shell: bash
