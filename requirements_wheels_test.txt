@@ -3,4 +3,4 @@ Brotli==1.2.0
 orjson==3.11.8
 faust-cchardet==2.1.19
 mysqlclient==2.2.8
-psycopg2==2.9.11
+psycopg2==2.9.12
