@@ -5,7 +5,9 @@ from __future__ import annotations
 import os
 import subprocess
 import sys
+import traceback
 from functools import cache
+from inspect import stack
 from pathlib import Path
 
 import requests
@@ -43,6 +45,19 @@ def run_command(
     timeout: int | None = None,
 ) -> None:
     """Implement subprocess.run but handle timeout different."""
+    print(
+        f"INFO ### {__file__}: {traceback.extract_stack(None, 2)[0][2]}"
+        f" => {stack()[0][3]}"
+        f"\n     subprocess.run("
+        f"\n         {cmd},"
+        f"\n         shell={True},"
+        f"\n         check={True},"
+        f"\n         stdout={sys.stdout},"
+        f"\n         stderr={sys.stderr},"
+        f"\n         env={env},"
+        f"\n         timeout={timeout}"
+        f"\n     )",
+    )
     subprocess.run(  # noqa: S602
         cmd,
         shell=True,
