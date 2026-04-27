@@ -55,6 +55,9 @@ inputs:
   wheels-host:
     description: "wheels host URL"
     default: "wheels.hass.io"
+  wheels-host-path:
+    description: "Path on wheels host to copy the repository to"
+    default: "/opt/wheels"
   wheels-user:
     description: "User for wheels host"
     default: "wheels"
@@ -152,7 +155,7 @@ runs:
           fi
           build+=("--remote \"/data/output\"")
         else
-          build+=("--remote \"${{ inputs.wheels-user }}@${{ inputs.wheels-host }}:/opt/wheels\"")
+          build+=("--remote \"${{ inputs.wheels-user }}@${{ inputs.wheels-host }}:${{ inputs.wheels-host-path }}\"")
         fi
 
 
