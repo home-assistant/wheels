@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from html.parser import HTMLParser
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
@@ -19,7 +20,7 @@ if TYPE_CHECKING:
 _RE_REQUIREMENT: Final = re.compile(
     r"(?P<package>.+)(?:==|>|<|<=|>=|~=)(?P<version>.+)",
 )
-_RE_PACKAGE_INDEX: Final = re.compile(r"\"(.+\.whl)\"")
+_RE_PACKAGE_INDEX: Final = re.compile(r"(.+\.whl)")
 _MUSLLINUX: Final = "musllinux"
 
 
@@ -30,6 +31,24 @@ class WhlPackage:
     name: NormalizedName
     version: AwesomeVersion
     tags: frozenset[Tag]
+
+
+class HTMLParserAHREF(HTMLParser):
+    """HTMLParser subclass for collecting anchor link href targets."""
+
+    href: list
+
+    def __init__(self) -> None:
+        """Call superclass init and initialize href list."""
+        super().__init__()
+        self.href = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        """Collect anchor link href targets."""
+        if tag == "a":
+            for key, value in attrs:
+                if key == "href":
+                    self.href.append(value)
 
 
 def create_wheels_folder(base_folder: Path) -> Path:
@@ -66,10 +85,12 @@ def create_package_map(packages: list[str]) -> dict[NormalizedName, AwesomeVersi
 def extract_packages_from_index(index: str) -> dict[NormalizedName, list[WhlPackage]]:
     """Extract packages from index which match the supported."""
     available_data = requests.get(index, allow_redirects=True, timeout=60).text
+    html_parser = HTMLParserAHREF()
+    html_parser.feed(available_data)
 
     result: dict[NormalizedName, list[WhlPackage]] = {}
-    for wheel_name in _RE_PACKAGE_INDEX.finditer(available_data):
-        name, version, _build_tag, tags = parse_wheel_filename(wheel_name[1])
+    for wheel_filename in filter(_RE_PACKAGE_INDEX.match, html_parser.href):
+        name, version, _build_tag, tags = parse_wheel_filename(wheel_filename)
         package = WhlPackage(name, AwesomeVersion(str(version)), tags)
 
         for tag in package.tags:
