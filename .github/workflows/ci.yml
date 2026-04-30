@@ -95,7 +95,6 @@ jobs:
           tag: ${{ matrix.tag }}
           arch: ${{ matrix.arch }}
           apk: "mariadb-dev;postgresql-dev;libffi-dev;openssl-dev"
-          skip-binary: "orjson"
           env-file: True
           test: True
           requirements: "requirements_wheels_test.txt"
@@ -122,7 +121,6 @@ jobs:
           tag: musllinux_1_2
           arch: amd64
           apk: "mariadb-dev;postgresql-dev;libffi-dev;openssl-dev"
-          skip-binary: "orjson"
           env-file: True
           requirements: "requirements_wheels_test.txt"
           local-wheels-repo-path: "/tmp/local_wheels"

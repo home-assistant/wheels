@@ -22,9 +22,9 @@ jobs:
         arch: ["aarch64", "amd64"]
         include:
           - abi: cp313
-            base: 3.13-alpine3.22
+            base: 3.13-alpine3.23
           - abi: cp314
-            base: 3.14-alpine3.22
+            base: 3.14-alpine3.23
 
           - arch: aarch64
             platform: linux/arm64
