@@ -25,7 +25,6 @@ _RE_MUSLLINUX_PLATFORM: Final = re.compile(
 
 _ARCH_PLAT = {
     "amd64": "x86_64",
-    "aarch64": "aarch64",
 }
 
 _ALPINE_MUSL_VERSION = {
@@ -52,7 +51,7 @@ def sys_platform(arch: str) -> set[str]:
 
 def check_abi_platform(abi: str, platform: str) -> bool:
     """Return True if abi and platform work."""
-    arch = _ARCH_PLAT[build_arch()]
+    arch = _ARCH_PLAT.get(build_arch(), build_arch())
     sys_abi = build_abi()
 
     # Check platform
@@ -114,7 +113,7 @@ def run_auditwheel(wheels_folder: Path) -> bool:
                 wheel_file.unlink()
 
         # Copy back wheels & make sure ARCH is correct
-        target_arch = _ARCH_PLAT[build_arch()]
+        target_arch = _ARCH_PLAT.get(build_arch(), build_arch())
         for wheel_file in Path(temp_dir).glob("*.whl"):
             package = _RE_MUSLLINUX_PLATFORM.search(wheel_file.name)
             if not package:
