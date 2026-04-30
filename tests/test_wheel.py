@@ -1,6 +1,7 @@
 """Tests for pip module."""
 
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -88,6 +89,19 @@ def test_working_abi_platform(abi: str, platform: str) -> None:
 def test_not_working_abi_platform(abi: str, platform: str) -> None:
     """Test not working abi/platform variations."""
     assert not wheel.check_abi_platform(abi, platform)
+
+
+@pytest.mark.parametrize(
+    ("arch", "platform"),
+    [
+        ("amd64", "musllinux_1_2_x86_64"),
+        ("aarch64", "musllinux_1_2_aarch64"),
+    ],
+)
+def test_build_arch_platform_mapping(arch: str, platform: str) -> None:
+    """Test build arch maps to expected wheel platform arch."""
+    with patch("builder.wheel.build_arch", return_value=arch):
+        assert wheel.check_abi_platform("cp310", platform)
 
 
 def test_fix_wheel_unmatch(tmp_path: Path) -> None:
