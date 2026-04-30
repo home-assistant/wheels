@@ -24,9 +24,14 @@ TEST_INDEX_FILES = [
 def mock_index_data() -> Generator[None]:
     """Prepare a fake existing wheel index for use in tests."""
     # Mimc the HTML of a webserver autoindex.
-    content = "\n".join(
-        f'<a href="{wheel}">{wheel}</a>     28-May-2021 09:53  38181515'
-        for wheel in TEST_INDEX_FILES
+    content = (
+        "<!DOCTYPE html>\n<html>\n<body>\n"
+        + "\n".join(
+            f'<a href="{wheel}" title="{wheel}">{wheel}</a>'
+            "     28-May-2021 09:53  38181515"
+            for wheel in TEST_INDEX_FILES
+        )
+        + "\n</body></html>"
     )
     with patch("builder.infra.requests.get") as mock_request_get:
         mock_request_get.return_value.status_code = 200
