@@ -64,6 +64,9 @@ inputs:
   wheels-index:
     description: "The wheels index URL"
     default: "https://wheels.home-assistant.io"
+  action-docker-image:
+    description: "The wheels action docker image 'registry/namespace/image_name'"
+    default: "ghcr.io/home-assistant/wheels"
   local-wheels-repo-path:
     description: "Path to a local folder to copy the repository to (wheels-host and wheels-user must be empty)"
     default: ""
@@ -103,7 +106,7 @@ runs:
     - shell: bash
       id: pull
       run: |
-        name="ghcr.io/home-assistant/wheels/${{ inputs.arch }}/${{ inputs.tag }}/${{ inputs.abi }}:${{ steps.version.outputs.version }}"
+        name="${{ inputs.action-docker-image }}/${{ inputs.arch }}/${{ inputs.tag }}/${{ inputs.abi }}:${{ steps.version.outputs.version }}"
         docker pull "$name"
         echo "name=$name" >> $GITHUB_OUTPUT
 
