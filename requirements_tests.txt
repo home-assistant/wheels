@@ -1,5 +1,5 @@
 pylint==4.0.5
-pytest==9.0.3
+pytest==9.1.0
 mypy==2.1.0
 prek==0.4.5
 types-requests==2.33.0.20260518
