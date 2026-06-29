@@ -1,21 +1,17 @@
 """Create folder structure for index."""
 
-from __future__ import annotations
-
 import re
 from dataclasses import dataclass
 from html.parser import HTMLParser
 from pathlib import Path
-from typing import TYPE_CHECKING, Final
+from typing import Final
 
 import requests
 from awesomeversion import AwesomeVersion
+from packaging.tags import Tag
 from packaging.utils import NormalizedName, canonicalize_name, parse_wheel_filename
 
 from .wheel import check_abi_platform
-
-if TYPE_CHECKING:
-    from packaging.tags import Tag
 
 _RE_REQUIREMENT: Final = re.compile(
     r"(?P<package>.+)(?:==|>|<|<=|>=|~=)(?P<version>.+)",

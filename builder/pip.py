@@ -1,14 +1,9 @@
 """Pip build commands."""
 
-from __future__ import annotations
-
 import os
-from typing import TYPE_CHECKING
+from pathlib import Path
 
 from .utils import run_command
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 
 def build_wheels_package(
