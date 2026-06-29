@@ -1,7 +1,7 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
   "name": "Wheels",
-  "image": "mcr.microsoft.com/devcontainers/python:3.13",
+  "image": "mcr.microsoft.com/devcontainers/python:3.14",
   "postStartCommand": "pip install -r requirements.txt -r requirements_tests.txt && prek install",
   "customizations": {
     "vscode": {
