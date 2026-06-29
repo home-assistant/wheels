@@ -16,16 +16,13 @@ Compile utilities:
 
 ### Python 3.14 / musllinux_1_2
 
-Build with Alpine 3.22
+Build with Alpine 3.24
 Images: ghcr.io/home-assistant/wheels/ARCH/musllinux_1_2/cp314:VERSION
 
-Version of system builds:
+Version of system builds can be found by checking:
 
-- GCC 14.2.0
-- Cython 3.2.2
-- numpy 2.3.3
-- scikit-build 0.18.1
-- cffi 2.0.0
+- [requirements_cp314.txt](requirements_cp314.txt)
+- https://pkgs.alpinelinux.org/packages?branch=v3.24
 
 ## Misc
 
