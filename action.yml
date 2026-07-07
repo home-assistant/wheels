@@ -64,6 +64,15 @@ inputs:
   wheels-index:
     description: "The wheels index URL"
     default: "https://wheels.home-assistant.io"
+  tailscale-oauth-client-id:
+    description: "Tailscale OAuth client ID to join the tailnet the wheels host is on"
+    required: true
+  tailscale-oauth-secret:
+    description: "Tailscale OAuth client secret"
+    required: true
+  tailscale-tags:
+    description: "Comma-separated tailnet ACL tags for the ephemeral CI node"
+    default: "tag:ci"
   local-wheels-repo-path:
     description: "Path to a local folder to copy the repository to (wheels-host and wheels-user must be empty)"
     default: ""
@@ -79,6 +88,17 @@ runs:
           input="dev"
         fi
         echo "version=${input}" >> $GITHUB_OUTPUT
+
+    # The wheels host is only reachable over Tailscale — join the tailnet
+    # before ssh-keyscan/upload (ephemeral node, removed after the job).
+    # Skipped when nothing is uploaded (test mode or local folder).
+    - name: Connect to Tailscale
+      if: (inputs.test == 'false' || inputs.test == 'False') && inputs.local-wheels-repo-path == ''
+      uses: tailscale/github-action@780049a30b6ff5c378a9e7b389d15ece7a204888 # v4.1.3
+      with:
+        oauth-client-id: ${{ inputs.tailscale-oauth-client-id }}
+        oauth-secret: ${{ inputs.tailscale-oauth-secret }}
+        tags: ${{ inputs.tailscale-tags }}
 
     - shell: bash
       run: |
@@ -164,6 +184,17 @@ runs:
           build+=("--remote \"${{ inputs.wheels-user }}@${{ inputs.wheels-host }}:${{ inputs.wheels-host-path }}\"")
         fi
 
+        # The upload runs inside the builder container, but Tailscale MagicDNS
+        # is only configured on the runner — resolve the wheels host here and
+        # inject it into the container via --add-host.
+        if [[ "${{ inputs.test }}" =~ false|False ]] && [ -z "${{ inputs.local-wheels-repo-path }}" ]; then
+          host_ip=$(getent ahostsv4 "${{ inputs.wheels-host }}" | awk '{print $1; exit}')
+          if [ -z "$host_ip" ]; then
+            echo "::error::Unable to resolve wheels host '${{ inputs.wheels-host }}' on the runner"
+            exit 1
+          fi
+          docker+=("--add-host ${{ inputs.wheels-host }}:$host_ip")
+        fi
 
         echo "build=${build[@]}" >> $GITHUB_OUTPUT
         echo "docker=${docker[@]}" >> $GITHUB_OUTPUT
