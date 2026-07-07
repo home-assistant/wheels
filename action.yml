@@ -72,7 +72,7 @@ inputs:
     required: true
   tailscale-tags:
     description: "Comma-separated tailnet ACL tags for the ephemeral CI node"
-    default: "tag:ci"
+    default: "tag:homeassistant-wheels-deploy-action"
   local-wheels-repo-path:
     description: "Path to a local folder to copy the repository to (wheels-host and wheels-user must be empty)"
     default: ""

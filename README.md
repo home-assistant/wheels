@@ -45,8 +45,8 @@ The [wheels-server](https://github.com/home-assistant/wheels-server) is not
 publicly reachable — it accepts rsync uploads only over a Tailscale tailnet.
 The `tailscale-oauth-client-id` and `tailscale-oauth-secret` inputs are
 therefore required: the runner joins the tailnet as an ephemeral node (tagged
-`tag:ci` by default, override with `tailscale-tags`) before uploading to
-`wheels-host`:
+`tag:homeassistant-wheels-deploy-action` by default, override with
+`tailscale-tags`) before uploading to `wheels-host`:
 
 ```yaml
 - name: Build wheels
