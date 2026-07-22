@@ -39,6 +39,34 @@ $ python3 -m builder \
 
 - rsync
 
+## Uploading over Tailscale
+
+The [wheels-server](https://github.com/home-assistant/wheels-server) is not
+publicly reachable — it accepts rsync uploads only over a Tailscale tailnet.
+The `tailscale-oauth-client-id` and `tailscale-oauth-secret` inputs are
+therefore required: the runner joins the tailnet as an ephemeral node (tagged
+`tag:homeassistant-wheels-deploy-action` by default, override with
+`tailscale-tags`) before uploading to `wheels-host`:
+
+```yaml
+- name: Build wheels
+  uses: home-assistant/wheels@2026.07.0
+  with:
+    abi: cp314
+    tag: musllinux_1_2
+    arch: amd64
+    wheels-key: ${{ secrets.WHEELS_KEY }}
+    wheels-host: wheels.<your-tailnet>.ts.net
+    tailscale-oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+    tailscale-oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+    requirements: "requirements.txt"
+```
+
+In test mode (`test: true`) and when publishing to a local folder
+(`local-wheels-repo-path`), nothing is uploaded and the runner does not join
+the tailnet. To publish to two servers during a migration, run the action
+twice (one step per host).
+
 ## Folder structure of index folder:
 
 `/musllinux/*`
