@@ -1,6 +1,6 @@
 requests==2.34.2
 Brotli==1.2.0
 orjson==3.11.9
-faust-cchardet==2.2.1
+faust-cchardet==3.0.0
 mysqlclient==2.2.8
 psycopg2==2.9.12
