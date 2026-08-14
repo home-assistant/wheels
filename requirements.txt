@@ -4,5 +4,5 @@ click==8.4.2
 requests==2.34.2
 wheel==0.47.0
 setuptools==84.0.0
-packaging==26.2
+packaging==26.3
 pip==26.2.1
