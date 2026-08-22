@@ -2,7 +2,7 @@ auditwheel==6.8.1
 awesomeversion>=25.8.0
 click==8.4.2
 requests==2.34.2
-wheel==0.47.0
+wheel==0.48.0
 setuptools==84.0.0
 packaging==26.3
 pip==26.2.1
