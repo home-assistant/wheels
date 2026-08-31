@@ -1,6 +1,6 @@
 auditwheel==6.8.1
 awesomeversion>=25.8.0
-click==8.4.2
+click==8.5.0
 requests==2.34.2
 wheel==0.48.0
 setuptools==84.0.0
