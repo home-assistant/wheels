@@ -1,4 +1,4 @@
-auditwheel==6.8.1
+auditwheel==6.8.2
 awesomeversion>=25.8.0
 click==8.5.0
 requests==2.34.2
