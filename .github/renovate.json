@@ -1,0 +1,76 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
+
+  "enabledManagers": [
+    "custom.regex",
+    "github-actions",
+    "pip_requirements",
+    "pre-commit"
+  ],
+
+  "pre-commit": {
+    "enabled": true
+  },
+
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "prettier and its plugin are pinned in additional_dependencies of the pre-commit hook; the hook rev alone doesn't change the prettier that runs",
+      "managerFilePatterns": ["/^\\.pre-commit-config\\.yaml$/"],
+      "matchStrings": [
+        "- (?<depName>prettier|prettier-plugin-sort-json)@(?<currentValue>[^\\s]+)"
+      ],
+      "datasourceTemplate": "npm"
+    }
+  ],
+
+  "minimumReleaseAge": "3 days",
+
+  "semanticCommits": "disabled",
+  "labels": ["dependencies"],
+
+  "packageRules": [
+    {
+      "description": "Label Python updates like Dependabot did",
+      "matchManagers": ["pip_requirements", "pre-commit", "custom.regex"],
+      "addLabels": ["python"]
+    },
+    {
+      "description": "Label GitHub Actions updates like Dependabot did",
+      "matchManagers": ["github-actions"],
+      "addLabels": ["github_actions"]
+    },
+    {
+      "description": "Test and lint tooling in one weekly PR (non-major). prek alone came in as 14 separate PRs this year.",
+      "matchFileNames": ["requirements_tests.txt"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "test and lint tooling",
+      "groupSlug": "test-lint-tooling",
+      "schedule": ["before 8am on monday"]
+    },
+    {
+      "description": "The prettier pre-commit hook mirror, the prettier version it runs and its plugin move together",
+      "matchPackageNames": [
+        "rbubley/mirrors-prettier",
+        "prettier",
+        "prettier-plugin-sort-json"
+      ],
+      "groupName": "prettier",
+      "groupSlug": "prettier"
+    },
+    {
+      "description": "Leave runner labels and action version inputs alone, Dependabot never updated those",
+      "matchManagers": ["github-actions"],
+      "matchDepTypes": ["github-runner", "uses-with"],
+      "enabled": false
+    },
+    {
+      "description": "Our own actions that follow a branch (like home-assistant/actions@master) float on purpose. Pinning them would open a digest PR in every repository for each change to them. Our own actions on a version tag are pinned like any other.",
+      "matchManagers": ["github-actions"],
+      "matchPackageNames": ["home-assistant/**"],
+      "matchCurrentValue": "/^(dev|main|master)$/",
+      "pinDigests": false
+    }
+  ]
+}
