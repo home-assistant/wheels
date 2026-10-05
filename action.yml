@@ -71,7 +71,8 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - shell: bash
+    - name: Determine action version
+      shell: bash
       id: version
       run: |
         input="${GITHUB_ACTION_PATH##*/}"
@@ -80,7 +81,8 @@ runs:
         fi
         echo "version=${input}" >> $GITHUB_OUTPUT
 
-    - shell: bash
+    - name: Prepare SSH key
+      shell: bash
       run: |
         if [[ "${{ inputs.test }}" =~ false|False ]] && [ -z "${{ inputs.local-wheels-repo-path }}" ]; then
           umask g-rwx,o-rwx
@@ -100,14 +102,16 @@ runs:
           ssh-keyscan -H "${{ inputs.wheels-host }}" >> .ssh/known_hosts
         fi
 
-    - shell: bash
+    - name: Pull builder image
+      shell: bash
       id: pull
       run: |
         name="ghcr.io/home-assistant/wheels/${{ inputs.arch }}/${{ inputs.tag }}/${{ inputs.abi }}:${{ steps.version.outputs.version }}"
         docker pull "$name"
         echo "name=$name" >> $GITHUB_OUTPUT
 
-    - shell: bash
+    - name: Prepare build options
+      shell: bash
       id: options
       run: |
         declare -a build
@@ -169,12 +173,14 @@ runs:
         echo "docker=${docker[@]}" >> $GITHUB_OUTPUT
         echo "path=$data_path" >> $GITHUB_OUTPUT
 
-    - shell: bash
+    - name: Collect host information
+      shell: bash
       id: host-info
       run: |
         echo "host-machine=$(uname -m)" >> $GITHUB_OUTPUT
 
-    - shell: bash
+    - name: Create builder container
+      shell: bash
       run: |
         echo "Create container"
         docker create --name "${{ inputs.name }}" -t \
@@ -185,7 +191,8 @@ runs:
           --upload rsync \
           ${{ steps.options.outputs.build }}
 
-    - shell: bash
+    - name: Copy repository to container
+      shell: bash
       run: |
         echo "Copy repository and SSH files to the container"
         docker cp "${{ steps.options.outputs.path }}/." "${{ inputs.name }}:/data"
@@ -193,7 +200,8 @@ runs:
           docker cp -a .ssh/ "${{ inputs.name }}:/root/.ssh"
         fi
 
-    - shell: bash
+    - name: Build wheels
+      shell: bash
       id: build
       run: |
         set +e
@@ -208,12 +216,14 @@ runs:
         done
         exit ${return_val}
 
-    - shell: bash
+    - name: Copy wheels to local repository
+      shell: bash
       if: ${{ inputs.local-wheels-repo-path }}
       run: |
         docker cp "${{ inputs.name }}:/data/output/." "${{ inputs.local-wheels-repo-path }}"
 
-    - shell: bash
+    - name: Remove builder container
+      shell: bash
       if: always()
       run: |
         docker rm -f "${{ inputs.name }}"
