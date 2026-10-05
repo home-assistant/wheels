@@ -206,7 +206,7 @@ runs:
           fi
           break
         done
-        echo "return_val=$return_val" >> $GITHUB_OUTPUT
+        exit ${return_val}
 
     - shell: bash
       if: ${{ inputs.local-wheels-repo-path }}
@@ -214,6 +214,6 @@ runs:
         docker cp "${{ inputs.name }}:/data/output/." "${{ inputs.local-wheels-repo-path }}"
 
     - shell: bash
+      if: always()
       run: |
         docker rm -f "${{ inputs.name }}"
-        exit ${{ steps.build.outputs.return_val }}
